@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.toList;
 public class LargestPrimeFactor
 {
 
-    private static boolean isPrime(long num)
+    public static boolean isPrime(long num)
     {
         if (num < 2)
         {
@@ -52,7 +52,7 @@ public class LargestPrimeFactor
                 .getAsLong();
     }
 
-    private static List<Long> primeFactors(final long n)
+    public static List<Long> primeFactors(final long n)
     {
         if (isPrime(n))
         {
