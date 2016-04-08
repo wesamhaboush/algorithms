@@ -1,0 +1,4297 @@
+* Isomorphic Strings
+
+Given two strings s and t, determine if they are isomorphic. Two strings are isomorphic if the characters in s can be replaced to get t.
+
+For example,"egg" and "add" are isomorphic, "foo" and "bar" are not.
+
+Analysis
+
+We need to define a method which accepts a map & a value, and returns the value's key in the map.
+
+Java Solution
+
+public boolean isIsomorphic(String s, String t) {
+    if(s==null || t==null)
+        return false;
+ 
+    if(s.length() != t.length())
+        return false;
+ 
+    if(s.length()==0 && t.length()==0)
+        return true;
+ 
+    HashMap<Character, Character> map = new HashMap<Character,Character>();
+    for(int i=0; i<s.length(); i++){
+        char c1 = s.charAt(i);
+        char c2 = t.charAt(i);
+ 
+        Character c = getKey(map, c2);
+        if(c != null && c!=c1){
+            return false;
+        }else if(map.containsKey(c1)){
+            if(c2 != map.get(c1))
+                return false;
+        }else{
+            map.put(c1,c2);
+        }
+    }
+ 
+    return true;
+}
+ 
+// a method for getting key of a target value
+public Character getKey(HashMap<Character,Character> map, Character target){
+    for (Map.Entry<Character,Character> entry : map.entrySet()) {
+        if (entry.getValue().equals(target)) {
+            return entry.getKey();
+        }
+    }
+ 
+    return null;
+}
+
+* Word Ladder
+ 
+Given two words (start and end), and a dictionary, find the length of shortest transformation sequence from start to end, such that only one letter can be changed at a time and each intermediate word must exist in the dictionary. For example, given:
+
+start = "hit"
+end = "cog"
+dict = ["hot","dot","dog","lot","log"]
+One shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog", the program should return its length 5.
+
+Analysis
+
+UPDATED on 06/07/2015.
+
+So we quickly realize that this is a search problem, and breath-first search guarantees the optimal solution.
+
+word-ladder
+
+Java Solution
+
+class WordNode{
+    String word;
+    int numSteps;
+ 
+    public WordNode(String word, int numSteps){
+        this.word = word;
+        this.numSteps = numSteps;
+    }
+}
+ 
+public class Solution {
+    public int ladderLength(String beginWord, String endWord, Set<String> wordDict) {
+        LinkedList<WordNode> queue = new LinkedList<WordNode>();
+        queue.add(new WordNode(beginWord, 1));
+ 
+        wordDict.add(endWord);
+ 
+        while(!queue.isEmpty()){
+            WordNode top = queue.remove();
+            String word = top.word;
+ 
+            if(word.equals(endWord)){
+                return top.numSteps;
+            }
+ 
+            char[] arr = word.toCharArray();
+            for(int i=0; i<arr.length; i++){
+                for(char c='a'; c<='z'; c++){
+                    char temp = arr[i];
+                    if(arr[i]!=c){
+                        arr[i]=c;
+                    }
+ 
+                    String newWord = new String(arr);
+                    if(wordDict.contains(newWord)){
+                        queue.add(new WordNode(newWord, top.numSteps+1));
+                        wordDict.remove(newWord);
+                    }
+ 
+                    arr[i]=temp;
+                }
+            }
+        }
+ 
+        return 0;
+    }
+}
+
+* LeetCode – Word Ladder II (Java)
+ 
+Given two words (start and end), and a dictionary, find all shortest transformation sequence(s) from start to end, such that: 1) Only one letter can be changed at a time, 2) Each intermediate word must exist in the dictionary.
+
+For example, given: start = "hit", end = "cog", and dict = ["hot","dot","dog","lot","log"], return:
+
+  [
+    ["hit","hot","dot","dog","cog"],
+    ["hit","hot","lot","log","cog"]
+  ]
+Analysis
+
+This is an extension of Word Ladder.
+
+The idea is the same. To track the actual ladder, we need to add a pointer that points to the previous node in the WordNode class.
+
+In addition, the used word can not directly removed from the dictionary. The used word is only removed when steps change.
+
+Java Solution
+
+class WordNode{
+    String word;
+    int numSteps;
+    WordNode pre;
+ 
+    public WordNode(String word, int numSteps, WordNode pre){
+        this.word = word;
+        this.numSteps = numSteps;
+        this.pre = pre;
+    }
+}
+ 
+public class Solution {
+    public List<List<String>> findLadders(String start, String end, Set<String> dict) {
+        List<List<String>> result = new ArrayList<List<String>>();
+ 
+        LinkedList<WordNode> queue = new LinkedList<WordNode>();
+        queue.add(new WordNode(start, 1, null));
+ 
+        dict.add(end);
+ 
+        int minStep = 0;
+ 
+        HashSet<String> visited = new HashSet<String>();  
+        HashSet<String> unvisited = new HashSet<String>();  
+        unvisited.addAll(dict);
+ 
+        int preNumSteps = 0;
+ 
+        while(!queue.isEmpty()){
+            WordNode top = queue.remove();
+            String word = top.word;
+            int currNumSteps = top.numSteps;
+ 
+            if(word.equals(end)){
+                if(minStep == 0){
+                    minStep = top.numSteps;
+                }
+ 
+                if(top.numSteps == minStep && minStep !=0){
+                    //nothing
+                    ArrayList<String> t = new ArrayList<String>();
+                    t.add(top.word);
+                    while(top.pre !=null){
+                        t.add(0, top.pre.word);
+                        top = top.pre;
+                    }
+                    result.add(t);
+                    continue;
+                }
+ 
+            }
+ 
+            if(preNumSteps < currNumSteps){
+                unvisited.removeAll(visited);
+            }
+ 
+            preNumSteps = currNumSteps;
+ 
+            char[] arr = word.toCharArray();
+            for(int i=0; i<arr.length; i++){
+                for(char c='a'; c<='z'; c++){
+                    char temp = arr[i];
+                    if(arr[i]!=c){
+                        arr[i]=c;
+                    }
+ 
+                    String newWord = new String(arr);
+                    if(unvisited.contains(newWord)){
+                        queue.add(new WordNode(newWord, top.numSteps+1, top));
+                        visited.add(newWord);
+                    }
+ 
+                    arr[i]=temp;
+                }
+            }
+ 
+ 
+        }
+ 
+        return result;
+    }
+}
+
+* LeetCode – Median of Two Sorted Arrays (Java)
+ 
+There are two sorted arrays A and B of size m and n respectively. Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).
+
+The median is also the number that is halfway into the set. To find the median, the data should first be arranged in order from least to greatest. To remember the definition of a median, just think of the median of a road, which is the middlemost part of the road.
+
+Java Solution 1
+
+If we see log(n), we should think about using binary something.
+
+This problem can be converted to the problem of finding kth element, k is (A's length + B' Length)/2.
+
+If any of the two arrays is empty, then the kth element is the non-empty array's kth element. If k == 0, the kth element is the first element of A or B.
+
+For normal cases(all other cases), we need to move the pointer at the pace of half of an array length to get log(n) time.
+
+public static double findMedianSortedArrays(int A[], int B[]) {
+	int m = A.length;
+	int n = B.length;
+ 
+	if ((m + n) % 2 != 0) // odd
+		return (double) findKth(A, B, (m + n) / 2, 0, m - 1, 0, n - 1);
+	else { // even
+		return (findKth(A, B, (m + n) / 2, 0, m - 1, 0, n - 1) 
+			+ findKth(A, B, (m + n) / 2 - 1, 0, m - 1, 0, n - 1)) * 0.5;
+	}
+}
+ 
+public static int findKth(int A[], int B[], int k, 
+	int aStart, int aEnd, int bStart, int bEnd) {
+ 
+	int aLen = aEnd - aStart + 1;
+	int bLen = bEnd - bStart + 1;
+ 
+	// Handle special cases
+	if (aLen == 0)
+		return B[bStart + k];
+	if (bLen == 0)
+		return A[aStart + k];
+	if (k == 0)
+		return A[aStart] < B[bStart] ? A[aStart] : B[bStart];
+ 
+	int aMid = aLen * k / (aLen + bLen); // a's middle count
+	int bMid = k - aMid - 1; // b's middle count
+ 
+	// make aMid and bMid to be array index
+	aMid = aMid + aStart;
+	bMid = bMid + bStart;
+ 
+	if (A[aMid] > B[bMid]) {
+		k = k - (bMid - bStart + 1);
+		aEnd = aMid;
+		bStart = bMid + 1;
+	} else {
+		k = k - (aMid - aStart + 1);
+		bEnd = bMid;
+		aStart = aMid + 1;
+	}
+ 
+	return findKth(A, B, k, aStart, aEnd, bStart, bEnd);
+}
+Java Solution 2
+
+Solution 1 is a general solution to find the kth element. We can also come up with a simpler solution which only finds the median of two sorted arrays for this particular problem. Thanks to Gunner86. The description of the algorithm is awesome!
+
+1) Calculate the medians m1 and m2 of the input arrays ar1[] and ar2[] respectively.
+2) If m1 and m2 both are equal then we are done, and return m1 (or m2)
+3) If m1 is greater than m2, then median is present in one of the below two subarrays.
+  a) From first element of ar1 to m1 (ar1[0...|_n/2_|])
+  b) From m2 to last element of ar2 (ar2[|_n/2_|...n-1])
+4) If m2 is greater than m1, then median is present in one of the below two subarrays.
+  a) From m1 to last element of ar1 (ar1[|_n/2_|...n-1])
+  b) From first element of ar2 to m2 (ar2[0...|_n/2_|])
+5) Repeat the above process until size of both the subarrays becomes 2.
+6) If size of the two arrays is 2 then use below formula to get the median.
+Median = (max(ar1[0], ar2[0]) + min(ar1[1], ar2[1]))/2
+
+* LeetCode – Kth Largest Element in an Array (Java)
+ 
+Find the kth largest element in an unsorted array. Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+For example, given [3,2,1,5,6,4] and k = 2, return 5.
+
+Note: You may assume k is always valid, 1 ≤ k ≤ array's length.
+
+Java Solution 1
+
+public int findKthLargest(int[] nums, int k) {
+    Arrays.sort(nums);
+    return nums[nums.length-k];
+}
+Time is O(nlog(n))
+
+Java Solution 2
+
+This problem can also be solve by using the quickselect approach, which is similar to quicksort.
+
+public int findKthLargest(int[] nums, int k) {
+	if (k < 1 || nums == null) {
+		return 0;
+	}
+ 
+	return getKth(nums.length - k +1, nums, 0, nums.length - 1);
+}
+ 
+public int getKth(int k, int[] nums, int start, int end) {
+ 
+	int pivot = nums[end];
+ 
+	int left = start;
+	int right = end;
+ 
+	while (true) {
+ 
+		while (nums[left] < pivot && left < right) {
+			left++;
+		}
+ 
+		while (nums[right] >= pivot && right > left) {
+			right--;
+		}
+ 
+		if (left == right) {
+			break;
+		}
+ 
+		swap(nums, left, right);
+	}
+ 
+	swap(nums, left, end);
+ 
+	if (k == left + 1) {
+		return pivot;
+	} else if (k < left + 1) {
+		return getKth(k, nums, start, left - 1);
+	} else {
+		return getKth(k, nums, left + 1, end);
+	}
+}
+ 
+public void swap(int[] nums, int n1, int n2) {
+	int tmp = nums[n1];
+	nums[n1] = nums[n2];
+	nums[n2] = tmp;
+}
+Average case time is O(n), worst case time is O(n^2).
+
+* LeetCode – Wildcard Matching (Java)
+ 
+Implement wildcard pattern matching with support for '?' and '*'.
+
+Java Solution
+
+To understand this solution, you can use s="aab" and p="*ab".
+
+public boolean isMatch(String s, String p) {
+	int i = 0;
+	int j = 0;
+	int starIndex = -1;
+	int iIndex = -1;
+ 
+	while (i < s.length()) {
+		if (j < p.length() && (p.charAt(j) == '?' || p.charAt(j) == s.charAt(i))) {
+			++i;
+			++j;
+		} else if (j < p.length() && p.charAt(j) == '*') {
+			starIndex = j;		
+			iIndex = i;
+			j++;
+		} else if (starIndex != -1) {
+			j = starIndex + 1;
+			i = iIndex+1;
+			iIndex++;
+		} else {
+			return false;
+		}
+	}
+ 
+	while (j < p.length() && p.charAt(j) == '*') {
+		++j;
+	}
+ 
+	return j == p.length();
+}
+
+*LeetCode – Regular Expression Matching in Java
+ 
+Implement regular expression matching with support for '.' and '*'.
+
+'.' Matches any single character.
+'*' Matches zero or more of the preceding element.
+
+The matching should cover the entire input string (not partial).
+
+The function prototype should be:
+bool isMatch(const char *s, const char *p)
+
+Some examples:
+isMatch("aa","a") return false
+isMatch("aa","aa") return true
+isMatch("aaa","aa") return false
+isMatch("aa", "a*") return true
+isMatch("aa", ".*") return true
+isMatch("ab", ".*") return true
+isMatch("aab", "c*a*b") return true
+
+1. Analysis
+
+First of all, this is one of the most difficulty problems. It is hard to think through all different cases. The problem should be simplified to handle 2 basic cases:
+
+the second char of pattern is "*"
+the second char of pattern is not "*"
+For the 1st case, if the first char of pattern is not ".", the first char of pattern and string should be the same. Then continue to match the remaining part.
+
+For the 2nd case, if the first char of pattern is "." or first char of pattern == the first i char of string, continue to match the remaining part.
+
+2. Java Solution 1 (Short)
+
+The following Java solution is accepted.
+
+public class Solution {
+    public boolean isMatch(String s, String p) {
+ 
+        if(p.length() == 0)
+            return s.length() == 0;
+ 
+        //p's length 1 is special case    
+        if(p.length() == 1 || p.charAt(1) != '*'){
+            if(s.length() < 1 || (p.charAt(0) != '.' && s.charAt(0) != p.charAt(0)))
+                return false;
+            return isMatch(s.substring(1), p.substring(1));    
+ 
+        }else{
+            int len = s.length();
+ 
+            int i = -1; 
+            while(i<len && (i < 0 || p.charAt(0) == '.' || p.charAt(0) == s.charAt(i))){
+                if(isMatch(s.substring(i+1), p.substring(2)))
+                    return true;
+                i++;
+            }
+            return false;
+        } 
+    }
+}
+3. Java Solution 2 (More Readable)
+
+public boolean isMatch(String s, String p) {
+	// base case
+	if (p.length() == 0) {
+		return s.length() == 0;
+	}
+ 
+	// special case
+	if (p.length() == 1) {
+ 
+		// if the length of s is 0, return false
+		if (s.length() < 1) {
+			return false;
+		}
+ 
+		//if the first does not match, return false
+		else if ((p.charAt(0) != s.charAt(0)) && (p.charAt(0) != '.')) {
+			return false;
+		}
+ 
+		// otherwise, compare the rest of the string of s and p.
+		else {
+			return isMatch(s.substring(1), p.substring(1));
+		}
+	}
+ 
+	// case 1: when the second char of p is not '*'
+	if (p.charAt(1) != '*') {
+		if (s.length() < 1) {
+			return false;
+		}
+		if ((p.charAt(0) != s.charAt(0)) && (p.charAt(0) != '.')) {
+			return false;
+		} else {
+			return isMatch(s.substring(1), p.substring(1));
+		}
+	}
+ 
+	// case 2: when the second char of p is '*', complex case.
+	else {
+		//case 2.1: a char & '*' can stand for 0 element
+		if (isMatch(s, p.substring(2))) {
+			return true;
+		}
+ 
+		//case 2.2: a char & '*' can stand for 1 or more preceding element, 
+		//so try every sub string
+		int i = 0;
+		while (i<s.length() && (s.charAt(i)==p.charAt(0) || p.charAt(0)=='.')){
+			if (isMatch(s.substring(i + 1), p.substring(2))) {
+				return true;
+			}
+			i++;
+		}
+		return false;
+	}
+}
+
+
+LeetCode – Evaluate Reverse Polish Notation
+ 
+Evaluate the value of an arithmetic expression in Reverse Polish Notation. Valid operators are +, -, *, /. Each operand may be an integer or another expression. For example:
+
+  ["2", "1", "+", "3", "*"] -> ((2 + 1) * 3) -> 9
+  ["4", "13", "5", "/", "+"] -> (4 + (13 / 5)) -> 6
+1. Naive Approach
+
+This problem can be solved by using a stack. We can loop through each element in the given array. When it is a number, push it to the stack. When it is an operator, pop two numbers from the stack, do the calculation, and push back the result.
+
+Evaluate Reverse Polish Notation
+
+The following is the code. However, this code contains compilation errors in leetcode. Why?
+
+public class Test {
+ 
+	public static void main(String[] args) throws IOException {
+		String[] tokens = new String[] { "2", "1", "+", "3", "*" };
+		System.out.println(evalRPN(tokens));
+	}
+ 
+	public static int evalRPN(String[] tokens) {
+		int returnValue = 0;
+		String operators = "+-*/";
+ 
+		Stack<String> stack = new Stack<String>();
+ 
+		for (String t : tokens) {
+			if (!operators.contains(t)) { //push to stack if it is a number
+				stack.push(t);
+			} else {//pop numbers from stack if it is an operator
+				int a = Integer.valueOf(stack.pop());
+				int b = Integer.valueOf(stack.pop());
+				switch (t) {
+				case "+":
+					stack.push(String.valueOf(a + b));
+					break;
+				case "-":
+					stack.push(String.valueOf(b - a));
+					break;
+				case "*":
+					stack.push(String.valueOf(a * b));
+					break;
+				case "/":
+					stack.push(String.valueOf(b / a));
+					break;
+				}
+			}
+		}
+ 
+		returnValue = Integer.valueOf(stack.pop());
+ 
+		return returnValue;
+	}
+}
+The problem is that switch string statement is only available from JDK 1.7. Leetcode apparently use a JDK version below 1.7.
+
+2. Accepted Solution
+
+If you want to use switch statement, you can convert the above by using the following code which use the index of a string "+-*/".
+
+public class Solution {
+    public int evalRPN(String[] tokens) {
+ 
+        int returnValue = 0;
+ 
+        String operators = "+-*/";
+ 
+        Stack<String> stack = new Stack<String>();
+ 
+        for(String t : tokens){
+            if(!operators.contains(t)){
+                stack.push(t);
+            }else{
+                int a = Integer.valueOf(stack.pop());
+                int b = Integer.valueOf(stack.pop());
+                int index = operators.indexOf(t);
+                switch(index){
+                    case 0:
+                        stack.push(String.valueOf(a+b));
+                        break;
+                    case 1:
+                        stack.push(String.valueOf(b-a));
+                        break;
+                    case 2:
+                        stack.push(String.valueOf(a*b));
+                        break;
+                    case 3:
+                        stack.push(String.valueOf(b/a));
+                        break;
+                }
+            }
+        }
+ 
+        returnValue = Integer.valueOf(stack.pop());
+ 
+        return returnValue;
+ 
+    }
+}
+
+* System.arraycopy() vs. Arrays.copyOf() in Java
+ 
+If we want to copy an array, we can use either System.arraycopy() or Arrays.copyOf(). In this post, I use a simple example to demonstrate the difference between the two.
+
+
+1. Simple Code Examples
+
+System.arraycopy()
+
+int[] arr = {1,2,3,4,5};
+ 
+int[] copied = new int[10];
+System.arraycopy(arr, 0, copied, 1, 5);//5 is the length to copy
+ 
+System.out.println(Arrays.toString(copied));
+Output:
+
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 1, 2, 3, 4, 5, 0, 0, 0, 0]
+Arrays.copyOf()
+
+int[] copied = Arrays.copyOf(arr, 10); //10 the the length of the new array
+System.out.println(Arrays.toString(copied));
+ 
+copied = Arrays.copyOf(arr, 3);
+System.out.println(Arrays.toString(copied));
+Output:
+
+[1, 2, 3, 4, 5, 0, 0, 0, 0, 0]
+[1, 2, 3]
+2. The Major Difference
+
+The difference is that Arrays.copyOf does not only copy elements, it also creates a new array. System.arrayCopy copies into an existing array.
+
+If we read the source code of Arrays.copyOf(), we can see that it uses System.arraycopy().
+
+public static int[] copyOf(int[] original, int newLength) { 
+   int[] copy = new int[newLength]; 
+   System.arraycopy(original, 0, copy, 0, Math.min(original.length, newLength)); 
+   return copy; 
+}
+
+* Rotate Array in Java
+ 
+You may have been using Java for a while. Do you think a simple Java array question can be a challenge? Let's use the following problem to test.
+
+Problem: Rotate an array of n elements to the right by k steps. For example, with n = 7 and k = 3, the array [1,2,3,4,5,6,7] is rotated to [5,6,7,1,2,3,4]. How many different ways do you know to solve this problem?
+
+Solution 1 - Intermediate Array
+
+In a straightforward way, we can create a new array and then copy elements to the new array. Then change the original array by using System.arraycopy().
+
+public void rotate(int[] nums, int k) {
+    if(k > nums.length) 
+        k=k%nums.length;
+ 
+    int[] result = new int[nums.length];
+ 
+    for(int i=0; i < k; i++){
+        result[i] = nums[nums.length-k+i];
+    }
+ 
+    int j=0;
+    for(int i=k; i<nums.length; i++){
+        result[i] = nums[j];
+        j++;
+    }
+ 
+    System.arraycopy( result, 0, nums, 0, nums.length );
+}
+Space is O(n) and time is O(n). You can check out the difference between System.arraycopy() and Arrays.copyOf().
+
+Solution 2 - Bubble Rotate
+
+Can we do this in O(1) space?
+
+This solution is like a bubble sort.
+
+public static void rotate(int[] arr, int order) {
+	if (arr == null || order < 0) {
+	    throw new IllegalArgumentException("Illegal argument!");
+	}
+ 
+	for (int i = 0; i < order; i++) {
+		for (int j = arr.length - 1; j > 0; j--) {
+			int temp = arr[j];
+			arr[j] = arr[j - 1];
+			arr[j - 1] = temp;
+		}
+	}
+}
+However, the time is O(n*k).
+
+Here is an example (length=7, order=3):
+
+i=0
+0 1 2 3 4 5 6 
+0 1 2 3 4 6 5
+...
+6 0 1 2 3 4 5
+i=1
+6 0 1 2 3 5 4 
+...
+5 6 0 1 2 3 4 
+i=2
+5 6 0 1 2 4 3 
+...
+4 5 6 0 1 2 3  
+Solution 3 - Reversal
+
+Can we do this in O(1) space and in O(n) time? The following solution does.
+
+Assuming we are given {1,2,3,4,5,6} and order 2. The basic idea is:
+
+1. Divide the array two parts: 1,2,3,4 and 5, 6
+2. Rotate first part: 4,3,2,1,5,6
+3. Rotate second part: 4,3,2,1,6,5
+4. Rotate the whole array: 5,6,1,2,3,4
+public static void rotate(int[] arr, int order) {
+	order = order % arr.length;
+ 
+	if (arr == null || order < 0) {
+		throw new IllegalArgumentException("Illegal argument!");
+	}
+ 
+	//length of first part
+	int a = arr.length - order; 
+ 
+	reverse(arr, 0, a-1);
+	reverse(arr, a, arr.length-1);
+	reverse(arr, 0, arr.length-1);
+ 
+}
+ 
+public static void reverse(int[] arr, int left, int right){
+	if(arr == null || arr.length == 1) 
+		return;
+ 
+	while(left < right){
+		int temp = arr[left];
+		arr[left] = arr[right];
+		arr[right] = temp;
+		left++;
+		right--;
+	}	
+}
+
+* LeetCode – Merge Intervals
+ 
+Problem:
+
+Given a collection of intervals, merge all overlapping intervals.
+
+For example,
+Given [1,3],[2,6],[8,10],[15,18],
+return [1,6],[8,10],[15,18].
+Thoughts of This Problem
+
+The key to solve this problem is defining a Comparator first to sort the arraylist of Intevals. And then merge some intervals.
+
+The take-away message from this problem is utilizing the advantage of sorted list/array.
+
+Java Solution
+
+class Interval {
+	int start;
+	int end;
+ 
+	Interval() {
+		start = 0;
+		end = 0;
+	}
+ 
+	Interval(int s, int e) {
+		start = s;
+		end = e;
+	}
+}
+ 
+public class Solution {
+	public ArrayList<Interval> merge(ArrayList<Interval> intervals) {
+ 
+		if (intervals == null || intervals.size() <= 1)
+			return intervals;
+ 
+		// sort intervals by using self-defined Comparator
+		Collections.sort(intervals, new IntervalComparator());
+ 
+		ArrayList<Interval> result = new ArrayList<Interval>();
+ 
+		Interval prev = intervals.get(0);
+		for (int i = 1; i < intervals.size(); i++) {
+			Interval curr = intervals.get(i);
+ 
+			if (prev.end >= curr.start) {
+				// merged case
+				Interval merged = new Interval(prev.start, Math.max(prev.end, curr.end));
+				prev = merged;
+			} else {
+				result.add(prev);
+				prev = curr;
+			}
+		}
+ 
+		result.add(prev);
+ 
+		return result;
+	}
+}
+ 
+class IntervalComparator implements Comparator<Interval> {
+	public int compare(Interval i1, Interval i2) {
+		return i1.start - i2.start;
+	}
+}
+
+LeetCode – Insert Interval
+ 
+Problem:
+
+Given a set of non-overlapping & sorted intervals, insert a new interval into the intervals (merge if necessary).
+
+Example 1:
+Given intervals [1,3],[6,9], insert and merge [2,5] in as [1,5],[6,9].
+
+Example 2:
+Given [1,2],[3,5],[6,7],[8,10],[12,16], insert and merge [4,9] in as [1,2],[3,10],[12,16].
+
+This is because the new interval [4,9] overlaps with [3,5],[6,7],[8,10].
+Thoughts of This Problem
+
+Quickly summarize 3 cases. Whenever there is intersection, created a new interval.
+
+insert-interval
+
+Java Solution
+
+/**
+ * Definition for an interval.
+ * public class Interval {
+ *     int start;
+ *     int end;
+ *     Interval() { start = 0; end = 0; }
+ *     Interval(int s, int e) { start = s; end = e; }
+ * }
+ */
+public class Solution {
+    public ArrayList<Interval> insert(ArrayList<Interval> intervals, Interval newInterval) {
+ 
+        ArrayList<Interval> result = new ArrayList<Interval>();
+ 
+        for(Interval interval: intervals){
+            if(interval.end < newInterval.start){
+                result.add(interval);
+            }else if(interval.start > newInterval.end){
+                result.add(newInterval);
+                newInterval = interval;        
+            }else if(interval.end >= newInterval.start || interval.start <= newInterval.end){
+                newInterval = new Interval(Math.min(interval.start, newInterval.start), Math.max(newInterval.end, interval.end));
+            }
+        }
+ 
+        result.add(newInterval); 
+ 
+        return result;
+    }
+}
+
+* LeetCode – Two Sum (Java)
+ 
+Given an array of integers, find two numbers such that they add up to a specific target number.
+
+The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.
+
+For example:
+
+Input: numbers={2, 7, 11, 15}, target=9
+Output: index1=1, index2=2
+Naive Approach
+
+This problem is pretty straightforward. We can simply examine every possible pair of numbers in this integer array.
+
+Time complexity in worst case: O(n^2).
+
+public static int[] twoSum(int[] numbers, int target) {
+	int[] ret = new int[2];
+	for (int i = 0; i < numbers.length; i++) {
+		for (int j = i + 1; j < numbers.length; j++) {
+			if (numbers[i] + numbers[j] == target) {
+				ret[0] = i + 1;
+				ret[1] = j + 1;
+			}
+		}
+	}
+	return ret;
+}
+Can we do better?
+
+Better Solution
+
+Use HashMap to store the target value.
+
+public class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+	HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+	int[] result = new int[2];
+ 
+	for (int i = 0; i < numbers.length; i++) {
+		if (map.containsKey(numbers[i])) {
+			int index = map.get(numbers[i]);
+			result[0] = index+1 ;
+			result[1] = i+1;
+			break;
+		} else {
+			map.put(target - numbers[i], i);
+		}
+	}
+ 
+	return result;
+    }
+}
+Time complexity depends on the put and get operations of HashMap which is normally O(1).
+
+Time complexity of this solution is O(n).
+
+* LeetCode – Two Sum (Java)
+ 
+Given an array of integers, find two numbers such that they add up to a specific target number.
+
+The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.
+
+For example:
+
+Input: numbers={2, 7, 11, 15}, target=9
+Output: index1=1, index2=2
+Naive Approach
+
+This problem is pretty straightforward. We can simply examine every possible pair of numbers in this integer array.
+
+Time complexity in worst case: O(n^2).
+
+public static int[] twoSum(int[] numbers, int target) {
+	int[] ret = new int[2];
+	for (int i = 0; i < numbers.length; i++) {
+		for (int j = i + 1; j < numbers.length; j++) {
+			if (numbers[i] + numbers[j] == target) {
+				ret[0] = i + 1;
+				ret[1] = j + 1;
+			}
+		}
+	}
+	return ret;
+}
+Can we do better?
+
+Better Solution
+
+Use HashMap to store the target value.
+
+public class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+	HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+	int[] result = new int[2];
+ 
+	for (int i = 0; i < numbers.length; i++) {
+		if (map.containsKey(numbers[i])) {
+			int index = map.get(numbers[i]);
+			result[0] = index+1 ;
+			result[1] = i+1;
+			break;
+		} else {
+			map.put(target - numbers[i], i);
+		}
+	}
+ 
+	return result;
+    }
+}
+Time complexity depends on the put and get operations of HashMap which is normally O(1).
+
+Time complexity of this solution is O(n).
+
+* Two Sum II – Input array is sorted (Java)
+ 
+This problem is similar to Two Sum.
+
+To solve this problem, we can use two points to scan the array from both sides. See Java solution below:
+
+public int[] twoSum(int[] numbers, int target) {
+	if (numbers == null || numbers.length == 0)
+		return null;
+ 
+	int i = 0;
+	int j = numbers.length - 1;
+ 
+	while (i < j) {
+		int x = numbers[i] + numbers[j];
+		if (x < target) {
+			++i;
+		} else if (x > target) {
+			j--;
+		} else {
+			return new int[] { i + 1, j + 1 };
+		}
+	}
+ 
+	return null;
+}
+
+* Two Sum III – Data structure design (Java)
+ 
+Design and implement a TwoSum class. It should support the following operations: add and find.
+
+add - Add the number to an internal data structure.
+find - Find if there exists any pair of numbers which sum is equal to the value.
+
+For example,
+
+add(1); 
+add(3); 
+add(5);
+find(4) -> true
+find(7) -> false
+Java Solution
+
+Since the desired class need add and get operations, HashMap is a good option for this purpose.
+
+public class TwoSum {
+	private HashMap<Integer, Integer> elements = new HashMap<Integer, Integer>();
+ 
+	public void add(int number) {
+		if (elements.containsKey(number)) {
+			elements.put(number, elements.get(number) + 1);
+		} else {
+			elements.put(number, 1);
+		}
+	}
+ 
+	public boolean find(int value) {
+		for (Integer i : elements.keySet()) {
+			int target = value - i;
+			if (elements.containsKey(target)) {
+				if (i == target && elements.get(target) < 2) { // for doubles, like 6 when you have two 3s.
+					continue;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+* LeetCode – 3Sum
+ 
+Problem:
+
+Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+
+Note:
+Elements in a triplet (a,b,c) must be in non-descending order. (ie, a ≤ b ≤ c)
+The solution set must not contain duplicate triplets.
+
+    For example, given array S = {-1 0 1 2 -1 -4},
+
+    A solution set is:
+    (-1, 0, 1)
+    (-1, -1, 2)
+1. Naive Solution
+
+Naive solution is 3 loops, and this gives time complexity O(n^3). Apparently this is not an acceptable solution, but a discussion can start from here.
+
+public class Solution {
+    public ArrayList<ArrayList<Integer>> threeSum(int[] num) {
+        //sort array
+        Arrays.sort(num);
+ 
+        ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> each = new ArrayList<Integer>();
+        for(int i=0; i<num.length; i++){
+            if(num[i] > 0) break;
+ 
+            for(int j=i+1; j<num.length; j++){
+                if(num[i] + num[j] > 0 && num[j] > 0) break;
+ 
+                for(int k=j+1; k<num.length; k++){
+                  if(num[i] + num[j] + num[k] == 0) {
+ 
+                      each.add(num[i]);
+                      each.add(num[j]);
+                      each.add(num[k]);
+                      result.add(each);
+                      each.clear();
+                  }
+                }
+            }
+        }
+ 
+        return result;
+    }
+}
+* The solution also does not handle duplicates. Therefore, it is not only time inefficient, but also incorrect.
+
+Result:
+
+Submission Result: Output Limit Exceeded
+2. Better Solution
+
+A better solution is using two pointers instead of one. This makes time complexity of O(n^2).
+
+To avoid duplicate, we can take advantage of sorted arrays, i.e., move pointers by >1 to use same element only once.
+
+public ArrayList<ArrayList<Integer>> threeSum(int[] num) {
+	ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+ 
+	if (num.length < 3)
+		return result;
+ 
+	// sort array
+	Arrays.sort(num);
+ 
+	for (int i = 0; i < num.length - 2; i++) {
+		// //avoid duplicate solutions
+		if (i == 0 || num[i] > num[i - 1]) {
+ 
+			int negate = -num[i];
+ 
+			int start = i + 1;
+			int end = num.length - 1;
+ 
+			while (start < end) {
+				//case 1
+				if (num[start] + num[end] == negate) {
+					ArrayList<Integer> temp = new ArrayList<Integer>();
+					temp.add(num[i]);
+					temp.add(num[start]);
+					temp.add(num[end]);
+ 
+					result.add(temp);
+					start++;
+					end--;
+					//avoid duplicate solutions
+					while (start < end && num[end] == num[end + 1])
+						end--;
+ 
+					while (start < end && num[start] == num[start - 1])
+						start++;
+				//case 2
+				} else if (num[start] + num[end] < negate) {
+					start++;
+				//case 3
+				} else {
+					end--;
+				}
+			}
+ 
+		}
+	}
+ 
+	return result;
+}
+
+* LeetCode – 4Sum (Java)
+ 
+Given an array S of n integers, are there elements a, b, c, and d in S such that a + b + c + d = target? Find all unique quadruplets in the array which gives the sum of target.
+
+Note:
+Elements in a quadruplet (a,b,c,d) must be in non-descending order. (ie, a ≤ b ≤ c ≤ d)
+The solution set must not contain duplicate quadruplets.
+
+    For example, given array S = {1 0 -1 0 -2 2}, and target = 0.
+
+    A solution set is:
+    (-1,  0, 0, 1)
+    (-2, -1, 1, 2)
+    (-2,  0, 0, 2)
+Thoughts
+
+A typical k-sum problem. Time is N to the power of (k-1).
+
+Java Solution
+
+public ArrayList<ArrayList<Integer>> fourSum(int[] num, int target) {
+	Arrays.sort(num);
+ 
+	HashSet<ArrayList<Integer>> hashSet = new HashSet<ArrayList<Integer>>();
+	ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+ 
+	for (int i = 0; i < num.length; i++) {
+		for (int j = i + 1; j < num.length; j++) {
+			int k = j + 1;
+			int l = num.length - 1;
+ 
+			while (k < l) {
+				int sum = num[i] + num[j] + num[k] + num[l];
+ 
+				if (sum > target) {
+					l--;
+				} else if (sum < target) {
+					k++;
+				} else if (sum == target) {
+					ArrayList<Integer> temp = new ArrayList<Integer>();
+					temp.add(num[i]);
+					temp.add(num[j]);
+					temp.add(num[k]);
+					temp.add(num[l]);
+ 
+					if (!hashSet.contains(temp)) {
+						hashSet.add(temp);
+						result.add(temp);
+					}
+ 
+					k++;
+					l--;
+				}
+			}
+		}
+	}
+ 
+	return result;
+}
+Here is the hashCode method of ArrayList. It makes sure that if all elements of two lists are the same, then the hash code of the two lists will be the same. Since each element in the ArrayList is Integer, same integer has same hash code.
+
+int hashCode = 1;
+Iterator<E> i = list.iterator();
+while (i.hasNext()) {
+      E obj = i.next();
+      hashCode = 31*hashCode + (obj==null ? 0 : obj.hashCode());
+}
+
+* LeetCode – 3Sum Closest (Java)
+ 
+Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+
+For example, given array S = {-1 2 1 -4}, and target = 1. 
+The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
+Analysis
+
+This problem is similar to 2 Sum. This kind of problem can be solved by using a similar approach, i.e., two pointers from both left and right.
+
+Java Solution
+
+public int threeSumClosest(int[] nums, int target) {
+    int min = Integer.MAX_VALUE;
+	int result = 0;
+ 
+	Arrays.sort(nums);
+ 
+	for (int i = 0; i < nums.length; i++) {
+		int j = i + 1;
+		int k = nums.length - 1;
+		while (j < k) {
+			int sum = nums[i] + nums[j] + nums[k];
+			int diff = Math.abs(sum - target);
+ 
+			if(diff == 0) return sum;
+ 
+			if (diff < min) {
+				min = diff;
+				result = sum;
+			}
+			if (sum <= target) {
+				j++;
+			} else {
+				k--;
+			}
+		}
+	}
+ 
+	return result;
+}
+Time Complexity is O(n^2).
+
+* LeetCode – String to Integer (atoi) (Java)
+ 
+Implement atoi to convert a string to an integer.
+
+Hint: Carefully consider all possible input cases. If you want a challenge, please do not see below and ask yourself what are the possible input cases.
+
+Analysis
+
+The following cases should be considered for this problem:
+
+1. null or empty string
+2. white spaces
+3. +/- sign
+4. calculate real value
+5. handle min & max
+Java Solution
+
+public int atoi(String str) {
+	if (str == null || str.length() < 1)
+		return 0;
+ 
+	// trim white spaces
+	str = str.trim();
+ 
+	char flag = '+';
+ 
+	// check negative or positive
+	int i = 0;
+	if (str.charAt(0) == '-') {
+		flag = '-';
+		i++;
+	} else if (str.charAt(0) == '+') {
+		i++;
+	}
+	// use double to store result
+	double result = 0;
+ 
+	// calculate value
+	while (str.length() > i && str.charAt(i) >= '0' && str.charAt(i) <= '9') {
+		result = result * 10 + (str.charAt(i) - '0');
+		i++;
+	}
+ 
+	if (flag == '-')
+		result = -result;
+ 
+	// handle max and min
+	if (result > Integer.MAX_VALUE)
+		return Integer.MAX_VALUE;
+ 
+	if (result < Integer.MIN_VALUE)
+		return Integer.MIN_VALUE;
+ 
+	return (int) result;
+}
+
+* LeetCode – Merge Sorted Array (Java)
+ 
+Given two sorted integer arrays A and B, merge B into A as one sorted array.
+
+Note:
+You may assume that A has enough space to hold additional elements from B. The number of elements initialized in A and B are m and n respectively.
+
+Analysis
+
+The key to solve this problem is moving element of A and B backwards. If B has some elements left after A is done, also need to handle that case.
+
+The takeaway message from this problem is that the loop condition. This kind of condition is also used for merging two sorted linked list.
+
+Java Solution 1
+
+public class Solution {
+    public void merge(int A[], int m, int B[], int n) {
+ 
+        while(m > 0 && n > 0){
+            if(A[m-1] > B[n-1]){
+                A[m+n-1] = A[m-1];
+                m--;
+            }else{
+                A[m+n-1] = B[n-1];
+                n--;
+            }
+        }
+ 
+        while(n > 0){
+            A[m+n-1] = B[n-1];
+            n--;
+        }
+    }
+}
+Java Solution 2
+
+The loop condition also can use m+n like the following.
+
+public void merge(int A[], int m, int B[], int n) {
+	int i = m - 1;
+	int j = n - 1;
+	int k = m + n - 1;
+ 
+	while (k >= 0) {
+		if (j < 0 || (i >= 0 && A[i] > B[j]))
+			A[k--] = A[i--];
+		else
+			A[k--] = B[j--];
+	}
+}
+
+* LeetCode – Valid Parentheses (Java)
+ 
+Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
+
+Analysis
+
+A typical problem which can be solved by using a stack data structure.
+
+Java Solution
+
+public static boolean isValid(String s) {
+	HashMap<Character, Character> map = new HashMap<Character, Character>();
+	map.put('(', ')');
+	map.put('[', ']');
+	map.put('{', '}');
+ 
+	Stack<Character> stack = new Stack<Character>();
+ 
+	for (int i = 0; i < s.length(); i++) {
+		char curr = s.charAt(i);
+ 
+		if (map.keySet().contains(curr)) {
+			stack.push(curr);
+		} else if (map.values().contains(curr)) {
+			if (!stack.empty() && map.get(stack.peek()) == curr) {
+				stack.pop();
+			} else {
+				return false;
+			}
+		}
+	}
+ 
+	return stack.empty();
+}
+
+* LeetCode – Longest Valid Parentheses (Java)
+ 
+Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
+
+For "(()", the longest valid parentheses substring is "()", which has length = 2.
+Another example is ")()())", where the longest valid parentheses substring is "()()", which has length = 4.
+
+Analysis
+
+This problem is similar with Valid Parentheses, which can be solved by using a stack.
+
+Java Solution
+
+public static int longestValidParentheses(String s) {
+	Stack<int[]> stack = new Stack<int[]>();
+	int result = 0;
+ 
+	for(int i=0; i<=s.length()-1; i++){
+		char c = s.charAt(i);
+		if(c=='('){
+			int[] a = {i,0};
+			stack.push(a);
+		}else{
+			if(stack.empty()||stack.peek()[1]==1){
+				int[] a = {i,1};
+				stack.push(a);
+			}else{
+				stack.pop();
+				int currentLen=0;
+				if(stack.empty()){
+					currentLen = i+1;
+				}else{
+					currentLen = i-stack.peek()[0];
+				}
+				result = Math.max(result, currentLen);
+			}
+		}
+	}
+ 
+	return result;
+}
+
+* LeetCode – Implement strStr() (Java)
+ 
+Problem:
+
+Implement strStr().
+
+Returns the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
+
+Java Solution 1 - Naive
+
+public int strStr(String haystack, String needle) {
+    if(haystack==null || needle==null)    
+        return 0;
+ 
+    if(needle.length() == 0)
+        return 0;
+ 
+    for(int i=0; i<haystack.length(); i++){
+        if(i + needle.length() > haystack.length())
+            return -1;
+ 
+        int m = i;
+        for(int j=0; j<needle.length(); j++){
+            if(needle.charAt(j)==haystack.charAt(m)){
+                if(j==needle.length()-1)
+                    return i;
+                m++;
+            }else{
+                break;
+            }
+ 
+        }    
+    }   
+ 
+    return -1;
+}
+Java Solution 2 - KMP
+
+Check out this article to understand KMP algorithm.
+
+public int strStr(String haystack, String needle) {
+        if(haystack==null || needle==null)    
+            return 0;
+ 
+	int h = haystack.length();
+	int n = needle.length();
+ 
+	if (n > h)
+		return -1;
+	if (n == 0)
+		return 0;
+ 
+	int[] next = getNext(needle);
+	int i = 0;
+ 
+	while (i <= h - n) {
+		int success = 1;
+		for (int j = 0; j < n; j++) {
+			if (needle.charAt(0) != haystack.charAt(i)) {
+				success = 0;
+				i++;
+				break;
+			} else if (needle.charAt(j) != haystack.charAt(i + j)) {
+				success = 0;
+				i = i + j - next[j - 1];
+				break;
+			}
+		}
+		if (success == 1)
+			return i;
+	}
+ 
+	return -1;
+}
+ 
+//calculate KMP array
+public int[] getNext(String needle) {
+	int[] next = new int[needle.length()];
+	next[0] = 0;
+ 
+	for (int i = 1; i < needle.length(); i++) {
+		int index = next[i - 1];
+		while (index > 0 && needle.charAt(index) != needle.charAt(i)) {
+			index = next[index - 1];
+		}
+ 
+		if (needle.charAt(index) == needle.charAt(i)) {
+			next[i] = next[i - 1] + 1;
+		} else {
+			next[i] = 0;
+		}
+	}
+ 
+	return next;
+}
+
+LeetCode – Minimum Size Subarray Sum (Java)
+ 
+Given an array of n positive integers and a positive integer s, find the minimal length of a subarray of which the sum ≥ s. If there isn't one, return 0 instead.
+
+For example, given the array [2,3,1,2,4,3] and s = 7, the subarray [4,3] has the minimal length of 2 under the problem constraint.
+
+Analysis
+
+We can use 2 points to mark the left and right boundaries of the sliding window. When the sum is greater than the target, shift the left pointer; when the sum is less than the target, shift the right pointer.
+
+Java Solution
+
+public int minSubArrayLen(int s, int[] nums) {
+    if(nums == null || nums.length == 0){
+        return 0;
+    }
+ 
+    // initialize min length to be the input array length
+    int result = nums.length;
+ 
+    int i = 0;
+    int sum = nums[0];
+ 
+    for(int j=0; j<nums.length; ){
+        if(i==j){
+            if(nums[i]>=s){ 
+                return 1; //if single elem is large enough
+            }else{
+               j++;
+ 
+               if(j<nums.length){
+                    sum = sum + nums[j];
+               }else{
+                    return result;
+               }
+            }    
+        }else{
+            //if sum is large enough, move left cursor
+            if(sum >= s){
+                result = Math.min(j-i+1, result);
+                sum = sum - nums[i]; 
+                i++;
+            //if sum is not large enough, move right cursor
+            }else{
+                j++;
+ 
+                if(j<nums.length){
+                    sum = sum + nums[j];
+                }else{
+                    if(i==0){ 
+                        return 0;
+                    }else{    
+                        return result;
+                    }
+                }
+            }
+        }
+    }
+ 
+    return result;
+}
+
+* LeetCode – Search Insert Position
+ 
+Given a sorted array and a target value, return the index if the target is found. If not, return the index where it would be if it were inserted in order. You may assume no duplicates in the array.
+
+Here are few examples.
+
+[1,3,5,6], 5 -> 2
+[1,3,5,6], 2 -> 1
+[1,3,5,6], 7 -> 4
+[1,3,5,6], 0 -> 0
+Solution 1
+
+Naively, we can just iterate the array and compare target with ith and (i+1)th element. Time complexity is O(n)
+
+public class Solution {
+    public int searchInsert(int[] A, int target) {
+ 
+        if(A==null) return 0;
+ 
+        if(target <= A[0]) return 0;
+ 
+        for(int i=0; i<A.length-1; i++){
+            if(target > A[i] && target <= A[i+1]){
+                return i+1;
+            }
+        }
+ 
+        return A.length;
+    }
+}
+Solution 2
+
+This also looks like a binary search problem. We should try to make the complexity to be O(log(n)).
+
+public class Solution {
+    public int searchInsert(int[] A, int target) {
+        if(A==null||A.length==0)
+            return 0;
+ 
+        return searchInsert(A,target,0,A.length-1);
+    }
+ 
+    public int searchInsert(int[] A, int target, int start, int end){
+        int mid=(start+end)/2;
+ 
+        if(target==A[mid]) 
+            return mid;
+        else if(target<A[mid]) 
+            return start<mid?searchInsert(A,target,start,mid-1):start;
+        else 
+            return end>mid?searchInsert(A,target,mid+1,end):(end+1);
+    }
+}
+
+* LeetCode – Longest Consecutive Sequence (Java)
+ 
+Given an unsorted array of integers, find the length of the longest consecutive elements sequence.
+
+For example, given [100, 4, 200, 1, 3, 2], the longest consecutive elements sequence should be [1, 2, 3, 4]. Its length is 4.
+
+Your algorithm should run in O(n) complexity.
+
+Analysis
+
+Because it requires O(n) complexity, we can not solve the problem by sorting the array first. Sorting takes at least O(nlogn) time.
+
+Java Solution
+
+We can use a HashSet to add and remove elements. HashSet is implemented by using a hash table. Elements are not ordered. The add, remove and contains methods have constant time complexity O(1).
+
+public static int longestConsecutive(int[] num) {
+	// if array is empty, return 0
+	if (num.length == 0) {
+		return 0;
+	}
+ 
+	Set<Integer> set = new HashSet<Integer>();
+	int max = 1;
+ 
+	for (int e : num)
+		set.add(e);
+ 
+	for (int e : num) {
+		int left = e - 1;
+		int right = e + 1;
+		int count = 1;
+ 
+		while (set.contains(left)) {
+			count++;
+			set.remove(left);
+			left--;
+		}
+ 
+		while (set.contains(right)) {
+			count++;
+			set.remove(right);
+			right++;
+		}
+ 
+		max = Math.max(count, max);
+	}
+ 
+	return max;
+}
+After an element is checked, it should be removed from the set. Otherwise, time complexity would be O(mn) in which m is the average length of all consecutive sequences.
+
+To clearly see the time complexity, I suggest you use some simple examples and manually execute the program. For example, given an array {1,2,4,5,3}, the program time is m. m is the length of longest consecutive sequence.
+
+We do have an extreme case here: If n is number of elements, m is average length of consecutive sequence, and m==n, then the time complexity is O(n^2). The reason is that in this case, no element is removed from the set each time. You can use this array to get the point: {1,3,5,7,9}.
+
+* LeetCode – Valid Palindrome (Java)
+ 
+Given a string, determine if it is a palindrome, considering only alphanumeric characters and ignoring cases.
+
+For example, "Red rum, sir, is murder" is a palindrome, while "Programcreek is awesome" is not.
+
+Note:
+Have you consider that the string might be empty? This is a good question to ask during an interview.
+
+For the purpose of this problem, we define empty string as valid palindrome.
+
+Thoughts
+
+From start and end loop though the string, i.e., char array. If it is not alpha or number, increase or decrease pointers. Compare the alpha and numeric characters. The solution below is pretty straightforward.
+
+Java Solution 1 - Naive
+
+public class Solution {
+ 
+    public  boolean isPalindrome(String s) {
+ 
+        if(s == null) return false;
+        if(s.length() < 2) return true;
+ 
+        char[] charArray = s.toCharArray();
+        int len = s.length();
+ 
+        int i=0;
+        int j=len-1;
+ 
+        while(i<j){
+            char left, right;
+ 
+            while(i<len-1 && !isAlpha(left) && !isNum(left)){
+                i++;
+                left =  charArray[i];
+            }
+ 
+            while(j>0 && !isAlpha(right) && !isNum(right)){
+                j--;
+                right = charArray[j];
+            }
+ 
+            if(i >= j)
+            	break;
+ 
+            left =  charArray[i];
+            right = charArray[j];
+ 
+            if(!isSame(left, right)){
+                return false;
+            }
+ 
+            i++;
+            j--;
+        }
+        return true;
+    }
+ 
+    public  boolean isAlpha(char a){
+        if((a >= 'a' && a <= 'z') || (a >= 'A' && a <= 'Z')){
+            return true;
+        }else{
+            return false;
+        }
+    }
+ 
+    public  boolean isNum(char a){
+        if(a >= '0' && a <= '9'){
+            return true;
+        }else{
+            return false;
+        }
+    }
+ 
+    public  boolean isSame(char a, char b){
+        if(isNum(a) && isNum(b)){
+            return a == b;
+        }else if(Character.toLowerCase(a) == Character.toLowerCase(b)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+}
+Java Solution 2 - Using Stack
+
+This solution removes the special characters first. (Thanks to Tia)
+
+public boolean isPalindrome(String s) {
+	s = s.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+ 
+	int len = s.length();
+	if (len < 2)
+		return true;
+ 
+	Stack<Character> stack = new Stack<Character>();
+ 
+	int index = 0;
+	while (index < len / 2) {
+		stack.push(s.charAt(index));
+		index++;
+	}
+ 
+	if (len % 2 == 1)
+		index++;
+ 
+	while (index < len) {
+		if (stack.empty())
+			return false;
+ 
+		char temp = stack.pop();
+		if (s.charAt(index) != temp)
+			return false;
+		else
+			index++;
+	}
+ 
+	return true;
+}
+Java Solution 3 - Using Two Pointers
+
+In the discussion below, April and Frank use two pointers to solve this problem. This solution looks really simple.
+
+public class ValidPalindrome {
+	public static boolean isValidPalindrome(String s){
+		if(s==null||s.length()==0) return false;
+ 
+		s = s.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+		System.out.println(s);
+ 
+		for(int i = 0; i < s.length() ; i++){
+			if(s.charAt(i) != s.charAt(s.length() - 1 - i)){
+				return false;
+			}
+		}
+ 
+		return true;
+	}
+ 
+	public static void main(String[] args) {
+		String str = "A man, a plan, a canal: Panama";
+ 
+		System.out.println(isValidPalindrome(str));
+	}
+}
+
+* LeetCode – ZigZag Conversion (Java)
+ 
+The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility)
+
+P   A   H   N
+A P L S I I G
+Y   I   R
+And then read line by line: "PAHNAPLSIIGYIR"
+Write the a method convert("PAYPALISHIRING", 3) which returns "PAHNAPLSIIGYIR".
+
+Java Solution
+
+public String convert(String s, int numRows) {
+	if (numRows == 1)
+		return s;
+ 
+	StringBuilder sb = new StringBuilder();
+	// step
+	int step = 2 * numRows - 2;
+ 
+	for (int i = 0; i < numRows; i++) {
+		//first & last rows
+		if (i == 0 || i == numRows - 1) {
+			for (int j = i; j < s.length(); j = j + step) {
+				sb.append(s.charAt(j));
+			}
+		//middle rows	
+		} else {
+			int j = i;
+			boolean flag = true;
+			int step1 = 2 * (numRows - 1 - i);
+			int step2 = step - step1;
+ 
+			while (j < s.length()) {
+				sb.append(s.charAt(j));
+				if (flag)
+					j = j + step1;
+				else
+					j = j + step2;
+				flag = !flag;
+			}
+		}
+	}
+ 
+	return sb.toString();
+}
+
+* LeetCode – Add Binary (Java)
+ 
+Given two binary strings, return their sum (also a binary string).
+
+For example, a = "11", b = "1", the return is "100".
+
+Java Solution
+
+Very simple, nothing special. Note how to convert a character to an int.
+
+public String addBinary(String a, String b) {
+    if(a==null || a.length()==0)
+        return b;
+    if(b==null || b.length()==0)
+        return a;
+ 
+    int pa = a.length()-1;
+    int pb = b.length()-1;
+ 
+    int flag = 0;
+    StringBuilder sb = new StringBuilder();
+    while(pa >= 0 || pb >=0){
+        int va = 0;
+        int vb = 0;
+ 
+        if(pa >= 0){
+            va = a.charAt(pa)=='0'? 0 : 1;    
+            pa--;
+        }
+        if(pb >= 0){
+            vb = b.charAt(pb)=='0'? 0: 1;
+            pb--;
+        }
+ 
+        int sum = va + vb + flag;
+        if(sum >= 2){
+            sb.append(String.valueOf(sum-2));
+            flag = 1;
+        }else{
+            flag = 0;
+            sb.append(String.valueOf(sum));
+        }
+    }
+ 
+    if(flag == 1){
+        sb.append("1");
+    }
+ 
+    String reversed = sb.reverse().toString();
+    return reversed;
+}
+
+* LeetCode – Length of Last Word (Java)
+ 
+Given a string s consists of upper/lower-case alphabets and empty space characters ' ', return the length of last word in the string. If the last word does not exist, return 0.
+
+Java Solution
+
+Very simple question. We just need a flag to mark the start of letters from the end. If a letter starts and the next character is not a letter, return the length.
+
+public int lengthOfLastWord(String s) { 
+    if(s==null || s.length() == 0)
+        return 0;
+ 
+    int result = 0;
+    int len = s.length();
+ 
+    boolean flag = false;
+    for(int i=len-1; i>=0; i--){
+        char c = s.charAt(i);
+        if((c>='a' && c<='z') || (c>='A' && c<='Z')){
+            flag = true;
+            result++;
+        }else{
+            if(flag)
+                return result;
+        }
+    }
+ 
+    return result;
+}
+
+* LeetCode – Triangle (Java)
+ 
+Given a triangle, find the minimum path sum from top to bottom. Each step you may move to adjacent numbers on the row below.
+
+For example, given the following triangle
+
+[
+     [2],
+    [3,4],
+   [6,5,7],
+  [4,1,8,3]
+]
+The minimum path sum from top to bottom is 11 (i.e., 2 + 3 + 5 + 1 = 11).
+
+Note: Bonus point if you are able to do this using only O(n) extra space, where n is the total number of rows in the triangle.
+
+Top-Down Approach (Wrong Answer!)
+
+This solution gets wrong answer! I will try to make it work later.
+
+public class Solution {
+    public int minimumTotal(ArrayList<ArrayList<Integer>> triangle) {
+ 
+       int[] temp = new int[triangle.size()];
+		int minTotal = Integer.MAX_VALUE;
+ 
+		for(int i=0; i< temp.length; i++){
+			temp[i] = Integer.MAX_VALUE;
+		}
+ 
+		if (triangle.size() == 1) {
+			return Math.min(minTotal, triangle.get(0).get(0));
+		}
+ 
+		int first = triangle.get(0).get(0);
+ 
+		for (int i = 0; i < triangle.size() - 1; i++) {
+			for (int j = 0; j <= i; j++) {
+ 
+				int a, b;
+ 
+				if(i==0 && j==0){
+					a = first + triangle.get(i + 1).get(j);
+					b = first + triangle.get(i + 1).get(j + 1);
+ 
+				}else{
+					a = temp[j] + triangle.get(i + 1).get(j);
+					b = temp[j] + triangle.get(i + 1).get(j + 1);
+ 
+				}
+ 
+				temp[j] = Math.min(a, temp[j]);
+				temp[j + 1] = Math.min(b, temp[j + 1]);
+			}
+		}
+ 
+		for (int e : temp) {
+			if (e < minTotal)
+				minTotal = e;
+		}
+ 
+		return minTotal;
+    }
+}
+Bottom-Up (Good Solution)
+
+We can actually start from the bottom of the triangle.
+
+public int minimumTotal(ArrayList<ArrayList<Integer>> triangle) {
+	int[] total = new int[triangle.size()];
+	int l = triangle.size() - 1;
+ 
+	for (int i = 0; i < triangle.get(l).size(); i++) {
+		total[i] = triangle.get(l).get(i);
+	}
+ 
+	// iterate from last second row
+	for (int i = triangle.size() - 2; i >= 0; i--) {
+		for (int j = 0; j < triangle.get(i + 1).size() - 1; j++) {
+			total[j] = triangle.get(i).get(j) + Math.min(total[j], total[j + 1]);
+		}
+	}
+ 
+	return total[0];
+}
+
+* LeetCode – Contains Duplicate (Java)
+ 
+Given an array of integers, find if the array contains any duplicates. Your function should return true if any value appears at least twice in the array, and it should return false if every element is distinct.
+
+Java Solution
+
+public boolean containsDuplicate(int[] nums) {
+    if(nums==null || nums.length==0)
+        return false;
+ 
+    HashSet<Integer> set = new HashSet<Integer>();
+    for(int i: nums){
+        if(!set.add(i)){
+            return true;
+        }
+    }
+ 
+    return false;
+}
+
+* LeetCode – Contains Duplicate II (Java)
+ 
+Given an array of integers and an integer k, return true if and only if there are two distinct indices i and j in the array such that nums[i] = nums[j] and the difference between i and j is at most k.
+
+Java Solution 1
+
+public boolean containsNearbyDuplicate(int[] nums, int k) {
+    HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+    int min = Integer.MAX_VALUE;
+ 
+    for(int i=0; i<nums.length; i++){
+        if(map.containsKey(nums[i])){
+            int preIndex = map.get(nums[i]);
+            int gap = i-preIndex;
+            min = Math.min(min, gap);
+        }
+        map.put(nums[i], i);
+    }
+ 
+    if(min <= k){
+        return true;
+    }else{
+        return false;
+    }
+}
+Java Solution 2 - Simplified
+
+public boolean containsNearbyDuplicate(int[] nums, int k) {
+    HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+ 
+    for(int i=0; i<nums.length; i++){
+        if(map.containsKey(nums[i])){
+            int pre = map.get(nums[i]);
+            if(i-pre<=k)
+                return true;
+        }
+ 
+        map.put(nums[i], i);
+    }
+ 
+    return false;
+}
+
+* LeetCode – Contains Duplicate III (Java)
+ 
+Given an array of integers, find out whether there are two distinct indices i and j in the array such that the difference between nums[i] and nums[j] is at most t and the difference between i and j is at most k.
+
+Java Solution 1
+
+This solution uses a treeset.
+
+The floor(x) method returns the greatest value that is less than x. The ceiling(x) methods returns the least value that is greater than x. The following is an example.
+contains-duplicate-iii
+
+The time complexity is O(nlog(k)).
+
+public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+	if (k < 1 || t < 0)
+		return false;
+ 
+	TreeSet<Integer> set = new TreeSet<Integer>();
+ 
+	for (int i = 0; i < nums.length; i++) {
+		int c = nums[i];
+		if ((set.floor(c) != null && c <= set.floor(c) + t)
+		|| (set.ceiling(c) != null && c >= set.ceiling(c) -t))
+			return true;
+ 
+		set.add(c);
+ 
+		if (i >= k)
+			set.remove(nums[i - k]);
+	}
+ 
+	return false;
+}
+Java Solution 2
+
+Another solution that is easier to understand.
+
+public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+	if (k < 1 || t < 0)
+		return false;
+ 
+	SortedSet<Long> set = new TreeSet<Long>();
+ 
+	for (int j = 0; j < nums.length; j++) {
+		long leftBoundary = (long) nums[j] - t;
+		long rightBoundary = (long) nums[j] + t + 1;
+		SortedSet<Long> subSet = set.subSet(leftBoundary, rightBoundary);
+ 
+		if (!subSet.isEmpty())
+			return true;
+ 
+		set.add((long) nums[j]);
+ 
+		if (j >= k) {
+			set.remove((long) nums[j - k]);
+		}
+	}
+ 
+	return false;
+}
+
+* LeetCode – Remove Duplicates from Sorted Array (Java)
+ 
+Given a sorted array, remove the duplicates in place such that each element appear only once and return the new length. Do not allocate extra space for another array, you must do this in place with constant memory.
+
+For example, given input array A = [1,1,2], your function should return length = 2, and A is now [1,2].
+
+Thoughts
+
+The problem is pretty straightforward. It returns the length of array with unique elements, but the original array need to be changed also. This problem should be reviewed with Remove Duplicates from Sorted Array II.
+
+Solution 1
+
+// Manipulate original array
+public static int removeDuplicatesNaive(int[] A) {
+	if (A.length < 2)
+		return A.length;
+ 
+	int j = 0;
+	int i = 1;
+ 
+	while (i < A.length) {
+		if (A[i] == A[j]) {
+			i++;
+		} else {
+			j++;
+			A[j] = A[i];
+			i++;
+		}
+	}
+ 
+	return j + 1;
+}
+This method returns the number of unique elements, but does not change the original array correctly. For example, if the input array is {1, 2, 2, 3, 3}, the array will be changed to {1, 2, 3, 3, 3}. The correct result should be {1, 2, 3}. Because array's size can not be changed once created, there is no way we can return the original array with correct results.
+
+Solution 2
+
+// Create an array with all unique elements
+public static int[] removeDuplicates(int[] A) {
+	if (A.length < 2)
+		return A;
+ 
+	int j = 0;
+	int i = 1;
+ 
+	while (i < A.length) {
+		if (A[i] == A[j]) {
+			i++;
+		} else {
+			j++;
+			A[j] = A[i];
+			i++;
+		}
+	}
+ 
+	int[] B = Arrays.copyOf(A, j + 1);
+ 
+	return B;
+}
+ 
+public static void main(String[] args) {
+	int[] arr = { 1, 2, 2, 3, 3 };
+	arr = removeDuplicates(arr);
+	System.out.println(arr.length);
+}
+In this method, a new array is created and returned.
+
+Solution 3
+
+If we only want to count the number of unique elements, the following method is good enough.
+
+// Count the number of unique elements
+public static int countUnique(int[] A) {
+	int count = 0;
+	for (int i = 0; i < A.length - 1; i++) {
+		if (A[i] == A[i + 1]) {
+			count++;
+		}
+	}
+	return (A.length - count);
+}
+ 
+public static void main(String[] args) {
+	int[] arr = { 1, 2, 2, 3, 3 };
+	int size = countUnique(arr);
+	System.out.println(size);
+}
+
+* LeetCode – Remove Duplicates from Sorted Array II (Java)
+ 
+Follow up for "Remove Duplicates": What if duplicates are allowed at most twice?
+
+For example, given sorted array A = [1,1,1,2,2,3], your function should return length = 5, and A is now [1,1,2,2,3].
+
+Naive Approach
+
+Given the method signature "public int removeDuplicates(int[] A)", it seems that we should write a method that returns a integer and that's it. After typing the following solution:
+
+public class Solution {
+    public int removeDuplicates(int[] A) {
+        if(A == null || A.length == 0)
+            return 0;
+ 
+        int pre = A[0];
+        boolean flag = false;
+        int count = 0;
+ 
+        for(int i=1; i<A.length; i++){
+            int curr = A[i];
+ 
+            if(curr == pre){
+                if(!flag){
+                	flag = true;
+                    continue;
+                }else{
+                    count++;
+                }
+            }else{
+                pre = curr;
+                flag = false;
+            }
+        }
+ 
+        return A.length - count;
+    }
+}
+Online Judge returns:
+
+Submission Result: Wrong Answer
+Input:	[1,1,1,2]
+Output:	[1,1,1]
+Expected:	[1,1,2]
+So this problem also requires in-place array manipulation.
+
+Correct Solution
+
+We can not change the given array's size, so we only change the first k elements of the array which has duplicates removed.
+
+public class Solution {
+	public int removeDuplicates(int[] A) {
+		if (A == null || A.length == 0)
+			return 0;
+ 
+		int pre = A[0];
+		boolean flag = false;
+		int count = 0;
+ 
+		// index for updating
+		int o = 1;
+ 
+		for (int i = 1; i < A.length; i++) {
+			int curr = A[i];
+ 
+			if (curr == pre) {
+				if (!flag) {
+					flag = true;
+					A[o++] = curr;
+ 
+					continue;
+				} else {
+					count++;
+				}
+			} else {
+				pre = curr;
+				A[o++] = curr;
+				flag = false;
+			}
+		}
+ 
+		return A.length - count;
+	}
+}
+Better Solution
+
+public class Solution {
+	public int removeDuplicates(int[] A) {
+		if (A.length <= 2)
+			return A.length;
+ 
+		int prev = 1; // point to previous
+		int curr = 2; // point to current
+ 
+		while (curr < A.length) {
+			if (A[curr] == A[prev] && A[curr] == A[prev - 1]) {
+				curr++;
+			} else {
+				prev++;
+				A[prev] = A[curr];
+				curr++;
+			}
+		}
+ 
+		return prev + 1;
+	}
+}
+
+* LeetCode – Longest Substring Without Repeating Characters (Java)
+ 
+Given a string, find the length of the longest substring without repeating characters. For example, the longest substring without repeating letters for "abcabcbb" is "abc", which the length is 3. For "bbbbb" the longest substring is "b", with the length of 1.
+
+Java Solution 1
+
+The first solution is like the problem of "determine if a string has all unique characters" in CC 150. We can use a flag array to track the existing characters for the longest substring without repeating characters.
+
+public int lengthOfLongestSubstring(String s) {
+        if(s==null)
+            return 0;
+	boolean[] flag = new boolean[256];
+ 
+	int result = 0;
+	int start = 0;
+	char[] arr = s.toCharArray();
+ 
+	for (int i = 0; i < arr.length; i++) {
+		char current = arr[i];
+		if (flag[current]) {
+			result = Math.max(result, i - start);
+			// the loop update the new start point
+			// and reset flag array
+			// for example, abccab, when it comes to 2nd c,
+			// it update start from 0 to 3, reset flag for a,b
+			for (int k = start; k < i; k++) {
+				if (arr[k] == current) {
+					start = k + 1; 
+					break;
+				}
+				flag[arr[k]] = false;
+			}
+		} else {
+			flag[current] = true;
+		}
+	}
+ 
+	result = Math.max(arr.length - start, result);
+ 
+	return result;
+}
+Java Solution 2
+
+This solution is from Tia. It is easier to understand than the first solution.
+
+The basic idea is using a hash table to track existing characters and their position. When a repeated character occurs, check from the previously repeated character. However, the time complexity is higher - O(n^3).
+
+public static int lengthOfLongestSubstring(String s) {
+        if(s==null)
+            return 0;
+	char[] arr = s.toCharArray();
+	int pre = 0;
+ 
+	HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+ 
+	for (int i = 0; i < arr.length; i++) {
+		if (!map.containsKey(arr[i])) {
+			map.put(arr[i], i);
+		} else {
+			pre = Math.max(pre, map.size());
+			i = map.get(arr[i]);
+			map.clear();
+		}
+	}
+ 
+	return Math.max(pre, map.size());
+}
+Consider the following simple example.
+
+abcda
+When loop hits the second "a", the HashMap contains the following:
+
+a 0
+b 1
+c 2
+d 3
+The index i is set to 0 and incremented by 1, so the loop start from second element again.
+
+* Longest Substring Which Contains 2 Unique Characters
+ 
+This is a problem asked by Google.
+
+Given a string, find the longest substring that contains only two unique characters. For example, given "abcbbbbcccbdddadacb", the longest substring that contains 2 unique character is "bcbbbbcccb".
+
+1. Longest Substring Which Contains 2 Unique Characters
+
+In this solution, a hashmap is used to track the right most index of 2 unique elements in the map. When a third character is being added to the map, the left pointer needs to move to the leftmost position in the map.
+
+You can use "abac" to walk through this solution.
+
+public static String maxSubString2UniqueChars(String s) {
+	int maxLen = 0;
+	String maxSubstring = null;
+	int m = 0;
+ 
+	// declare a map to track the right most position of the two characters
+	HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+ 
+	for (int i = 0; i < s.length(); i++) {
+		char c = s.charAt(i);
+		// if map contains 2 characters, process
+		if (map.size() == 2 && !map.containsKey(c)) {
+			if (i - m > maxLen) {
+				maxLen = i - m;
+				maxSubstring = s.substring(m, i);
+			}
+ 
+			// get the left most index for
+			int leftMost = s.length();
+			for (Entry<Character, Integer> entry : map.entrySet()) {
+				if (entry.getValue() < leftMost) {
+					leftMost = entry.getValue();
+				}
+			}
+ 
+			m = leftMost + 1;
+			map.remove(s.charAt(leftMost));
+		}
+ 
+		map.put(c, i);
+	}
+ 
+	if (map.size() == 2 && maxLen == 0) {
+		return s;
+	}
+ 
+	return maxSubstring;
+}
+Now if this question is extended to be "the longest substring that contains k unique characters", what should we do? Apparently, the solution above is not scalable.
+
+2. Naive Solution for K Unique Characters
+
+The above solution can be extended to be a more general solution which would allow k distinct characters.
+
+public static String maxSubStringKUniqueChars(String s, int k) {
+	int maxLen = 0;
+	String maxSubstring = null;
+	int m = 0;
+ 
+	// declare a map to track the right most position of the two characters
+	HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+ 
+	for (int i = 0; i < s.length(); i++) {
+		char c = s.charAt(i);
+		// if map contains 2 characters, process
+		if (map.size() == k && !map.containsKey(c)) {
+			if (i - m > maxLen) {
+				maxLen = i - m;
+				maxSubstring = s.substring(m, i);
+			}
+ 
+			int leftMost = s.length();
+			for (Entry<Character, Integer> entry : map.entrySet()) {
+				if (entry.getValue() < leftMost) {
+					leftMost = entry.getValue();
+				}
+			}
+ 
+			m = leftMost + 1;
+			map.remove(s.charAt(leftMost));
+		}
+ 
+		map.put(c, i);
+	}
+ 
+	if (map.size() == k && maxLen == 0) {
+		return s;
+	}
+ 
+	return maxSubstring;
+}
+The time is O(n*k). Can you get a better solution?
+
+3. Better Solution for K Unique Characters
+
+public static String maxSubStringKUniqueChars(String s, int k) {
+	//declare a counter
+	HashMap<Character, Integer> map = new HashMap<Character, Integer>();		
+	int start = 0;
+	int maxLen = 0;
+	String maxSubstring = null;
+ 
+	for (int i = 0; i < s.length(); i++) {
+		//add each char to the counter
+		char c = s.charAt(i);
+		if(map.containsKey(c)){
+			map.put(c, map.get(c)+1);
+		}else{
+			map.put(c, 1);
+		}
+ 
+		if(map.size() == k+1){
+			//get maximum
+			int range = i-start;
+			if(range > maxLen){
+				maxLen = range;
+				maxSubstring = s.substring(start, i);
+			}
+ 
+			//move left cursor toward right, so that substring contains only k chars
+			while(map.size()>k){
+				char first = s.charAt(start);
+				int count = map.get(first);
+				if(count>1){
+					map.put(first,count-1);
+				}else{
+					map.remove(first);
+				}
+				start++;
+			}
+		}
+	}
+ 
+	if (map.size() == k && maxLen == 0) {
+		return s;
+	}
+ 
+	return maxSubstring;
+}
+Time is O(n).
+
+* LeetCode – Substring with Concatenation of All Words (Java)
+ 
+You are given a string, s, and a list of words, words, that are all of the same length. Find all starting indices of substring(s) in s that is a concatenation of each word in words exactly once and without any intervening characters.
+
+For example, given: s="barfoothefoobarman" & words=["foo", "bar"], return [0,9].
+
+Analysis
+
+This problem is similar (almost the same) to Longest Substring Which Contains 2 Unique Characters.
+
+Since each word in the dictionary has the same length, each of them can be treated as a single character.
+
+Java Solution
+
+public List<Integer> findSubstring(String s, String[] words) {
+    ArrayList<Integer> result = new ArrayList<Integer>();
+    if(s==null||s.length()==0||words==null||words.length==0){
+        return result;
+    } 
+ 
+    //frequency of words
+    HashMap<String, Integer> map = new HashMap<String, Integer>();
+    for(String w: words){
+        if(map.containsKey(w)){
+            map.put(w, map.get(w)+1);
+        }else{
+            map.put(w, 1);
+        }
+    }
+ 
+    int len = words[0].length();
+ 
+    for(int j=0; j<len; j++){
+        HashMap<String, Integer> currentMap = new HashMap<String, Integer>();
+        int start = j;//start index of start
+        int count = 0;//count totoal qualified words so far
+ 
+        for(int i=j; i<=s.length()-len; i=i+len){
+            String sub = s.substring(i, i+len);
+            if(map.containsKey(sub)){
+                //set frequency in current map
+                if(currentMap.containsKey(sub)){
+                    currentMap.put(sub, currentMap.get(sub)+1);
+                }else{
+                    currentMap.put(sub, 1);
+                }
+ 
+                count++;
+ 
+                while(currentMap.get(sub)>map.get(sub)){
+                    String left = s.substring(start, start+len);
+                    currentMap.put(left, currentMap.get(left)-1);
+ 
+                    count--;
+                    start = start + len;
+                }
+ 
+ 
+                if(count==words.length){
+                    result.add(start); //add to result
+ 
+                    //shift right and reset currentMap, count & start point         
+                    String left = s.substring(start, start+len);
+                    currentMap.put(left, currentMap.get(left)-1);
+                    count--;
+                    start = start + len;
+                }
+            }else{
+                currentMap.clear();
+                start = i+len;
+                count = 0;
+            }
+        }
+    }
+ 
+    return result;
+}
+
+* LeetCode – Minimum Window Substring (Java)
+ 
+Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+
+For example, S = "ADOBECODEBANC", T = "ABC", Minimum window is "BANC".
+
+Java Solution
+
+public String minWindow(String s, String t) {
+    if(t.length()>s.length()) 
+        return "";
+    String result = "";
+ 
+    //character counter for t
+    HashMap<Character, Integer> target = new HashMap<Character, Integer>();
+    for(int i=0; i<t.length(); i++){
+        char c = t.charAt(i);    
+        if(target.containsKey(c)){
+            target.put(c,target.get(c)+1);
+        }else{
+            target.put(c,1);  
+        }
+    }
+ 
+    // character counter for s
+    HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+    int left = 0;
+    int minLen = s.length()+1;
+ 
+    int count = 0; // the total of mapped characters
+ 
+    for(int i=0; i<s.length(); i++){
+        char c = s.charAt(i);
+ 
+        if(target.containsKey(c)){
+            if(map.containsKey(c)){
+                if(map.get(c)<target.get(c)){
+                    count++;
+                }
+                map.put(c,map.get(c)+1);
+            }else{
+                map.put(c,1);
+                count++;
+            }
+        }
+ 
+        if(count == t.length()){
+            char sc = s.charAt(left);
+            while (!map.containsKey(sc) || map.get(sc) > target.get(sc)) {
+                if (map.containsKey(sc) && map.get(sc) > target.get(sc))
+                    map.put(sc, map.get(sc) - 1);
+                left++;
+                sc = s.charAt(left);
+            }
+ 
+            if (i - left + 1 < minLen) {
+                result = s.substring(left, i + 1);
+                minLen = i - left + 1;
+            }
+        }
+    }
+ 
+    return result;
+}
+
+* LeetCode – Find Minimum in Rotated Sorted Array
+ 
+Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
+
+Find the minimum element.You may assume no duplicate exists in the array.
+
+Analysis
+
+This problems seems like a binary search, and the key is how to break the array to two parts, so that we only need to work on half of the array each time, i.e., when to select the left half and when to select the right half.
+
+If we pick the middle element, we can compare the middle element with the left-end element. If middle is less than leftmost, the left half should be selected; if the middle is greater than the leftmost, the right half should be selected. Using simple recursion, this problem can be solve in time log(n).
+
+In addition, in any rotated sorted array, the rightmost element should be less than the left-most element, otherwise, the sorted array is not rotated and we can simply pick the leftmost element as the minimum.
+
+Java Solution
+
+Define a helper function, otherwise, we will need to use Arrays.copyOfRange() function, which may be expensive for large arrays.
+
+public int findMin(int[] num) {
+	return findMin(num, 0, num.length - 1);
+}
+ 
+public int findMin(int[] num, int left, int right) {
+	if (left == right)
+		return num[left];
+	if ((right - left) == 1)
+		return Math.min(num[left], num[right]);
+ 
+	int middle = left + (right - left) / 2;
+ 
+	// not rotated
+	if (num[left] < num[right]) {
+		return num[left];
+ 
+	// go right side
+	} else if (num[middle] > num[left]) {
+		return findMin(num, middle, right);
+ 
+	// go left side
+	} else {
+		return findMin(num, left, middle);
+	}
+}
+
+* LeetCode – Find Minimum in Rotated Sorted Array II (Java)
+ 
+Problem
+
+Follow up for "Find Minimum in Rotated Sorted Array": What if duplicates are allowed?
+
+Would this affect the run-time complexity? How and why?
+
+Java Solution
+
+This is a follow-up problem of finding minimum element in rotated sorted array without duplicate elements. We only need to add one more condition, which checks if the left-most element and the right-most element are equal. If they are we can simply drop one of them. In my solution below, I drop the left element whenever the left-most equals to the right-most.
+
+public int findMin(int[] num) {
+    return findMin(num, 0, num.length-1);
+}
+ 
+public int findMin(int[] num, int left, int right){
+    if(right==left){
+        return num[left];
+    }
+    if(right == left +1){
+        return Math.min(num[left], num[right]);
+    }
+    // 3 3 1 3 3 3
+ 
+    int middle = (right-left)/2 + left;
+    // already sorted
+    if(num[right] > num[left]){
+        return num[left];
+    //right shift one
+    }else if(num[right] == num[left]){
+        return findMin(num, left+1, right);
+    //go right    
+    }else if(num[middle] >= num[left]){
+        return findMin(num, middle, right);
+    //go left    
+    }else{
+        return findMin(num, left, middle);
+    }
+}
+
+* LeetCode – Search in Rotated Sorted Array (Java)
+ 
+Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
+
+You are given a target value to search. If found in the array return its index, otherwise return -1. You may assume no duplicate exists in the array.
+
+Java Solution 1- Recusive
+
+public int search(int[] nums, int target) {
+    return binarySearch(nums, 0, nums.length-1, target);
+}
+ 
+public int binarySearch(int[] nums, int left, int right, int target){
+    if(left>right) 
+        return -1;
+ 
+    int mid = left + (right-left)/2;
+ 
+    if(target == nums[mid])
+        return mid;
+ 
+    if(nums[left] <= nums[mid]){
+        if(nums[left]<=target && target<nums[mid]){
+          return binarySearch(nums,left, mid-1, target);
+        }else{
+          return  binarySearch(nums, mid+1, right, target);
+        }
+    }else {
+        if(nums[mid]<target&& target<=nums[right]){
+          return  binarySearch(nums,mid+1, right, target);
+        }else{
+          return  binarySearch(nums, left, mid-1, target);
+        }
+    }
+}
+Java Solution 2 - Iterative
+
+public int search(int[] nums, int target) {
+    int left = 0;
+    int right= nums.length-1;
+ 
+    while(left<=right){
+        int mid = left + (right-left)/2;
+        if(target==nums[mid])
+            return mid;
+ 
+        if(nums[left]<=nums[mid]){
+            if(nums[left]<=target&& target<nums[mid]){
+                right=mid-1;
+            }else{
+                left=mid+1;
+            }
+        }else{
+            if(nums[mid]<target&& target<=nums[right]){
+                left=mid+1;
+            }else{
+                right=mid-1;
+            }
+        }    
+    }
+ 
+    return -1;
+}
+
+* LeetCode – Search in Rotated Sorted Array II (Java)
+ 
+Follow up for "Search in Rotated Sorted Array": what if duplicates are allowed? Write a function to determine if a given target is in the array.
+
+Java Solution
+
+public boolean search(int[] nums, int target) {
+    int left=0;
+    int right=nums.length-1;
+ 
+    while(left<=right){
+        int mid = (left+right)/2;
+        if(nums[mid]==target)
+            return true;
+ 
+        if(nums[left]<nums[mid]){
+            if(nums[left]<=target&& target<nums[mid]){
+                right=mid-1;
+            }else{
+                left=mid+1;
+            }
+        }else if(nums[left]>nums[mid]){
+            if(nums[mid]<target&&target<=nums[right]){
+                left=mid+1;
+            }else{
+                right=mid-1;
+            }
+        }else{
+            left++;
+        }    
+    }
+ 
+    return false;
+}
+
+* LeetCode – Find Peak Element
+ 
+A peak element is an element that is greater than its neighbors. Given an input array where num[i] ≠ num[i+1], find a peak element and return its index. The array may contain multiple peaks, in that case return the index to any one of the peaks is fine.
+
+You may imagine that num[-1] = num[n] = -∞. For example, in array [1, 2, 3, 1], 3 is a peak element and your function should return the index number 2.
+
+Thoughts
+
+This is a very simple problem. We can scan the array and find any element that is greater can its previous and next. The first and last element are handled separately.
+
+Java Solution
+
+public class Solution {
+    public int findPeakElement(int[] num) {
+        int max = num[0];
+        int index = 0;
+        for(int i=1; i<=num.length-2; i++){
+            int prev = num[i-1];
+            int curr = num[i];
+            int next = num[i+1];
+ 
+            if(curr > prev && curr > next && curr > max){
+                index = i;
+                max = curr;
+            }
+        }
+ 
+        if(num[num.length-1] > max){
+            return num.length-1;
+        }
+ 
+        return index;
+    }
+}
+
+* LeetCode – Min Stack (Java)
+ 
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+
+push(x) -- Push element x onto stack.
+pop() -- Removes the element on top of the stack.
+top() -- Get the top element.
+getMin() -- Retrieve the minimum element in the stack.
+
+Analysis
+
+UPDATED ON 6/17/2015
+
+To make constant time of getMin(), we need to keep track of the minimum element for each element in the stack.
+
+Java Solution
+
+Define a node class that holds element value, min value, and pointer to elements below it.
+
+class Node {
+	int value;
+	int min;
+	Node next;
+ 
+	Node(int x) {
+		value = x;
+		next = null;
+		min = x;
+	}
+}
+class MinStack {
+	Node head;
+ 
+	public void push(int x) {
+		if (head == null) {
+			head = new Node(x);
+		} else {
+			Node temp = new Node(x);
+			temp.min = Math.min(head.min, x);
+			temp.next = head;
+			head = temp;
+		}
+	}
+ 
+	public void pop() {
+		if (head == null)
+			return;
+		head = head.next;
+	}
+ 
+	public int top() {
+		if (head == null)
+			return Integer.MAX_VALUE;
+ 
+		return head.value;
+	}
+ 
+	public int getMin() {
+		if (head == null)
+			return Integer.MAX_VALUE;
+ 
+		return head.min;
+	}
+}
+
+*LeetCode – Majority Element (Java)
+ 
+Given an array of size n, find the majority element. The majority element is the element that appears more than ⌊ n/2 ⌋ times. (assume that the array is non-empty and the majority element always exist in the array.)
+
+Java Solution 1 - Naive
+
+We can sort the array first, which takes time of nlog(n). Then scan once to find the longest consecutive substrings.
+
+public class Solution {
+    public int majorityElement(int[] num) {
+        if(num.length==1){
+            return num[0];
+        }
+ 
+        Arrays.sort(num);
+ 
+        int prev=num[0];
+        int count=1;
+        for(int i=1; i<num.length; i++){
+            if(num[i] == prev){
+                count++;
+                if(count > num.length/2) return num[i];
+            }else{
+                count=1;
+                prev = num[i];
+            }
+        }
+ 
+        return 0;
+    }
+}
+Java Solution 2 - Much Simpler
+
+Thanks to SK. His/her solution is much efficient and simpler.
+Since the majority always take more than a half space, the middle element is guaranteed to be the majority. Sorting array takes nlog(n). So the time complexity of this solution is nlog(n). Cheers!
+
+public int majorityElement(int[] num) {
+	if (num.length == 1) {
+		return num[0];
+	}
+ 
+	Arrays.sort(num);
+	return num[num.length / 2];
+}
+Java Solution 3 - Linear Time Majority Vote Algorithm
+
+public int majorityElement(int[] nums) {
+    int result = 0, count = 0;
+ 
+    for(int i = 0; i<nums.length; i++ ) {
+        if(count == 0){
+            result = nums[ i ];
+            count = 1;
+        }else if(result == nums[i]){
+           count++;
+        }else{
+           count--;
+        }
+    }
+ 
+    return result;
+}
+
+* LeetCode – Majority Element II (Java)
+ 
+Given an integer array of size n, find all elements that appear more than ⌊ n/3 ⌋ times. The algorithm should run in linear time and in O(1) space.
+
+Java Solution 1 - Using a Counter
+
+Time = O(n) and Space = O(n)
+
+public List<Integer> majorityElement(int[] nums) {
+    HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+    for(int i: nums){
+        if(map.containsKey(i)){
+            map.put(i, map.get(i)+1);
+        }else{
+            map.put(i, 1);
+        }
+    }
+ 
+    List<Integer> result = new ArrayList<Integer>();
+ 
+    for(Map.Entry<Integer, Integer> entry: map.entrySet()){
+        if(entry.getValue() > nums.length/3){
+            result.add(entry.getKey());
+        }    
+    }
+ 
+    return result;
+}
+Java Solution 2
+
+Time = O(n) and Space = O(1)
+
+Check out Majority Element I.
+
+public List<Integer> majorityElement(int[] nums) {
+    List<Integer> result = new ArrayList<Integer>();
+ 
+    Integer n1=null, n2=null;
+    int c1=0, c2=0;
+ 
+    for(int i: nums){
+        if(n1!=null && i==n1.intValue()){
+            c1++;
+        }else if(n2!=null && i==n2.intValue()){
+            c2++;
+        }else if(c1==0){
+            c1=1;
+            n1=i;
+        }else if(c2==0){
+            c2=1;
+            n2=i;
+        }else{
+            c1--;
+            c2--;
+        }
+    }
+ 
+    c1=c2=0;
+ 
+    for(int i: nums){
+        if(i==n1.intValue()){
+            c1++;
+        }else if(i==n2.intValue()){
+            c2++;
+        }
+    }
+ 
+    if(c1>nums.length/3)
+        result.add(n1);
+    if(c2>nums.length/3)
+        result.add(n2);
+ 
+    return result;
+}
+
+* LeetCode – Remove Element (Java)
+ 
+Given an array and a value, remove all instances of that value in place and return the new length. (Note: The order of elements can be changed. It doesn't matter what you leave beyond the new length.)
+
+Java Solution
+
+This problem can be solve by using two indices.
+
+public int removeElement(int[] A, int elem) {
+    int i=0;
+    int j=0;
+ 
+    while(j < A.length){
+        if(A[j] != elem){
+            A[i] = A[j];
+            i++; 
+        }
+ 
+        j++;
+    }
+ 
+    return i;
+}
+
+LeetCode – Largest Rectangle in Histogram (Java)
+ 
+Given n non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram.
+
+largest-rectangle-in-histogram1
+
+Above is a histogram where width of each bar is 1, given height = [2,1,5,6,2,3].
+
+largest-rectangle-in-histogram2
+The largest rectangle is shown in the shaded area, which has area = 10 unit.
+
+For example, given height = [2,1,5,6,2,3], return 10.
+
+Analysis
+
+The key to solve this problem is to maintain a stack to store bars' indexes. The stack only keeps the increasing bars.
+
+Java Solution
+
+public int largestRectangleArea(int[] height) {
+	if (height == null || height.length == 0) {
+		return 0;
+	}
+ 
+	Stack<Integer> stack = new Stack<Integer>();
+ 
+	int max = 0;
+	int i = 0;
+ 
+	while (i < height.length) {
+		//push index to stack when the current height is larger than the previous one
+		if (stack.isEmpty() || height[i] >= height[stack.peek()]) {
+			stack.push(i);
+			i++;
+		} else {
+		//calculate max value when the current height is less than the previous one
+			int p = stack.pop();
+			int h = height[p];
+			int w = stack.isEmpty() ? i : i - stack.peek() - 1;
+			max = Math.max(h * w, max);
+		}
+ 
+	}
+ 
+	while (!stack.isEmpty()) {
+		int p = stack.pop();
+		int h = height[p];
+		int w = stack.isEmpty() ? i : i - stack.peek() - 1;
+		max = Math.max(h * w, max);
+	}
+ 
+	return max;
+}
+
+* LeetCode – Longest Common Prefix (Java)
+ 
+Problem
+
+Write a function to find the longest common prefix string amongst an array of strings.
+
+Analysis
+
+To solve this problem, we need to find the two loop conditions. One is the length of the shortest string. The other is iteration over every element of the string array.
+
+Java Solution
+
+public String longestCommonPrefix(String[] strs) {
+    if(strs == null || strs.length == 0)
+        return "";
+ 
+    int minLen=Integer.MAX_VALUE;
+    for(String str: strs){
+        if(minLen > str.length())
+            minLen = str.length();
+    }
+    if(minLen == 0) return "";
+ 
+    for(int j=0; j<minLen; j++){
+        char prev='0';
+        for(int i=0; i<strs.length ;i++){
+            if(i==0) {
+                prev = strs[i].charAt(j);
+                continue;
+            }
+ 
+            if(strs[i].charAt(j) != prev){
+                return strs[i].substring(0, j);
+            }
+        }
+    }
+ 
+    return strs[0].substring(0,minLen);
+}
+
+* LeetCode – Largest Number (Java)
+ 
+Given a list of non negative integers, arrange them such that they form the largest number.
+
+For example, given [3, 30, 34, 5, 9], the largest formed number is 9534330. (Note: The result may be very large, so you need to return a string instead of an integer.)
+
+Analysis
+
+This problem can be solve by simply sorting strings, not sorting integer. Define a comparator to compare strings by concat() right-to-left or left-to-right.
+
+Java Solution
+
+public String largestNumber(int[] nums) {
+    String[] strs = new String[nums.length];
+    for(int i=0; i<nums.length; i++){
+        strs[i] = String.valueOf(nums[i]);
+    }
+ 
+    Arrays.sort(strs, new Comparator<String>(){
+        public int compare(String s1, String s2){
+            String leftRight = s1+s2;
+            String rightLeft = s2+s1;
+            return -leftRight.compareTo(rightLeft);
+ 
+        }
+    });
+ 
+    StringBuilder sb = new StringBuilder();
+    for(String s: strs){
+        sb.append(s);
+    }
+ 
+    while(sb.charAt(0)=='0' && sb.length()>1){
+        sb.deleteCharAt(0);
+    }
+ 
+    return sb.toString();
+}
+
+* LeetCode – Simplify Path (Java)
+ 
+Given an absolute path for a file (Unix-style), simplify it.
+
+For example,
+
+path = "/home/", => "/home"
+path = "/a/./b/../../c/", => "/c"
+path = "/../", => "/"
+path = "/home//foo/", => "/home/foo"
+Java Solution
+
+public String simplifyPath(String path) {
+    Stack<String> stack = new Stack<String>();
+ 
+    //stack.push(path.substring(0,1));
+ 
+    while(path.length()> 0 && path.charAt(path.length()-1) =='/'){
+        path = path.substring(0, path.length()-1);
+    }
+ 
+    int start = 0;
+    for(int i=1; i<path.length(); i++){
+        if(path.charAt(i) == '/'){
+            stack.push(path.substring(start, i));
+            start = i;
+        }else if(i==path.length()-1){
+            stack.push(path.substring(start));
+        }
+    }
+ 
+    LinkedList<String> result = new LinkedList<String>();
+    int back = 0;
+    while(!stack.isEmpty()){
+        String top = stack.pop();
+ 
+        if(top.equals("/.") || top.equals("/")){
+            //nothing
+        }else if(top.equals("/..")){
+            back++;
+        }else{
+            if(back > 0){
+                back--;
+            }else{
+                result.push(top);
+            }
+        }
+    }
+ 
+    //if empty, return "/"
+    if(result.isEmpty()){
+        return "/";
+    }
+ 
+    StringBuilder sb = new StringBuilder();
+    while(!result.isEmpty()){
+        String s = result.pop();
+        sb.append(s);
+    }
+ 
+    return sb.toString();
+}
+
+* LeetCode – Gas Station (Java)
+ 
+There are N gas stations along a circular route, where the amount of gas at station i is gas[i].
+
+You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from station i to its next station (i+1). You begin the journey with an empty tank at one of the gas stations.
+
+Return the starting gas station's index if you can travel around the circuit once, otherwise return -1.
+
+Analysis
+
+To solve this problem, we need to understand and use the following 2 facts:
+1) if the sum of gas >= the sum of cost, then the circle can be completed.
+2) if A can not reach C in a the sequence of A-->B-->C, then B can not make it either.
+
+Proof of fact 2:
+
+If gas[A] < cost[A], then A can not even reach B. 
+So to reach C from A, gas[A] must >= cost[A]. 
+Given that A can not reach C, we have gas[A] + gas[B] < cost[A] + cost[B],
+and gas[A] >= cost[A],
+Therefore, gas[B] < cost[B], i.e., B can not reach C. 
+In the following solution, sumRemaining tracks the sum of remaining to the current index. If sumRemaining < 0, then every index between old start and current index is bad, and we need to update start to be the current index. You can use the following example to visualize the solution. leetcode-gas-station-java
+
+Java Solution
+
+public int canCompleteCircuit(int[] gas, int[] cost) {
+	int sumRemaining = 0; // track current remaining
+	int total = 0; // track total remaining
+	int start = 0; 
+ 
+	for (int i = 0; i < gas.length; i++) {
+		int remaining = gas[i] - cost[i];
+ 
+		//if sum remaining of (i-1) >= 0, continue 
+		if (sumRemaining >= 0) { 
+			sumRemaining += remaining;
+		//otherwise, reset start index to be current
+		} else {
+			sumRemaining = remaining;
+			start = i;
+		}
+		total += remaining;
+	}
+ 
+	if (total >= 0){
+		return start;
+	}else{
+		return -1;
+	}
+}
+
+* LeetCode – Pascal’s Triangle (Java)
+ 
+Given numRows, generate the first numRows of Pascal's triangle. For example, given numRows = 5, the result should be:
+
+[
+     [1],
+    [1,1],
+   [1,2,1],
+  [1,3,3,1],
+ [1,4,6,4,1]
+]
+Java Solution
+
+public ArrayList<ArrayList<Integer>> generate(int numRows) {
+	ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+	if (numRows <= 0)
+		return result;
+ 
+	ArrayList<Integer> pre = new ArrayList<Integer>();
+	pre.add(1);
+	result.add(pre);
+ 
+	for (int i = 2; i <= numRows; i++) {
+		ArrayList<Integer> cur = new ArrayList<Integer>();
+ 
+		cur.add(1); //first
+		for (int j = 0; j < pre.size() - 1; j++) {
+			cur.add(pre.get(j) + pre.get(j + 1)); //middle
+		}
+		cur.add(1);//last
+ 
+		result.add(cur);
+		pre = cur;
+	}
+ 
+	return result;
+}
+
+* LeetCode – Pascal’s Triangle II (Java)
+ 
+Given an index k, return the kth row of the Pascal's triangle. For example, when k = 3, the row is [1,3,3,1].
+
+Analysis
+
+This problem is related to Pascal's Triangle which gets all rows of Pascal's triangle. In this problem, only one row is required to return.
+
+Pascal's Triangle II
+
+Java Solution
+
+public List<Integer> getRow(int rowIndex) {
+	ArrayList<Integer> result = new ArrayList<Integer>();
+ 
+	if (rowIndex < 0)
+		return result;
+ 
+	result.add(1);
+	for (int i = 1; i <= rowIndex; i++) {
+		for (int j = result.size() - 2; j >= 0; j--) {
+			result.set(j + 1, result.get(j) + result.get(j + 1));
+		}
+		result.add(1);
+	}
+	return result;
+}
+
+* LeetCode – Container With Most Water (Java)
+ 
+Problem
+
+Given n non-negative integers a1, a2, ..., an, where each represents a point at coordinate (i, ai). n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, which together with x-axis forms a container, such that the container contains the most water.
+
+Analysis
+
+Initially we can assume the result is 0. Then we scan from both sides. If leftHeight < rightHeight, move right and find a value that is greater than leftHeight. Similarily, if leftHeight > rightHeight, move left and find a value that is greater than rightHeight. Additionally, keep tracking the max value.
+
+container with most water
+
+Java Solution
+
+public int maxArea(int[] height) {
+	if (height == null || height.length < 2) {
+		return 0;
+	}
+ 
+	int max = 0;
+	int left = 0;
+	int right = height.length - 1;
+ 
+	while (left < right) {
+		max = Math.max(max, (right - left) * Math.min(height[left], height[right]));
+		if (height[left] < height[right])
+			left++;
+		else
+			right--;
+	}
+ 
+	return max;
+}
+
+* LeetCode – Candy (Java)
+ 
+There are N children standing in a line. Each child is assigned a rating value. You are giving candies to these children subjected to the following requirements:
+
+1. Each child must have at least one candy.
+2. Children with a higher rating get more candies than their neighbors.
+
+What is the minimum candies you must give?
+
+Analysis
+
+This problem can be solved in O(n) time.
+
+We can always assign a neighbor with 1 more if the neighbor has higher a rating value. However, to get the minimum total number, we should always start adding 1s in the ascending order. We can solve this problem by scanning the array from both sides. First, scan the array from left to right, and assign values for all the ascending pairs. Then scan from right to left and assign values to descending pairs.
+
+This problem is similar to Trapping Rain Water.
+
+Java Solution
+
+public int candy(int[] ratings) {
+	if (ratings == null || ratings.length == 0) {
+		return 0;
+	}
+ 
+	int[] candies = new int[ratings.length];
+	candies[0] = 1;
+ 
+	//from let to right
+	for (int i = 1; i < ratings.length; i++) {
+		if (ratings[i] > ratings[i - 1]) {
+			candies[i] = candies[i - 1] + 1;
+		} else { 
+			// if not ascending, assign 1
+			candies[i] = 1;
+		}
+	}
+ 
+	int result = candies[ratings.length - 1];
+ 
+	//from right to left
+	for (int i = ratings.length - 2; i >= 0; i--) {
+		int cur = 1;
+		if (ratings[i] > ratings[i + 1]) {
+			cur = candies[i + 1] + 1;
+		}
+ 
+		result += Math.max(cur, candies[i]);
+		candies[i] = cur;
+	}
+ 
+	return result;
+}
+
+LeetCode – Trapping Rain Water (Java)
+ 
+Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.
+
+For example, given [0,1,0,2,1,0,1,3,2,1,2,1], return 6.
+
+Analysis
+
+This problem is similar to Candy. It can be solve by scanning from both sides and then get the total.
+
+Java Solution
+
+public int trap(int[] height) {
+    int result = 0;
+ 
+    if(height==null || height.length<=2)
+        return result;
+ 
+    int left[] = new int[height.length];
+    int right[]= new int[height.length];
+ 
+    //scan from left to right
+    int max = height[0];
+    left[0] = height[0];
+    for(int i=1; i<height.length; i++){
+        if(height[i]<max){
+            left[i]=max;
+        }else{
+            left[i]=height[i];
+            max = height[i];
+        }
+    }
+ 
+    //scan from right to left
+    max = height[height.length-1];
+    right[height.length-1]=height[height.length-1];
+    for(int i=height.length-2; i>=0; i--){
+        if(height[i]<max){
+            right[i]=max;
+        }else{
+            right[i]=height[i];
+            max = height[i];
+        }
+    }
+ 
+    //calculate totoal
+    for(int i=0; i<height.length; i++){
+        result+= Math.min(left[i],right[i])-height[i];
+    }
+ 
+    return result;
+}
+
+* LeetCode – Count and Say (Java)
+ 
+Problem
+
+The count-and-say sequence is the sequence of integers beginning as follows:
+1, 11, 21, 1211, 111221, ...
+
+1 is read off as "one 1" or 11.
+11 is read off as "two 1s" or 21.
+21 is read off as "one 2, then one 1" or 1211.
+Given an integer n, generate the nth sequence.
+
+Java Solution
+
+The problem can be solved by using a simple iteration. See Java solution below:
+
+public String countAndSay(int n) {
+	if (n <= 0)
+		return null;
+ 
+	String result = "1";
+	int i = 1;
+ 
+	while (i < n) {
+		StringBuilder sb = new StringBuilder();
+		int count = 1;
+		for (int j = 1; j < result.length(); j++) {
+			if (result.charAt(j) == result.charAt(j - 1)) {
+				count++;
+			} else {
+				sb.append(count);
+				sb.append(result.charAt(j - 1));
+				count = 1;
+			}
+		}
+ 
+		sb.append(count);
+		sb.append(result.charAt(result.length() - 1));
+		result = sb.toString();
+		i++;
+	}
+ 
+	return result;
+}
+
+
+* LeetCode – Search for a Range (Java)
+ 
+Given a sorted array of integers, find the starting and ending position of a given target value. Your algorithm's runtime complexity must be in the order of O(log n). If the target is not found in the array, return [-1, -1]. For example, given [5, 7, 7, 8, 8, 10] and target value 8, return [3, 4].
+
+Analysis
+
+Based on the requirement of O(log n), this is a binary search problem apparently.
+
+Java Solution
+
+public int[] searchRange(int[] nums, int target) {
+    if(nums == null || nums.length == 0){
+        return null;
+    }
+ 
+    int[] arr= new int[2];
+    arr[0]=-1;
+    arr[1]=-1;
+ 
+    binarySearch(nums, 0, nums.length-1, target, arr);
+ 
+    return arr;
+}
+ 
+public void binarySearch(int[] nums, int left, int right, int target, int[] arr){
+    if(right<left) 
+        return;
+ 
+    if(nums[left]==nums[right] && nums[left]==target){
+        arr[0]=left;
+        arr[1]=right;
+        return;
+    }
+ 
+    int mid = left+(right-left)/2;
+ 
+ 
+    if(nums[mid]<target){
+        binarySearch(nums, mid+1, right, target, arr);
+    }else if(nums[mid]>target){
+        binarySearch(nums, left, mid-1, target, arr);
+    }else{
+        arr[0]=mid;
+        arr[1]=mid;
+ 
+        //handle duplicates - left
+        int t1 = mid;
+        while(t1 >left && nums[t1]==nums[t1-1]){
+            t1--;
+            arr[0]=t1;
+        }
+ 
+        //handle duplicates - right
+        int t2 = mid;
+        while(t2 < right&& nums[t2]==nums[t2+1]){
+            t2++;
+            arr[1]=t2;
+        }
+        return;
+    }
+}
+
+* LeetCode – Basic Calculator (Java)
+ 
+Implement a basic calculator to evaluate a simple expression string.
+
+The expression string may contain open ( and closing parentheses ), the plus + or minus sign -, non-negative integers and empty spaces.You may assume that the given expression is always valid.
+
+Some examples: "1 + 1" = 2, "(1)" = 1, "(1-(4-5))" = 2
+
+Analysis
+
+This problem can be solved by using a stack. We keep pushing element to the stack, when ')" is met, calculate the expression up to the first "(".
+
+Java Solution
+
+public int calculate(String s) {
+	// delte white spaces
+	s = s.replaceAll(" ", "");
+ 
+	Stack<String> stack = new Stack<String>();
+	char[] arr = s.toCharArray();
+ 
+	StringBuilder sb = new StringBuilder();
+	for (int i = 0; i < arr.length; i++) {
+		if (arr[i] == ' ')
+			continue;
+ 
+		if (arr[i] >= '0' && arr[i] <= '9') {
+			sb.append(arr[i]);
+ 
+			if (i == arr.length - 1) {
+				stack.push(sb.toString());
+			}
+		} else {
+			if (sb.length() > 0) {
+				stack.push(sb.toString());
+				sb = new StringBuilder();
+			}
+ 
+			if (arr[i] != ')') {
+				stack.push(new String(new char[] { arr[i] }));
+			} else {
+				// when meet ')', pop and calculate
+				ArrayList<String> t = new ArrayList<String>();
+				while (!stack.isEmpty()) {
+					String top = stack.pop();
+					if (top.equals("(")) {
+						break;
+					} else {
+						t.add(0, top);
+					}
+				}
+ 
+				int temp = 0;
+				if (t.size() == 1) {
+					temp = Integer.valueOf(t.get(0));
+				} else {
+					for (int j = t.size() - 1; j > 0; j = j - 2) {
+						if (t.get(j - 1).equals("-")) {
+							temp += 0 - Integer.valueOf(t.get(j));
+						} else {
+							temp += Integer.valueOf(t.get(j));
+						}
+					}
+					temp += Integer.valueOf(t.get(0));
+				}
+				stack.push(String.valueOf(temp));
+			}
+		}
+	}
+ 
+	ArrayList<String> t = new ArrayList<String>();
+	while (!stack.isEmpty()) {
+		String elem = stack.pop();
+		t.add(0, elem);
+	}
+ 
+	int temp = 0;
+	for (int i = t.size() - 1; i > 0; i = i - 2) {
+		if (t.get(i - 1).equals("-")) {
+			temp += 0 - Integer.valueOf(t.get(i));
+		} else {
+			temp += Integer.valueOf(t.get(i));
+		}
+	}
+	temp += Integer.valueOf(t.get(0));
+ 
+	return temp;
+}
+
+* LeetCode – Anagrams (Java)
+ 
+Given an array of strings, return all groups of strings that are anagrams.
+
+Analysis
+
+An anagram is a type of word play, the result of rearranging the letters of a word or phrase to produce a new word or phrase, using all the original letters exactly once; for example Torchwood can be rearranged into Doctor Who.
+
+If two strings are anagram to each other, their sorted sequence is the same. Therefore, this problem can be seen as a problem of finding duplicate elements.
+
+Java Solution
+
+public List<String> anagrams(String[] strs) {
+    ArrayList<String> result = new ArrayList<String>();
+    if(strs == null || strs.length == 0)
+        return result;
+ 
+    HashMap<String, ArrayList<Integer>> map = new HashMap<String, ArrayList<Integer>>();
+    for(int i=0; i<strs.length; i++){
+        char[] arr = strs[i].toCharArray();
+        Arrays.sort(arr);
+        String t = String.valueOf(arr);
+        if(map.get(t) == null){
+            ArrayList<Integer> l = new ArrayList<Integer>();
+            l.add(i);
+            map.put(t, l);
+        }else{
+            map.get(t).add(i);
+        }
+    }
+ 
+    for(ArrayList<Integer> l: map.values()){
+        if(l.size() > 1){
+            for(Integer i: l){
+                result.add(strs[i]);
+            }
+        }
+    }
+ 
+    return result;
+}
+* Leetcode – Longest Palindromic Substring (Java)
+ 
+Finding the longest palindromic substring is a classic problem of coding interview. This post summarizes 3 different solutions for this problem.
+
+1. Naive Approach
+
+Naively, we can simply examine every substring and check if it is palindromic. The time complexity is O(n^3). If this is submitted to LeetCode onlinejudge, an error message will be returned - "Time Limit Exceeded". Therefore, this approach is just a start, we need a better algorithm.
+
+public static String longestPalindrome1(String s) {
+ 
+	int maxPalinLength = 0;
+	String longestPalindrome = null;
+	int length = s.length();
+ 
+	// check all possible sub strings
+	for (int i = 0; i < length; i++) {
+		for (int j = i + 1; j < length; j++) {
+			int len = j - i;
+			String curr = s.substring(i, j + 1);
+			if (isPalindrome(curr)) {
+				if (len > maxPalinLength) {
+					longestPalindrome = curr;
+					maxPalinLength = len;
+				}
+			}
+		}
+	}
+ 
+	return longestPalindrome;
+}
+ 
+public static boolean isPalindrome(String s) {
+ 
+	for (int i = 0; i < s.length() - 1; i++) {
+		if (s.charAt(i) != s.charAt(s.length() - 1 - i)) {
+			return false;
+		}
+	}
+ 
+	return true;
+}
+2. Dynamic Programming
+
+Let s be the input string, i and j are two indices of the string. Define a 2-dimension array "table" and let table[i][j] denote whether a substring from i to j is palindrome.
+
+Start condition:
+
+table[i][i] == 1;
+table[i][i+1] == 1  => s.charAt(i) == s.charAt(i+1) 
+Changing condition:
+
+table[i+1][j-1] == 1 && s.charAt(i) == s.charAt(j)
+=>
+table[i][j] == 1
+Time O(n^2) Space O(n^2)
+
+public static String longestPalindrome2(String s) {
+	if (s == null)
+		return null;
+ 
+	if(s.length() <=1)
+		return s;
+ 
+	int maxLen = 0;
+	String longestStr = null;
+ 
+	int length = s.length();
+ 
+	int[][] table = new int[length][length];
+ 
+	//every single letter is palindrome
+	for (int i = 0; i < length; i++) {
+		table[i][i] = 1;
+	}
+	printTable(table);
+ 
+	//e.g. bcba
+	//two consecutive same letters are palindrome
+	for (int i = 0; i <= length - 2; i++) {
+		if (s.charAt(i) == s.charAt(i + 1)){
+			table[i][i + 1] = 1;
+			longestStr = s.substring(i, i + 2);
+		}	
+	}
+	printTable(table);
+	//condition for calculate whole table
+	for (int l = 3; l <= length; l++) {
+		for (int i = 0; i <= length-l; i++) {
+			int j = i + l - 1;
+			if (s.charAt(i) == s.charAt(j)) {
+				table[i][j] = table[i + 1][j - 1];
+				if (table[i][j] == 1 && l > maxLen)
+					longestStr = s.substring(i, j + 1);
+			} else {
+				table[i][j] = 0;
+			}
+			printTable(table);
+		}
+	}
+ 
+	return longestStr;
+}
+public static void printTable(int[][] x){
+	for(int [] y : x){
+		for(int z: y){
+			System.out.print(z + " ");
+		}
+		System.out.println();
+	}
+	System.out.println("------");
+}
+Given a string, we can use the printTable() method to examine the table after execution. For example, if the input string is "dabcba", the final matrix would be the following:
+
+1 0 0 0 0 0 
+0 1 0 0 0 1 
+0 0 1 0 1 0 
+0 0 0 1 0 0 
+0 0 0 0 1 0 
+0 0 0 0 0 1 
+From the table, we can clearly see that the longest string is in cell table[1][5].
+
+3. A Simple Algorithm
+
+Time O(n^2), Space O(1)
+
+public String longestPalindrome(String s) {
+	if (s.isEmpty()) {
+		return null;
+	}
+ 
+	if (s.length() == 1) {
+		return s;
+	}
+ 
+	String longest = s.substring(0, 1);
+	for (int i = 0; i < s.length(); i++) {
+		// get longest palindrome with center of i
+		String tmp = helper(s, i, i);
+		if (tmp.length() > longest.length()) {
+			longest = tmp;
+		}
+ 
+		// get longest palindrome with center of i, i+1
+		tmp = helper(s, i, i + 1);
+		if (tmp.length() > longest.length()) {
+			longest = tmp;
+		}
+	}
+ 
+	return longest;
+}
+ 
+// Given a center, either one letter or two letter, 
+// Find longest palindrome
+public String helper(String s, int begin, int end) {
+	while (begin >= 0 && end <= s.length() - 1 && s.charAt(begin) == s.charAt(end)) {
+		begin--;
+		end++;
+	}
+	return s.substring(begin + 1, end);
+}
+4. Manacher's Algorithm
+
+Manacher's algorithm is much more complicated to figure out, even though it will bring benefit of time complexity of O(n). Since it is not typical, there is no need to waste time on that.
+
+* LeetCode – Shortest Palindrome (Java)
+ 
+Given a string S, you are allowed to convert it to a palindrome by adding characters in front of it. Find and return the shortest palindrome you can find by performing this transformation.
+
+For example, given "aacecaaa", return "aaacecaaa"; given "abcd", return "dcbabcd".
+
+Analysis
+
+We can solve this problem by using one of the methods which is used to solve the longest palindrome substring problem.
+
+Specifically, we can start from the center and scan two sides. If read the left boundary, then the shortest palindrome is identified.
+
+Java Solution
+
+public String shortestPalindrome(String s) {
+	if (s == null || s.length() <= 1)
+		return s;
+ 
+	String result = null;
+ 
+	int len = s.length();
+	int mid = len / 2;	
+ 
+	for (int i = mid; i >= 1; i--) {
+		if (s.charAt(i) == s.charAt(i - 1)) {
+			if ((result = scanFromCenter(s, i - 1, i)) != null)
+				return result;
+		} else {
+			if ((result = scanFromCenter(s, i - 1, i - 1)) != null)
+				return result;
+		}
+	}
+ 
+	return result;
+}
+ 
+private String scanFromCenter(String s, int l, int r) {
+	int i = 1;
+ 
+	//scan from center to both sides
+	for (; l - i >= 0; i++) {
+		if (s.charAt(l - i) != s.charAt(r + i))
+			break;
+	}
+ 
+	//if not end at the beginning of s, return null 
+	if (l - i >= 0)
+		return null;
+ 
+	StringBuilder sb = new StringBuilder(s.substring(r + i));
+	sb.reverse();
+ 
+	return sb.append(s).toString();
+}
+
+*LeetCode – Rectangle Area (Java)
+ 
+Find the total area covered by two rectilinear rectangles in a 2D plane. Each rectangle is defined by its bottom left corner and top right corner coordinates.
+
+Analysis
+
+This problem can be converted as a overlap internal problem. On the x-axis, there are (A,C) and (E,G); on the y-axis, there are (F,H) and (B,D). If they do not have overlap, the total area is the sum of 2 rectangle areas. If they have overlap, the total area should minus the overlap area.
+
+rectangle-area
+
+Java Solution
+
+public int computeArea(int A, int B, int C, int D, int E, int F, int G, int H) {
+    if(C<E||G<A )
+        return (G-E)*(H-F) + (C-A)*(D-B);
+ 
+    if(D<F || H<B)
+        return (G-E)*(H-F) + (C-A)*(D-B);
+ 
+    int right = Math.min(C,G);
+    int left = Math.max(A,E);
+    int top = Math.min(H,D);
+    int bottom = Math.max(F,B);
+ 
+    return (G-E)*(H-F) + (C-A)*(D-B) - (right-left)*(top-bottom);
+}
+
+* LeetCode – Rectangle Area (Java)
+ 
+Find the total area covered by two rectilinear rectangles in a 2D plane. Each rectangle is defined by its bottom left corner and top right corner coordinates.
+
+Analysis
+
+This problem can be converted as a overlap internal problem. On the x-axis, there are (A,C) and (E,G); on the y-axis, there are (F,H) and (B,D). If they do not have overlap, the total area is the sum of 2 rectangle areas. If they have overlap, the total area should minus the overlap area.
+
+rectangle-area
+
+Java Solution
+
+public int computeArea(int A, int B, int C, int D, int E, int F, int G, int H) {
+    if(C<E||G<A )
+        return (G-E)*(H-F) + (C-A)*(D-B);
+ 
+    if(D<F || H<B)
+        return (G-E)*(H-F) + (C-A)*(D-B);
+ 
+    int right = Math.min(C,G);
+    int left = Math.max(A,E);
+    int top = Math.min(H,D);
+    int bottom = Math.max(F,B);
+ 
+    return (G-E)*(H-F) + (C-A)*(D-B) - (right-left)*(top-bottom);
+}
+
+* LeetCode – Summary Ranges (Java)
+ 
+Given a sorted integer array without duplicates, return the summary of its ranges for consecutive numbers.
+
+For example, given [0,1,2,4,5,7], return ["0->2","4->5","7"].
+
+Analysis
+
+Java Solution
+
+public List<String> summaryRanges(int[] nums) {
+    List<String> result = new ArrayList<String>();
+ 
+    if(nums == null || nums.length==0)
+        return result;
+ 
+    if(nums.length==1){
+        result.add(nums[0]+"");
+    }
+ 
+    int pre = nums[0]; // previous element   
+    int first = pre; // first element of each range
+ 
+    for(int i=1; i<nums.length; i++){
+            if(nums[i]==pre+1){
+                if(i==nums.length-1){
+                    result.add(first+"->"+nums[i]);
+                }
+            }else{
+                if(first == pre){
+                    result.add(first+"");
+                }else{
+                    result.add(first + "->"+pre);   
+                }
+ 
+                if(i==nums.length-1){
+                    result.add(nums[i]+"");
+                }
+ 
+                first = nums[i];
+            }
+ 
+            pre = nums[i];
+    }
+ 
+    return result;
+}
+
+* LeetCode – Increasing Triplet Subsequence (Java)
+ 
+Given an unsorted array return whether an increasing subsequence of length 3 exists or not in the array.
+
+Examples:
+Given [1, 2, 3, 4, 5],
+return true.
+
+Given [5, 4, 3, 2, 1],
+return false.
+
+Analysis
+
+This problem can be converted to be finding if there is a sequence such that the_smallest_so_far < the_second_smallest_so_far < current. We use x, y and z to denote the 3 number respectively.
+
+Java Solution
+
+public boolean increasingTriplet(int[] nums) {
+	int x = Integer.MAX_VALUE;
+	int y = Integer.MAX_VALUE;
+ 
+	for (int i = 0; i < nums.length; i++) {
+		int z = nums[i];
+ 
+		if (x >= z) {
+			x = z;// update x to be a smaller value
+		} else if (y >= z) {
+			y = z; // update y to be a smaller value
+		} else {
+			return true;
+		}
+	}
+ 
+	return false;
+}
+
+
+

@@ -1,0 +1,1859 @@
+* Leetcode – Binary Tree Preorder Traversal (Java)
+ 
+Preorder binary tree traversal is a classic interview problem about trees. The key to solve this problem is to understand the following:
+
+What is preorder? (parent node is processed before its children)
+Use Stack from Java Core library
+It is not obvious what preorder for some strange cases. However, if you draw a stack and manually execute the program, how each element is pushed and popped is obvious.
+
+The key to solve this problem is using a stack to store left and right children, and push right child first so that it is processed after the left child.
+
+public class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode(int x) { val = x; }
+}
+ 
+public class Solution {
+    public ArrayList<Integer> preorderTraversal(TreeNode root) {
+        ArrayList<Integer> returnList = new ArrayList<Integer>();
+ 
+        if(root == null)
+            return returnList;
+ 
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        stack.push(root);
+ 
+        while(!stack.empty()){
+            TreeNode n = stack.pop();
+            returnList.add(n.val);
+ 
+            if(n.right != null){
+                stack.push(n.right);
+            }
+            if(n.left != null){
+                stack.push(n.left);
+            }
+ 
+        }
+        return returnList;
+    }
+}
+
+* Leetcode – Binary Tree Inorder Traversal (Java)
+ 
+Java Solution 1 - Iterative
+
+The key to solve inorder traversal of binary tree includes the following:
+
+The order of "inorder" is: left child -> parent -> right child
+Use a stack to track nodes
+Understand when to push node into the stack and when to pop node out of the stack
+Binary-Tree-Inorder-Traversal-in-Java
+
+//Definition for binary tree
+public class TreeNode {
+     int val;
+     TreeNode left;
+     TreeNode right;
+     TreeNode(int x) { val = x; }
+ }
+ 
+public class Solution {
+    public ArrayList<Integer> inorderTraversal(TreeNode root) {
+        // IMPORTANT: Please reset any member data you declared, as
+        // the same Solution instance will be reused for each test case.
+         ArrayList<Integer> lst = new ArrayList<Integer>();
+ 
+        if(root == null)
+            return lst; 
+ 
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        //define a pointer to track nodes
+        TreeNode p = root;
+ 
+        while(!stack.empty() || p != null){
+ 
+            // if it is not null, push to stack
+            //and go down the tree to left
+            if(p != null){
+                stack.push(p);
+                p = p.left;
+ 
+            // if no left child
+            // pop stack, process the node
+            // then let p point to the right
+            }else{
+                TreeNode t = stack.pop();
+                lst.add(t.val);
+                p = t.right;
+            }
+        }
+ 
+        return lst;
+    }
+}
+Java Solution 2 - Recursive
+
+The recursive solution is trivial.
+
+public class Solution {
+    List<Integer> result = new ArrayList<Integer>();
+ 
+    public List<Integer> inorderTraversal(TreeNode root) {
+        if(root !=null){
+            helper(root);
+        }
+ 
+        return result;
+    }
+ 
+    public void helper(TreeNode p){
+        if(p.left!=null)
+            helper(p.left);
+ 
+        result.add(p.val);
+ 
+        if(p.right!=null)
+            helper(p.right);
+    }
+}
+
+* Leetcode – Binary Tree Postorder Traversal (Java)
+ 
+Among preoder, inorder and postorder binary tree traversal problems, postorder traversal is the most complicated one.
+
+Analysis
+
+The key to to iterative postorder traversal is the following:
+
+The order of "Postorder" is: left child -> right child -> parent node.
+Find the relation between the previously visited node and the current node
+Use a stack to track nodes
+As we go down the tree to the lft, check the previously visited node. If the current node is the left or right child of the previous node, then keep going down the tree, and add left/right node to stack when applicable. When there is no children for current node, i.e., the current node is a leaf, pop it from the stack. Then the previous node become to be under the current node for next loop. You can using an example to walk through the code.
+
+For example, for the following tree, the post order traversal returns {4, 6, 5, 2, 3, 1}.
+binary-tree-postorder-traversal
+
+Java Solution
+
+//Definition for binary tree
+public class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode(int x) { val = x; }
+}
+ 
+ 
+public class Solution {
+    public ArrayList<Integer> postorderTraversal(TreeNode root) {
+ 
+        ArrayList<Integer> lst = new ArrayList<Integer>();
+ 
+        if(root == null)
+            return lst; 
+ 
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        stack.push(root);
+ 
+        TreeNode prev = null;
+        while(!stack.empty()){
+            TreeNode curr = stack.peek();
+ 
+            // go down the tree.
+            //check if current node is leaf, if so, process it and pop stack,
+            //otherwise, keep going down
+            if(prev == null || prev.left == curr || prev.right == curr){
+                //prev == null is the situation for the root node
+                if(curr.left != null){
+                    stack.push(curr.left);
+                }else if(curr.right != null){
+                    stack.push(curr.right);
+                }else{
+                    stack.pop();
+                    lst.add(curr.val);
+                }
+ 
+            //go up the tree from left node    
+            //need to check if there is a right child
+            //if yes, push it to stack
+            //otherwise, process parent and pop stack
+            }else if(curr.left == prev){
+                if(curr.right != null){
+                    stack.push(curr.right);
+                }else{
+                    stack.pop();
+                    lst.add(curr.val);
+                }
+ 
+            //go up the tree from right node 
+            //after coming back from right node, process parent node and pop stack. 
+            }else if(curr.right == prev){
+                stack.pop();
+                lst.add(curr.val);
+            }
+ 
+            prev = curr;
+        }
+ 
+        return lst;
+    }
+}
+
+* LeetCode – Binary Tree Level Order Traversal (Java)
+ 
+Given a binary tree, return the level order traversal of its nodes' values. (ie, from left to right, level by level).
+
+For example:
+Given binary tree {3,9,20,#,#,15,7},
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+return its level order traversal as [[3], [9,20], [15,7]]
+
+Analysis
+
+It is obvious that this problem can be solve by using a queue. However, if we use one queue we can not track when each level starts. So we use two queues to track the current level and the next level.
+
+Java Solution
+
+public ArrayList<ArrayList<Integer>> levelOrder(TreeNode root) {
+    ArrayList<ArrayList<Integer>> al = new ArrayList<ArrayList<Integer>>();
+    ArrayList<Integer> nodeValues = new ArrayList<Integer>();
+    if(root == null)
+        return al;
+ 
+    LinkedList<TreeNode> current = new LinkedList<TreeNode>();
+    LinkedList<TreeNode> next = new LinkedList<TreeNode>();
+    current.add(root);
+ 
+    while(!current.isEmpty()){
+        TreeNode node = current.remove();
+ 
+        if(node.left != null)
+            next.add(node.left);
+        if(node.right != null)
+            next.add(node.right);
+ 
+        nodeValues.add(node.val);
+        if(current.isEmpty()){
+            current = next;
+            next = new LinkedList<TreeNode>();
+            al.add(nodeValues);
+            nodeValues = new ArrayList();
+        }
+ 
+    }
+    return al;
+}
+
+* LeetCode – Binary Tree Level Order Traversal (Java)
+ 
+Given a binary tree, return the level order traversal of its nodes' values. (ie, from left to right, level by level).
+
+For example:
+Given binary tree {3,9,20,#,#,15,7},
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+return its level order traversal as [[3], [9,20], [15,7]]
+
+Analysis
+
+It is obvious that this problem can be solve by using a queue. However, if we use one queue we can not track when each level starts. So we use two queues to track the current level and the next level.
+
+Java Solution
+
+public ArrayList<ArrayList<Integer>> levelOrder(TreeNode root) {
+    ArrayList<ArrayList<Integer>> al = new ArrayList<ArrayList<Integer>>();
+    ArrayList<Integer> nodeValues = new ArrayList<Integer>();
+    if(root == null)
+        return al;
+ 
+    LinkedList<TreeNode> current = new LinkedList<TreeNode>();
+    LinkedList<TreeNode> next = new LinkedList<TreeNode>();
+    current.add(root);
+ 
+    while(!current.isEmpty()){
+        TreeNode node = current.remove();
+ 
+        if(node.left != null)
+            next.add(node.left);
+        if(node.right != null)
+            next.add(node.right);
+ 
+        nodeValues.add(node.val);
+        if(current.isEmpty()){
+            current = next;
+            next = new LinkedList<TreeNode>();
+            al.add(nodeValues);
+            nodeValues = new ArrayList();
+        }
+ 
+    }
+    return al;
+}
+
+* LeetCode – Binary Tree Level Order Traversal II (Java)
+ 
+Given a binary tree, return the bottom-up level order traversal of its nodes' values.
+
+For example, given binary tree {3,9,20,#,#,15,7},
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+return its level order traversal as [[15,7], [9,20],[3]]
+
+Java Solution
+
+public List<ArrayList<Integer>> levelOrderBottom(TreeNode root) {
+    ArrayList<ArrayList<Integer>> result = new  ArrayList<ArrayList<Integer>>();
+ 
+    if(root == null){
+        return result;
+    }
+ 
+    LinkedList<TreeNode> current = new LinkedList<TreeNode>();
+    LinkedList<TreeNode> next = new LinkedList<TreeNode>();
+    current.offer(root);
+ 
+    ArrayList<Integer> numberList = new ArrayList<Integer>();
+ 
+    // need to track when each level starts
+    while(!current.isEmpty()){
+        TreeNode head = current.poll();
+ 
+        numberList.add(head.val);
+ 
+        if(head.left != null){
+            next.offer(head.left);
+        }
+        if(head.right!= null){
+            next.offer(head.right);
+        }
+ 
+        if(current.isEmpty()){
+            current = next;
+            next = new LinkedList<TreeNode>();
+            result.add(numberList);
+            numberList = new ArrayList<Integer>();
+        }
+    }
+ 
+    //return Collections.reverse(result);
+    ArrayList<ArrayList<Integer>> reversedResult = new  ArrayList<ArrayList<Integer>>();
+    for(int i=result.size()-1; i>=0; i--){
+        reversedResult.add(result.get(i));
+    }
+ 
+    return reversedResult;
+}
+
+* LeetCode – Validate Binary Search Tree (Java)
+ 
+Given a binary tree, determine if it is a valid binary search tree (BST).
+
+Assume a BST is defined as follows:
+
+The left subtree of a node contains only nodes with keys less than the node's key.
+The right subtree of a node contains only nodes with keys greater than the node's key.
+Both the left and right subtrees must also be binary search trees.
+Java Solution 1 - Recursive
+
+All values on the left sub tree must be less than root, and all values on the right sub tree must be greater than root. So we just check the boundaries for each node.
+
+public boolean isValidBST(TreeNode root) {
+    return isValidBST(root, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);    
+}
+ 
+public boolean isValidBST(TreeNode p, double min, double max){
+    if(p==null) 
+        return true;
+ 
+    if(p.val <= min || p.val >= max)
+        return false;
+ 
+    return isValidBST(p.left, min, p.val) && isValidBST(p.right, p.val, max);
+}
+This solution also goes to the left subtree first. If the violation occurs close to the root but on the right subtree, the method still cost O(n). The second solution below can handle violations close to root node faster.
+
+Java Solution 2 - Iterative
+
+public class Solution {
+    public boolean isValidBST(TreeNode root) {
+        if(root == null)
+            return true;
+ 
+        LinkedList<BNode> queue = new LinkedList<BNode>();
+        queue.add(new BNode(root, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY));
+        while(!queue.isEmpty()){
+            BNode b = queue.poll();
+            if(b.n.val <= b.left || b.n.val >=b.right){
+                return false;
+            }
+            if(b.n.left!=null){
+                queue.offer(new BNode(b.n.left, b.left, b.n.val));
+            }
+            if(b.n.right!=null){
+                queue.offer(new BNode(b.n.right, b.n.val, b.right));
+            }
+        }
+        return true;
+    }
+}
+//define a BNode class with TreeNode and it's boundaries
+class BNode{
+    TreeNode n;
+    double left;
+    double right;
+    public BNode(TreeNode n, double left, double right){
+        this.n = n;
+        this.left = left;
+        this.right = right;
+    }
+}
+
+* LeetCode – Flatten Binary Tree to Linked List
+ 
+Given a binary tree, flatten it to a linked list in-place.
+
+For example,
+Given
+
+         1
+        / \
+       2   5
+      / \   \
+     3   4   6
+The flattened tree should look like:
+
+   1
+    \
+     2
+      \
+       3
+        \
+         4
+          \
+           5
+            \
+             6
+Thoughts
+
+Go down through the left, when right is not null, push right to stack.
+
+Java Solution
+
+/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public void flatten(TreeNode root) {
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        TreeNode p = root;
+ 
+        while(p != null || !stack.empty()){
+ 
+            if(p.right != null){
+                stack.push(p.right);
+            }
+ 
+            if(p.left != null){
+                p.right = p.left;
+                p.left = null;
+            }else if(!stack.empty()){
+                TreeNode temp = stack.pop();
+                p.right=temp;
+            }
+ 
+            p = p.right;
+        }
+    }
+}
+
+* LeetCode – Path Sum
+ 
+Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.
+
+For example:
+Given the below binary tree and sum = 22,
+
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \      \
+        7    2      1
+return true, as there exist a root-to-leaf path 5->4->11->2 which sum is 22.
+
+Java Solution 1 - Using Queue
+
+Add all node to a queue and store sum value of each node to another queue. When it is a leaf node, check the stored sum value.
+
+For the tree above, the queue would be: 5 - 4 - 8 - 11 - 13 - 4 - 7 - 2 - 1. It will check node 13, 7, 2 and 1. This is a typical breadth first search(BFS) problem.
+
+/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public boolean hasPathSum(TreeNode root, int sum) {
+        if(root == null) return false;
+ 
+        LinkedList<TreeNode> nodes = new LinkedList<TreeNode>();
+        LinkedList<Integer> values = new LinkedList<Integer>();
+ 
+        nodes.add(root);
+        values.add(root.val);
+ 
+        while(!nodes.isEmpty()){
+            TreeNode curr = nodes.poll();
+            int sumValue = values.poll();
+ 
+            if(curr.left == null && curr.right == null && sumValue==sum){
+                return true;
+            }
+ 
+            if(curr.left != null){
+                nodes.add(curr.left);
+                values.add(sumValue+curr.left.val);
+            }
+ 
+            if(curr.right != null){
+                nodes.add(curr.right);
+                values.add(sumValue+curr.right.val);
+            }
+        }
+ 
+        return false;
+    }
+}
+Java Solution 2 - Recursion
+
+public boolean hasPathSum(TreeNode root, int sum) {
+	if (root == null)
+		return false;
+	if (root.val == sum && (root.left == null && root.right == null))
+		return true;
+ 
+	return hasPathSum(root.left, sum - root.val)
+			|| hasPathSum(root.right, sum - root.val);
+}
+
+* LeetCode – Path Sum II (Java)
+ 
+Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum.
+
+For example, given the below binary tree and sum = 22,
+
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \    / \
+        7    2  5   1
+the method returns the following:
+
+[
+   [5,4,11,2],
+   [5,8,4,5]
+]
+Analysis
+
+This problem can be converted to be a typical depth-first search problem. A recursive depth-first search algorithm usually requires a recursive method call, a reference to the final result, a temporary result, etc.
+
+Java Solution
+
+public List<ArrayList<Integer>> pathSum(TreeNode root, int sum) {
+    ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+    if(root == null) 
+        return result;
+ 
+    ArrayList<Integer> l = new ArrayList<Integer>();
+    l.add(root.val);
+    dfs(root, sum-root.val, result, l);
+    return result;
+}
+ 
+public void dfs(TreeNode t, int sum, ArrayList<ArrayList<Integer>> result, ArrayList<Integer> l){
+    if(t.left==null && t.right==null && sum==0){
+        ArrayList<Integer> temp = new ArrayList<Integer>();
+        temp.addAll(l);
+        result.add(temp);
+    }
+ 
+    //search path of left node
+    if(t.left != null){
+        l.add(t.left.val);
+        dfs(t.left, sum-t.left.val, result, l);
+        l.remove(l.size()-1);
+    }
+ 
+    //search path of right node
+    if(t.right!=null){
+        l.add(t.right.val);
+        dfs(t.right, sum-t.right.val, result, l);
+        l.remove(l.size()-1);
+    }
+}
+
+* LeetCode – Construct Binary Tree from Preorder and Inorder Traversal (Java)
+ 
+Given preorder and inorder traversal of a tree, construct the binary tree.
+
+Analysis
+
+Consider the following example:
+
+in-order:   4 2 5 (1) 6 7 3 8
+pre-order: (1) 2 4 5  3 7 6 8
+From the pre-order array, we know that first element is the root. We can find the root in in-order array. Then we can identify the left and right sub-trees of the root from in-order array.
+
+Using the length of left sub-tree, we can identify left and right sub-trees in pre-order array. Recursively, we can build up the tree.
+
+For this example, the constructed tree is:
+construct-binary-tree-from-inorder-and-postorder-traversal
+
+Java Solution
+
+public TreeNode buildTree(int[] preorder, int[] inorder) {
+    int preStart = 0;
+    int preEnd = preorder.length-1;
+    int inStart = 0;
+    int inEnd = inorder.length-1;
+ 
+    return construct(preorder, preStart, preEnd, inorder, inStart, inEnd);
+}
+ 
+public TreeNode construct(int[] preorder, int preStart, int preEnd, int[] inorder, int inStart, int inEnd){
+    if(preStart>preEnd||inStart>inEnd){
+        return null;
+    }
+ 
+    int val = preorder[preStart];
+    TreeNode p = new TreeNode(val);
+ 
+    //find parent element index from inorder
+    int k=0;
+    for(int i=0; i<inorder.length; i++){
+        if(val == inorder[i]){
+            k=i;
+            break;
+        }
+    }
+ 
+    p.left = construct(preorder, preStart+1, preStart+(k-inStart), inorder, inStart, k-1);
+    p.right= construct(preorder, preStart+(k-inStart)+1, preEnd, inorder, k+1 , inEnd);
+ 
+    return p;
+}
+
+* Construct Binary Tree from Inorder and Postorder Traversal
+ 
+Given inorder and postorder traversal of a tree, construct the binary tree.
+
+Analysis
+
+This problem can be illustrated by using a simple example.
+
+in-order:   4 2 5  (1)  6 7 3 8
+post-order: 4 5 2  6 7 8 3  (1)
+From the post-order array, we know that last element is the root. We can find the root in in-order array. Then we can identify the left and right sub-trees of the root from in-order array.
+
+Using the length of left sub-tree, we can identify left and right sub-trees in post-order array. Recursively, we can build up the tree.
+
+For this example, the constructed tree is:
+construct-binary-tree-from-inorder-and-postorder-traversal
+
+Java Solution
+
+public TreeNode buildTree(int[] inorder, int[] postorder) {
+	int inStart = 0;
+	int inEnd = inorder.length - 1;
+	int postStart = 0;
+	int postEnd = postorder.length - 1;
+ 
+	return buildTree(inorder, inStart, inEnd, postorder, postStart, postEnd);
+}
+ 
+public TreeNode buildTree(int[] inorder, int inStart, int inEnd,
+		int[] postorder, int postStart, int postEnd) {
+	if (inStart > inEnd || postStart > postEnd)
+		return null;
+ 
+	int rootValue = postorder[postEnd];
+	TreeNode root = new TreeNode(rootValue);
+ 
+	int k = 0;
+	for (int i = 0; i < inorder.length; i++) {
+		if (inorder[i] == rootValue) {
+			k = i;
+			break;
+		}
+	}
+ 
+	root.left = buildTree(inorder, inStart, k - 1, postorder, postStart,
+			postStart + k - (inStart + 1));
+	// Becuase k is not the length, it it need to -(inStart+1) to get the length
+	root.right = buildTree(inorder, k + 1, inEnd, postorder, postStart + k- inStart, postEnd - 1);
+	// postStart+k-inStart = postStart+k-(inStart+1) +1
+ 
+	return root;
+}
+
+* LeetCode – Convert Sorted Array to Binary Search Tree (Java)
+ 
+Given an array where elements are sorted in ascending order, convert it to a height balanced BST.
+
+Thoughts
+
+Straightforward! Recursively do the job.
+
+Java Solution
+
+// Definition for binary tree
+class TreeNode {
+	int val;
+	TreeNode left;
+	TreeNode right;
+ 
+	TreeNode(int x) {
+		val = x;
+	}
+}
+ 
+public class Solution {
+	public TreeNode sortedArrayToBST(int[] num) {
+		if (num.length == 0)
+			return null;
+ 
+		return sortedArrayToBST(num, 0, num.length - 1);
+	}
+ 
+	public TreeNode sortedArrayToBST(int[] num, int start, int end) {
+		if (start > end)
+			return null;
+ 
+		int mid = (start + end) / 2;
+		TreeNode root = new TreeNode(num[mid]);
+		root.left = sortedArrayToBST(num, start, mid - 1);
+		root.right = sortedArrayToBST(num, mid + 1, end);
+ 
+		return root;
+	}
+}
+
+* LeetCode – Convert Sorted List to Binary Search Tree (Java)
+ 
+Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
+
+Thoughts
+
+If you are given an array, the problem is quite straightforward. But things get a little more complicated when you have a singly linked list instead of an array. Now you no longer have random access to an element in O(1) time. Therefore, you need to create nodes bottom-up, and assign them to its parents. The bottom-up approach enables us to access the list in its order at the same time as creating nodes.
+
+Java Solution
+
+//  Definition for singly-linked list.
+class ListNode {
+	int val;
+	ListNode next;
+ 
+	ListNode(int x) {
+		val = x;
+		next = null;
+	}
+}
+ 
+// Definition for binary tree
+class TreeNode {
+	int val;
+	TreeNode left;
+	TreeNode right;
+ 
+	TreeNode(int x) {
+		val = x;
+	}
+}
+ 
+public class Solution {
+	static ListNode h;
+ 
+	public TreeNode sortedListToBST(ListNode head) {
+		if (head == null)
+			return null;
+ 
+		h = head;
+		int len = getLength(head);
+		return sortedListToBST(0, len - 1);
+	}
+ 
+	// get list length
+	public int getLength(ListNode head) {
+		int len = 0;
+		ListNode p = head;
+ 
+		while (p != null) {
+			len++;
+			p = p.next;
+		}
+		return len;
+	}
+ 
+	// build tree bottom-up
+	public TreeNode sortedListToBST(int start, int end) {
+		if (start > end)
+			return null;
+ 
+		// mid
+		int mid = (start + end) / 2;
+ 
+		TreeNode left = sortedListToBST(start, mid - 1);
+		TreeNode root = new TreeNode(h.val);
+		h = h.next;
+		TreeNode right = sortedListToBST(mid + 1, end);
+ 
+		root.left = left;
+		root.right = right;
+ 
+		return root;
+	}
+}
+
+* LeetCode – Minimum Depth of Binary Tree (Java)
+ 
+Given a binary tree, find its minimum depth.
+
+The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+
+Thoughts
+
+LinkedList is a queue in Java. The add() and remove() methods are used to manipulate the queue.
+
+Java Solution
+
+/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public int minDepth(TreeNode root) {
+        if(root == null){
+            return 0;
+        }
+ 
+        LinkedList<TreeNode> nodes = new LinkedList<TreeNode>();
+        LinkedList<Integer> counts = new LinkedList<Integer>();
+ 
+        nodes.add(root);
+        counts.add(1);
+ 
+        while(!nodes.isEmpty()){
+            TreeNode curr = nodes.remove();
+            int count = counts.remove();
+ 
+            if(curr.left != null){
+                nodes.add(curr.left);
+                counts.add(count+1);
+            }
+ 
+            if(curr.right != null){
+                nodes.add(curr.right);
+                counts.add(count+1);
+            }
+ 
+            if(curr.left == null && curr.right == null){
+                return count;
+            }
+        }
+ 
+        return 0;
+    }
+}
+
+* LeetCode – Binary Tree Maximum Path Sum (Java)
+ 
+Given a binary tree, find the maximum path sum. The path may start and end at any node in the tree. For example, given the below binary tree
+
+       1
+      / \
+     2   3
+the result is 6.
+
+Analysis
+
+1) Recursively solve this problem
+2) Get largest left sum and right sum
+2) Compare to the stored maximum
+
+Java Solution
+
+We can also use an array to store value for recursive methods.
+
+public int maxPathSum(TreeNode root) {
+	int max[] = new int[1]; 
+	max[0] = Integer.MIN_VALUE;
+	calculateSum(root, max);
+	return max[0];
+}
+ 
+public int calculateSum(TreeNode root, int[] max) {
+	if (root == null)
+		return 0;
+ 
+	int left = calculateSum(root.left, max);
+	int right = calculateSum(root.right, max);
+ 
+	int current = Math.max(root.val, Math.max(root.val + left, root.val + right));
+ 
+	max[0] = Math.max(max[0], Math.max(current, left + root.val + right));
+ 
+	return current;
+}
+
+* LeetCode – Balanced Binary Tree (Java)
+ 
+Given a binary tree, determine if it is height-balanced.
+
+For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
+
+Analysis
+
+This is a typical tree problem that can be solve by using recursion.
+
+Java Solution
+
+// Definition for binary tree
+class TreeNode {
+	int val;
+	TreeNode left;
+	TreeNode right;
+ 
+	TreeNode(int x) {
+		val = x;
+	}
+}
+ 
+public class Solution {
+	public boolean isBalanced(TreeNode root) {
+		if (root == null)
+			return true;
+ 
+		if (getHeight(root) == -1)
+			return false;
+ 
+		return true;
+	}
+ 
+	public int getHeight(TreeNode root) {
+		if (root == null)
+			return 0;
+ 
+		int left = getHeight(root.left);
+		int right = getHeight(root.right);
+ 
+		if (left == -1 || right == -1)
+			return -1;
+ 
+		if (Math.abs(left - right) > 1) {
+			return -1;
+		}
+ 
+		return Math.max(left, right) + 1;
+ 
+	}
+}
+
+* LeetCode – Symmetric Tree (Java)
+ 
+Problem
+
+Given a binary tree, check whether it is a mirror of itself (ie, symmetric around its center).
+
+For example, this binary tree is symmetric:
+
+    1
+   / \
+  2   2
+ / \ / \
+3  4 4  3
+But the following is not:
+
+    1
+   / \
+  2   2
+   \   \
+   3    3
+Java Solution - Recursion
+
+This problem can be solve by using a simple recursion. The key is finding the conditions that return false, such as value is not equal, only one node(left or right) has value.
+
+public boolean isSymmetric(TreeNode root) {
+	if (root == null)
+		return true;
+	return isSymmetric(root.left, root.right);
+}
+ 
+public boolean isSymmetric(TreeNode l, TreeNode r) {
+	if (l == null && r == null) {
+		return true;
+	} else if (r == null || l == null) {
+		return false;
+	}
+ 
+	if (l.val != r.val)
+		return false;
+ 
+	if (!isSymmetric(l.left, r.right))
+		return false;
+	if (!isSymmetric(l.right, r.left))
+		return false;
+ 
+	return true;
+}
+
+* LeetCode – Binary Search Tree Iterator (Java)
+ 
+Problem
+
+Implement an iterator over a binary search tree (BST). Your iterator will be initialized with the root node of a BST. Calling next() will return the next smallest number in the BST. Note: next() and hasNext() should run in average O(1) time and uses O(h) memory, where h is the height of the tree.
+
+Java Solution
+
+The key to solve this problem is understanding what is BST. Here is a diagram.
+
+binary-search-tree
+
+/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+ 
+public class BSTIterator {
+	Stack<TreeNode> stack;
+ 
+	public BSTIterator(TreeNode root) {
+		stack = new Stack<TreeNode>();
+		while (root != null) {
+			stack.push(root);
+			root = root.left;
+		}
+	}
+ 
+	public boolean hasNext() {
+		return !stack.isEmpty();
+	}
+ 
+	public int next() {
+		TreeNode node = stack.pop();
+		int result = node.val;
+		if (node.right != null) {
+			node = node.right;
+			while (node != null) {
+				stack.push(node);
+				node = node.left;
+			}
+		}
+		return result;
+	}
+} 
+
+* LeetCode – Binary Tree Right Side View (Java)
+ 
+Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom. For example, given the following binary tree,
+
+   1            <---
+ /   \
+2     3         <---
+ \     
+  5             <---
+You can see [1, 3, 5].
+
+Analysis
+
+This problem can be solve by using a queue. On each level of the tree, we add the right-most element to the results.
+
+Java Solution
+
+public List<Integer> rightSideView(TreeNode root) {
+    ArrayList<Integer> result = new ArrayList<Integer>();
+ 
+    if(root == null) return result;
+ 
+    LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+    queue.add(root);
+ 
+    while(queue.size() > 0){
+        //get size here
+        int size = queue.size();
+ 
+        for(int i=0; i<size; i++){
+            TreeNode top = queue.remove();
+ 
+            //the first element in the queue (right-most of the tree)
+            if(i==0){
+                result.add(top.val);
+            }
+            //add right first
+            if(top.right != null){
+                queue.add(top.right);
+            }
+            //add left
+            if(top.left != null){
+                queue.add(top.left);
+            }
+        }
+    }
+ 
+    return result;
+}
+
+* LeetCode – Implement Trie (Prefix Tree) (Java)
+ 
+Implement a trie with insert, search, and startsWith methods.
+
+Analysis
+
+A trie node should contains the character, its children and the flag that marks if it is a leaf node.
+
+Java Solution
+
+You can use this diagram to walk though the Java solution.
+
+implement-trie-leetcode-java
+
+class TrieNode {
+    char c;
+    HashMap<Character, TrieNode> children = new HashMap<Character, TrieNode>();
+    boolean isLeaf;
+ 
+    public TrieNode() {}
+ 
+    public TrieNode(char c){
+        this.c = c;
+    }
+}
+public class Trie {
+    private TrieNode root;
+ 
+    public Trie() {
+        root = new TrieNode();
+    }
+ 
+    // Inserts a word into the trie.
+    public void insert(String word) {
+        HashMap<Character, TrieNode> children = root.children;
+ 
+        for(int i=0; i<word.length(); i++){
+            char c = word.charAt(i);
+ 
+            TrieNode t;
+            if(children.containsKey(c)){
+                    t = children.get(c);
+            }else{
+                t = new TrieNode(c);
+                children.put(c, t);
+            }
+ 
+            children = t.children;
+ 
+            //set leaf node
+            if(i==word.length()-1)
+                t.isLeaf = true;    
+        }
+    }
+ 
+    // Returns if the word is in the trie.
+    public boolean search(String word) {
+        TrieNode t = searchNode(word);
+ 
+        if(t != null && t.isLeaf) 
+            return true;
+        else
+            return false;
+    }
+ 
+    // Returns if there is any word in the trie
+    // that starts with the given prefix.
+    public boolean startsWith(String prefix) {
+        if(searchNode(prefix) == null) 
+            return false;
+        else
+            return true;
+    }
+ 
+    public TrieNode searchNode(String str){
+        Map<Character, TrieNode> children = root.children; 
+        TrieNode t = null;
+        for(int i=0; i<str.length(); i++){
+            char c = str.charAt(i);
+            if(children.containsKey(c)){
+                t = children.get(c);
+                children = t.children;
+            }else{
+                return null;
+            }
+        }
+ 
+        return t;
+    }
+}
+
+* LeetCode – Add and Search Word – Data structure design (Java)
+ 
+Design a data structure that supports the following two operations:
+
+void addWord(word)
+bool search(word)
+search(word) can search a literal word or a regular expression string containing only letters a-z or .. A . means it can represent any one letter.
+
+Analysis
+
+This problem is similar with Implement Trie. The solution 1 below uses the same definition of a trie node. To handle the "." case for this problem, we need to search all possible paths, instead of one path.
+
+Java Solution 1
+
+TrieNode
+
+class TrieNode{
+    char c;
+    HashMap<Character, TrieNode> children = new HashMap<Character, TrieNode>();
+    boolean isLeaf;
+ 
+    public TrieNode() {}
+ 
+    public TrieNode(char c){
+        this.c = c;
+    }
+}
+WordDictionary
+
+public class WordDictionary {
+    private TrieNode root;
+ 
+    public WordDictionary(){
+        root = new TrieNode();
+    }
+ 
+    // Adds a word into the data structure.
+    public void addWord(String word) {
+        HashMap<Character, TrieNode> children = root.children;
+ 
+        for(int i=0; i<word.length(); i++){
+            char c = word.charAt(i);
+ 
+            TrieNode t = null;
+            if(children.containsKey(c)){
+                t = children.get(c);
+            }else{
+                t = new TrieNode(c);
+                children.put(c,t);
+            }
+ 
+            children = t.children;
+ 
+            if(i == word.length()-1){
+                t.isLeaf = true;
+            }
+        }
+    }
+ 
+    // Returns if the word is in the data structure. A word could
+    // contain the dot character '.' to represent any one letter.
+    public boolean search(String word) {
+       return dfsSearch(root.children, word, 0);
+ 
+    }
+ 
+     public boolean dfsSearch(HashMap<Character, TrieNode> children, String word, int start) {
+        if(start == word.length()){
+            if(children.size()==0) 
+                return true; 
+            else
+                return false;
+        }
+ 
+        char c = word.charAt(start);    
+ 
+        if(children.containsKey(c)){
+            if(start == word.length()-1 && children.get(c).isLeaf){
+                return true;
+            }
+ 
+            return dfsSearch(children.get(c).children, word, start+1);
+        }else if(c == '.'){
+            boolean result = false;
+            for(Map.Entry<Character, TrieNode> child: children.entrySet()){
+                if(start == word.length()-1 && child.getValue().isLeaf){
+                    return true;
+                } 
+ 
+                //if any path is true, set result to be true; 
+                if(dfsSearch(child.getValue().children, word, start+1)){
+                    result = true;
+                }
+            }
+ 
+            return result;
+        }else{
+            return false;
+        }
+    }
+}
+
+* Merge K Sorted Arrays in Java
+ 
+This is a classic interview question. Another similar problem is "merge k sorted lists".
+
+This problem can be solved by using a heap. The time is O(nlog(n)).
+
+Given m arrays, the minimum elements of all arrays can form a heap. It takes O(log(m)) to insert an element to the heap and it takes O(1) to delete the minimum element.
+
+class ArrayContainer implements Comparable<ArrayContainer> {
+	int[] arr;
+	int index;
+ 
+	public ArrayContainer(int[] arr, int index) {
+		this.arr = arr;
+		this.index = index;
+	}
+ 
+	@Override
+	public int compareTo(ArrayContainer o) {
+		return this.arr[this.index] - o.arr[o.index];
+	}
+}
+public class KSortedArray {
+	public static int[] mergeKSortedArray(int[][] arr) {
+		//PriorityQueue is heap in Java 
+		PriorityQueue<ArrayContainer> queue = new PriorityQueue<ArrayContainer>();
+		int total=0;
+ 
+		//add arrays to heap
+		for (int i = 0; i < arr.length; i++) {
+			queue.add(new ArrayContainer(arr[i], 0));
+			total = total + arr[i].length;
+		}
+ 
+		int m=0;
+		int result[] = new int[total];
+ 
+		//while heap is not empty
+		while(!queue.isEmpty()){
+			ArrayContainer ac = queue.poll();
+			result[m++]=ac.arr[ac.index];
+ 
+			if(ac.index < ac.arr.length-1){
+				queue.add(new ArrayContainer(ac.arr, ac.index+1));
+			}
+		}
+ 
+		return result;
+	}
+ 
+	public static void main(String[] args) {
+		int[] arr1 = { 1, 3, 5, 7 };
+		int[] arr2 = { 2, 4, 6, 8 };
+		int[] arr3 = { 0, 9, 10, 11 };
+ 
+		int[] result = mergeKSortedArray(new int[][] { arr1, arr2, arr3 });
+		System.out.println(Arrays.toString(result));
+	}
+}
+
+* LeetCode – Populating Next Right Pointers in Each Node (Java)
+ 
+Given the following perfect binary tree,
+
+         1
+       /  \
+      2    3
+     / \  / \
+    4  5  6  7
+After calling your function, the tree should look like:
+
+         1 -> NULL
+       /  \
+      2 -> 3 -> NULL
+     / \  / \
+    4->5->6->7 -> NULL
+Java Solution
+
+This solution is easier to understand. You can use the example tree above to walk through the algorithm. The basic idea is have 4 pointers to move towards right on two levels (see comments in the code).
+
+populating-next-right-pointers-in-each-node
+
+public void connect(TreeLinkNode root) {
+    if(root == null) 
+        return;
+ 
+    TreeLinkNode lastHead = root;//prevous level's head 
+    TreeLinkNode lastCurrent = null;//previous level's pointer
+    TreeLinkNode currentHead = null;//currnet level's head 
+    TreeLinkNode current = null;//current level's pointer
+ 
+    while(lastHead!=null){
+        lastCurrent = lastHead;
+ 
+        while(lastCurrent!=null){
+            if(currentHead == null){
+                currentHead = lastCurrent.left;
+                current = lastCurrent.left;
+            }else{
+                current.next = lastCurrent.left;
+                current = current.next;
+            }
+ 
+            if(currentHead != null){
+                current.next = lastCurrent.right;
+                current = current.next;
+            }
+ 
+            lastCurrent = lastCurrent.next;
+        }
+ 
+        //update last head
+        lastHead = currentHead;
+        currentHead = null;
+    }
+ 
+}
+
+* LeetCode – Populating Next Right Pointers in Each Node II (Java)
+ 
+Follow up for problem "Populating Next Right Pointers in Each Node".
+
+What if the given tree could be any binary tree? Would your previous solution still work?
+
+Analysis
+
+Similar to Populating Next Right Pointers in Each Node, we have 4 pointers at 2 levels of the tree.
+
+populating-next-right-pointers-in-each-node-ii
+
+Java Solution
+
+public void connect(TreeLinkNode root) {
+    if(root == null) 
+        return;
+ 
+    TreeLinkNode lastHead = root;//prevous level's head 
+    TreeLinkNode lastCurrent = null;//previous level's pointer
+    TreeLinkNode currentHead = null;//currnet level's head 
+    TreeLinkNode current = null;//current level's pointer
+ 
+    while(lastHead!=null){
+        lastCurrent = lastHead;
+ 
+        while(lastCurrent!=null){
+            //left child is not null
+            if(lastCurrent.left!=null)    {
+                if(currentHead == null){
+                    currentHead = lastCurrent.left;
+                    current = lastCurrent.left;
+                }else{
+                    current.next = lastCurrent.left;
+                    current = current.next;
+                }
+            }
+ 
+            //right child is not null
+            if(lastCurrent.right!=null){
+                if(currentHead == null){
+                    currentHead = lastCurrent.right;
+                    current = lastCurrent.right;
+                }else{
+                    current.next = lastCurrent.right;
+                    current = current.next;
+                }
+            }
+ 
+            lastCurrent = lastCurrent.next;
+        }
+ 
+        //update last head
+        lastHead = currentHead;
+        currentHead = null;
+    }
+}
+
+* LeetCode – Unique Binary Search Trees (Java)
+ 
+Given n, how many structurally unique BST's (binary search trees) that store values 1...n?
+
+For example, Given n = 3, there are a total of 5 unique BST's.
+
+   1         3     3      2      1
+    \       /     /      / \      \
+     3     2     1      1   3      2
+    /     /       \                 \
+   2     1         2                 3
+Analysis
+
+Let count[i] be the number of unique binary search trees for i. The number of trees are determined by the number of subtrees which have different root node. For example,
+
+i=0, count[0]=1 //empty tree
+
+i=1, count[1]=1 //one tree
+
+i=2, count[2]=count[0]*count[1] // 0 is root
+            + count[1]*count[0] // 1 is root
+
+i=3, count[3]=count[0]*count[2] // 1 is root
+            + count[1]*count[1] // 2 is root
+            + count[2]*count[0] // 3 is root
+
+i=4, count[4]=count[0]*count[3] // 1 is root
+            + count[1]*count[2] // 2 is root
+            + count[2]*count[1] // 3 is root
+            + count[3]*count[0] // 4 is root
+..
+..
+..
+
+i=n, count[n] = sum(count[0..k]*count[k+1...n]) 0 <= k < n-1
+Use dynamic programming to solve the problem.
+
+Java Solution
+
+public int numTrees(int n) {
+	int[] count = new int[n + 1];
+ 
+	count[0] = 1;
+	count[1] = 1;
+ 
+	for (int i = 2; i <= n; i++) {
+		for (int j = 0; j <= i - 1; j++) {
+			count[i] = count[i] + count[j] * count[i - j - 1];
+		}
+	}
+ 
+	return count[n];
+}
+
+* LeetCode – Unique Binary Search Trees II (Java)
+ 
+Given n, generate all structurally unique BST's (binary search trees) that store values 1...n.
+
+For example,
+Given n = 3, your program should return all 5 unique BST's shown below.
+
+   1         3     3      2      1
+    \       /     /      / \      \
+     3     2     1      1   3      2
+    /     /       \                 \
+   2     1         2                 3
+Analysis
+
+Check out Unique Binary Search Trees I.
+
+This problem can be solved by recursively forming left and right subtrees. The different combinations of left and right subtrees form the set of all unique binary search trees.
+
+Java Solution
+
+public List<TreeNode> generateTrees(int n) {
+    return generateTrees(1, n);
+}
+ 
+public List<TreeNode> generateTrees(int start, int end) {
+    List<TreeNode> list = new LinkedList<>();
+ 
+    if (start > end) {
+        list.add(null);
+        return list;
+    }
+ 
+    for (int i = start; i <= end; i++) {
+        List<TreeNode> lefts = generateTrees(start, i - 1);
+        List<TreeNode> rights = generateTrees(i + 1, end);
+        for (TreeNode left : lefts) {
+            for (TreeNode right : rights) {
+                TreeNode node = new TreeNode(i);
+                node.left = left;
+                node.right = right;
+                list.add(node);
+            }
+        }
+    }
+ 
+    return list;
+}
+
+* LeetCode – Sum Root to Leaf Numbers (Java)
+ 
+Given a binary tree containing digits from 0-9 only, each root-to-leaf path could represent a number. Find the total sum of all root-to-leaf numbers.
+
+For example,
+
+    1
+   / \
+  2   3
+The root-to-leaf path 1->2 represents the number 12.
+The root-to-leaf path 1->3 represents the number 13.
+Return the sum = 12 + 13 = 25.
+
+Java Solution - Recursive
+
+This problem can be solved by a typical DFS approach.
+
+public int sumNumbers(TreeNode root) {
+    int result = 0;
+    if(root==null)
+        return result;
+ 
+    ArrayList<ArrayList<TreeNode>> all = new ArrayList<ArrayList<TreeNode>>();
+    ArrayList<TreeNode> l = new ArrayList<TreeNode>();
+    l.add(root);
+    dfs(root, l, all);
+ 
+    for(ArrayList<TreeNode> a: all){
+        StringBuilder sb = new StringBuilder();
+        for(TreeNode n: a){
+            sb.append(String.valueOf(n.val));
+        }
+        int currValue = Integer.valueOf(sb.toString());
+        result = result + currValue;
+    }
+ 
+    return result;
+}
+ 
+public void dfs(TreeNode n, ArrayList<TreeNode> l,  ArrayList<ArrayList<TreeNode>> all){
+    if(n.left==null && n.right==null){
+        ArrayList<TreeNode> t = new ArrayList<TreeNode>();
+        t.addAll(l);
+        all.add(t);
+    }
+ 
+    if(n.left!=null){
+        l.add(n.left);
+        dfs(n.left, l, all);
+        l.remove(l.size()-1);
+    }
+ 
+    if(n.right!=null){
+        l.add(n.right);
+        dfs(n.right, l, all);
+        l.remove(l.size()-1);
+    }
+ 
+}
+Same approach, but simpler coding style.
+
+public int sumNumbers(TreeNode root) {
+    if(root == null) 
+        return 0;
+ 
+    return dfs(root, 0, 0);
+}
+ 
+public int dfs(TreeNode node, int num, int sum){
+    if(node == null) return sum;
+ 
+    num = num*10 + node.val;
+ 
+    // leaf
+    if(node.left == null && node.right == null) {
+        sum += num;
+        return sum;
+    }
+ 
+    // left subtree + right subtree
+    sum = dfs(node.left, num, sum) + dfs(node.right, num, sum);
+    return sum;
+}
+
+* LeetCode – Count Complete Tree Nodes (Java)
+ 
+Given a complete binary tree, count the number of nodes.
+
+Analysis
+
+Steps to solve this problem:
+1) get the height of left-most part
+2) get the height of right-most part
+3) when they are equal, the # of nodes = 2^h -1
+4) when they are not equal, recursively get # of nodes from left&right sub-trees
+
+count-complete-tree-nodes
+
+count-complete-tree-nodes-2
+
+Time complexity is O(h^2).
+
+Java Solution
+
+public int countNodes(TreeNode root) {
+    if(root==null)
+        return 0;
+ 
+    int left = getLeftHeight(root)+1;    
+    int right = getRightHeight(root)+1;
+ 
+    if(left==right){
+        return (2<<(left-1))-1;
+    }else{
+        return countNodes(root.left)+countNodes(root.right)+1;
+    }
+}
+ 
+public int getLeftHeight(TreeNode n){
+    if(n==null) return 0;
+ 
+    int height=0;
+    while(n.left!=null){
+        height++;
+        n = n.left;
+    }
+    return height;
+}
+ 
+public int getRightHeight(TreeNode n){
+    if(n==null) return 0;
+ 
+    int height=0;
+    while(n.right!=null){
+        height++;
+        n = n.right;
+    }
+    return height;
+}
+
+* LeetCode – Invert Binary Tree (Java)
+ 
+Google: 90% of our engineers use the software you wrote (Homebrew), but you can’t invert a binary tree on a whiteboard so fuck off.
+
+Very funny. Luckily, I can and in 2 ways! 😉
+
+Java Solution 1 - Recursive
+
+public TreeNode invertTree(TreeNode root) {
+    if(root!=null){
+        helper(root);
+    }
+ 
+    return root;    
+}
+ 
+public void helper(TreeNode p){
+ 
+    TreeNode temp = p.left;
+    p.left = p.right;
+    p.right = temp;
+ 
+    if(p.left!=null)
+        helper(p.left);
+ 
+    if(p.right!=null)
+        helper(p.right);
+}
+Java Solution 2 - Iterative
+
+public TreeNode invertTree(TreeNode root) {
+    LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+ 
+    if(root!=null){
+        queue.add(root);
+    }
+ 
+    while(!queue.isEmpty()){
+        TreeNode p = queue.poll();
+        if(p.left!=null)
+            queue.add(p.left);
+        if(p.right!=null)
+            queue.add(p.right);
+ 
+        TreeNode temp = p.left;
+        p.left = p.right;
+        p.right = temp;
+    }
+ 
+    return root;    
+}
+
+* LeetCode – Kth Smallest Element in a BST (Java)
+ 
+Given a binary search tree, write a function kthSmallest to find the kth smallest element in it. (1 ≤ k ≤ BST's total elements)
+
+Java Solution 1 - Inorder Traversal
+
+We can inorder traverse the tree and get the kth smallest element. Time is O(n).
+
+public int kthSmallest(TreeNode root, int k) {
+    Stack<TreeNode> stack = new Stack<TreeNode>();
+ 
+    TreeNode p = root;
+    int result = 0;
+ 
+    while(!stack.isEmpty() || p!=null){
+        if(p!=null){
+            stack.push(p);
+            p = p.left;
+        }else{
+            TreeNode t = stack.pop();
+            k--;
+            if(k==0)
+                result = t.val;
+            p = t.right;
+        }
+    }
+ 
+    return result;
+}
+
+* LeetCode – Lowest Common Ancestor of a Binary Search Tree (Java)
+ 
+Given a binary search tree (BST), find the lowest common ancestor (LCA) of two given nodes in the BST.
+
+Analysis
+
+This problem can be solved by using BST property, i.e., left < parent < right for each node. There are 3 cases to handle. Java Solution
+
+public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    TreeNode m = root;
+ 
+    if(m.val > p.val && m.val < q.val){
+        return m;  
+    }else if(m.val>p.val && m.val > q.val){
+        return lowestCommonAncestor(root.left, p, q);
+    }else if(m.val<p.val && m.val < q.val){
+        return lowestCommonAncestor(root.right, p, q);
+    }
+ 
+    return root;
+}
+
+* 

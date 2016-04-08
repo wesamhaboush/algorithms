@@ -1,0 +1,9 @@
+https://bitbucket.org/blob79/quickcheck
+https://bitbucket.org/blob79/quickcheck/src/c8e12cc026fd6295966bf9ff5d20919961ff4149/quickcheck-examples/src/test/java/?at=default
+http://blob79.bitbucket.org/quickcheck/javadoc/quickcheck_0_6/index.html
+http://www.functionaljava.org/examples-java8.html
+http://www.jcheck.org/
+http://www.jcheck.org/tutorial/
+https://github.com/mcandre/node-quickcheck
+https://github.com/jsverify/jsverify
+

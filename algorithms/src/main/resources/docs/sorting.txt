@@ -1,0 +1,267 @@
+* Quicksort Array in Java
+ 
+Quicksort is a divide and conquer algorithm. It first divides a large list into two smaller sub-lists and then recursively sort the two sub-lists. If we want to sort an array without any extra space, quicksort is a good option. On average, time complexity is O(n log(n)).
+
+The basic step of sorting an array are as follows:
+
+Select a pivot, normally the middle one
+From both ends, swap elements and make all elements on the left less than the pivot and all elements on the right greater than the pivot
+Recursively sort left part and right part
+Here is a very good animation of quicksort.
+
+public class QuickSort {
+	public static void main(String[] args) {
+		int[] x = { 9, 2, 4, 7, 3, 7, 10 };
+		System.out.println(Arrays.toString(x));
+ 
+		int low = 0;
+		int high = x.length - 1;
+ 
+		quickSort(x, low, high);
+		System.out.println(Arrays.toString(x));
+	}
+ 
+	public static void quickSort(int[] arr, int low, int high) {
+		if (arr == null || arr.length == 0)
+			return;
+ 
+		if (low >= high)
+			return;
+ 
+		// pick the pivot
+		int middle = low + (high - low) / 2;
+		int pivot = arr[middle];
+ 
+		// make left < pivot and right > pivot
+		int i = low, j = high;
+		while (i <= j) {
+			while (arr[i] < pivot) {
+				i++;
+			}
+ 
+			while (arr[j] > pivot) {
+				j--;
+			}
+ 
+			if (i <= j) {
+				int temp = arr[i];
+				arr[i] = arr[j];
+				arr[j] = temp;
+				i++;
+				j--;
+			}
+		}
+ 
+		// recursively sort two sub parts
+		if (low < j)
+			quickSort(arr, low, j);
+ 
+		if (high > i)
+			quickSort(arr, i, high);
+	}
+}
+
+* LeetCode – Maximum Gap (Java)
+ 
+Given an unsorted array, find the maximum difference between the successive elements in its sorted form.
+
+Try to solve it in linear time/space. Return 0 if the array contains less than 2 elements. You may assume all elements in the array are non-negative integers and fit in the 32-bit signed integer range.
+
+Analysis
+
+We can use a bucket-sort like algorithm to solve this problem in time of O(n) and space O(n). The basic idea is to project each element of the array to an array of buckets. Each bucket tracks the maximum and minimum elements. Finally, scanning the bucket list, we can get the maximum gap.
+
+The key part is to get the interval:
+
+From: interval * (num[i] - min) = 0 and interval * (max -num[i]) = n
+interval = num.length / (max - min)
+See the internal comment for more details.
+
+Java Solution
+
+class Bucket{
+    int low;
+    int high;
+    public Bucket(){
+        low = -1;
+        high = -1; 
+    }
+}
+ 
+public int maximumGap(int[] num) {
+    if(num == null || num.length < 2){
+        return 0;
+    }
+ 
+    int max = num[0];
+    int min = num[0];
+    for(int i=1; i<num.length; i++){
+        max = Math.max(max, num[i]);
+        min = Math.min(min, num[i]);
+    }
+ 
+    // initialize an array of buckets
+    Bucket[] buckets = new Bucket[num.length+1]; //project to (0 - n)
+    for(int i=0; i<buckets.length; i++){
+        buckets[i] = new Bucket();
+    }
+ 
+    double interval = (double) num.length / (max - min);
+    //distribute every number to a bucket array
+    for(int i=0; i<num.length; i++){
+        int index = (int) ((num[i] - min) * interval);
+ 
+        if(buckets[index].low == -1){
+            buckets[index].low = num[i];
+            buckets[index].high = num[i];
+        }else{
+            buckets[index].low = Math.min(buckets[index].low, num[i]);
+            buckets[index].high = Math.max(buckets[index].high, num[i]);
+        }
+    }
+ 
+    //scan buckets to find maximum gap
+    int result = 0;
+    int prev = buckets[0].high;
+    for(int i=1; i<buckets.length; i++){
+        if(buckets[i].low != -1){
+            result = Math.max(result, buckets[i].low-prev);
+            prev = buckets[i].high;
+        }
+ 
+    }
+ 
+    return result;
+}
+
+* LeetCode – First Missing Positive (Java)
+ 
+Given an unsorted integer array, find the first missing positive integer. For example, given [1,2,0] return 3 and [3,4,-1,1] return 2.
+
+Your algorithm should run in O(n) time and uses constant space.
+
+Analysis
+
+This problem can solve by using a bucket-sort like algorithm. Let's consider finding first missing positive and 0 first. The key fact is that the ith element should be i, so we have:
+i==A[i]
+A[i]==A[A[i]]
+
+For example, given an array {1,2,0,4}, the algorithm does the following:
+
+first-missing-positive
+
+int firstMissingPositiveAnd0(int A[]) {
+	int n = A.length;
+	for (int i = 0; i < n; i++) {
+		// when the ith element is not i
+		while (A[i] != i) {
+			// no need to swap when ith element is out of range [0,n]
+			if (A[i] < 0 || A[i] >= n)
+				break;
+ 
+			//handle duplicate elements
+			if(A[i]==A[A[i]])
+                    		break;
+			// swap elements
+			int temp = A[i];
+			A[i] = A[temp];
+			A[temp] = temp;
+		}
+	}
+ 
+	for (int i = 0; i < n; i++) {
+		if (A[i] != i)
+			return i;
+	}
+ 
+	return n;
+}
+
+Java Solution
+
+This problem only considers positive numbers, so we need to shift 1 offset. The ith element is i+1.
+
+public int firstMissingPositive(int[] A) {
+        int n = A.length;
+ 
+    	for (int i = 0; i < n; i++) {
+    		while (A[i] != i + 1) {
+    			if (A[i] <= 0 || A[i] >= n)
+    				break;
+ 
+                	if(A[i]==A[A[i]-1])
+                    		break;
+ 
+    			int temp = A[i];
+    			A[i] = A[temp - 1];
+    			A[temp - 1] = temp;
+    		}
+    	}
+ 
+    	for (int i = 0; i < n; i++){
+    		if (A[i] != i + 1){
+    			return i + 1;
+    		}
+    	}	
+ 
+    	return n + 1;
+}
+
+* LeetCode – Sort Colors (Java)
+ 
+Given an array with n objects colored red, white or blue, sort them so that objects of the same color are adjacent, with the colors in the order red, white and blue.
+
+Here, we will use the integers 0, 1, and 2 to represent the color red, white, and blue respectively.
+
+Java Solution 1 - Counting Sort
+
+Check out this animation to understand how counting sort works.
+
+public void sortColors(int[] nums) {
+    if(nums==null||nums.length<2){
+        return;
+    }
+ 
+    int[] countArray = new int[3];
+    for(int i=0; i<nums.length; i++){
+        countArray[nums[i]]++;
+    }
+ 
+    for(int i=1; i<=2; i++){
+        countArray[i]=countArray[i-1]+countArray[i];
+    }
+ 
+    int[] sorted = new int[nums.length];
+    for(int i=0;i<nums.length; i++){
+        int index = countArray[nums[i]]-1;
+        countArray[nums[i]] = countArray[nums[i]]-1;
+        sorted[index]=nums[i];
+    }
+ 
+    System.arraycopy(sorted, 0, nums, 0, nums.length);
+}
+Java Solution 2 - Improved Counting Sort
+
+In solution 1, two arrays are created. One is for counting, and the other is for storing the sorted array (space is O(n)). We can improve the solution so that it only uses constant space. Since we already get the count of each element, we can directly project them to the original array, instead of creating a new one.
+
+public void sortColors(int[] nums) {
+    if(nums==null||nums.length<2){
+        return;
+    }
+ 
+    int[] countArray = new int[3];
+    for(int i=0; i<nums.length; i++){
+        countArray[nums[i]]++;
+    }
+ 
+    int j = 0;
+    int k = 0;
+    while(j<=2){
+        if(countArray[j]!=0){
+            nums[k++]=j;
+            countArray[j] = countArray[j]-1;
+        }else{
+            j++;
+        }
+    }
+}

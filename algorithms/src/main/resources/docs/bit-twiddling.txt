@@ -1,0 +1,363 @@
+* Get Bit Value
+
+Get bit i for a give number n. (i count from 0 and starts from right)
+
+public static boolean getBit(int num, int i){
+	int result = num & (1<<i);
+ 
+	if(result == 0){
+		return false;
+	}else{
+		return true;
+	}
+}
+
+* Leetcode – Single Number (Java)
+ 
+The problem:
+
+Given an array of integers, every element appears twice except for one. Find that single one.
+
+Java Solution 1
+
+The key to solve this problem is bit manipulation. XOR will return 1 only on two different bits. So if two numbers are the same, XOR will return 0. Finally only one number left.
+
+public int singleNumber(int[] A) {
+	int x = 0;
+	for (int a : A) {
+		x = x ^ a;
+	}
+	return x;
+}
+Java Solution 2
+
+public int singleNumber(int[] A) {
+	HashSet<Integer> set = new HashSet<Integer>();
+	for (int n : A) {
+		if (!set.add(n))
+			set.remove(n);
+	}
+	Iterator<Integer> it = set.iterator();
+	return it.next();
+}
+
+* LeetCode – Single Number II (Java)
+ 
+Problem
+
+Given an array of integers, every element appears three times except for one. Find that single one.
+
+Java Solution
+
+This problem is similar to Single Number.
+
+public int singleNumber(int[] A) {
+    int ones = 0, twos = 0, threes = 0;
+    for (int i = 0; i < A.length; i++) {
+        twos |= ones & A[i];
+        ones ^= A[i];
+        threes = ones & twos;
+        ones &= ~threes;
+        twos &= ~threes;
+    }
+    return ones;
+}
+
+* Twitter Codility Problem – Max Binary Gap
+ 
+Problem: Get maximum binary Gap.
+
+For example, 9's binary form is 1001, the gap is 2.
+
+Thoughts
+
+The key to solve this problem is the fact that an integer x & 1 will get the last digit of the integer.
+
+Java Solution
+
+public class Solution {
+	public static int solution(int N) {
+		int max = 0;
+		int count = -1;
+		int r = 0;
+ 
+		while (N > 0) {
+			// get right most bit & shift right
+			r = N & 1;
+			N = N >> 1;
+ 
+			if (0 == r && count >= 0) {
+				count++;
+			}
+ 
+			if (1 == r) {
+				max = count > max ? count : max;
+				count = 0;
+			}
+		}
+ 
+		return max;
+	}
+ 
+	public static void main(String[] args) {
+		System.out.println(solution(9));
+	}
+}
+
+* Twitter Codility Problem – Max Binary Gap
+ 
+Problem: Get maximum binary Gap.
+
+For example, 9's binary form is 1001, the gap is 2.
+
+Thoughts
+
+The key to solve this problem is the fact that an integer x & 1 will get the last digit of the integer.
+
+Java Solution
+
+public class Solution {
+	public static int solution(int N) {
+		int max = 0;
+		int count = -1;
+		int r = 0;
+ 
+		while (N > 0) {
+			// get right most bit & shift right
+			r = N & 1;
+			N = N >> 1;
+ 
+			if (0 == r && count >= 0) {
+				count++;
+			}
+ 
+			if (1 == r) {
+				max = count > max ? count : max;
+				count = 0;
+			}
+		}
+ 
+		return max;
+	}
+ 
+	public static void main(String[] args) {
+		System.out.println(solution(9));
+	}
+}
+
+* LeetCode – Number of 1 Bits (Java)
+ 
+Problem
+
+Write a function that takes an unsigned integer and returns the number of ’1' bits it has (also known as the Hamming weight).
+
+For example, the 32-bit integer ’11' has binary representation 00000000000000000000000000001011, so the function should return 3.
+
+Java Solution
+
+public int hammingWeight(int n) {
+    int count = 0;
+    for(int i=1; i<33; i++){
+        if(getBit(n, i) == true){
+            count++;
+        }
+    }
+    return count;
+}
+ 
+public boolean getBit(int n, int i){
+    return (n & (1 << i)) != 0;
+}
+
+* LeetCode – Reverse Bits (Java)
+ 
+Problem
+
+Reverse bits of a given 32 bits unsigned integer.
+
+For example, given input 43261596 (represented in binary as 00000010100101000001111010011100), return 964176192 (represented in binary as 00111001011110000010100101000000).
+
+Follow up:
+If this function is called many times, how would you optimize it?
+
+Related problem: Reverse Integer
+
+Java Solution
+
+public int reverseBits(int n) {
+	for (int i = 0; i < 16; i++) {
+		n = swapBits(n, i, 32 - i - 1);
+	}
+ 
+	return n;
+}
+ 
+public int swapBits(int n, int i, int j) {
+	int a = (n >> i) & 1;
+	int b = (n >> j) & 1;
+ 
+	if ((a ^ b) != 0) {
+		return n ^= (1 << i) | (1 << j);
+	}
+ 
+	return n;
+}
+
+* LeetCode – Repeated DNA Sequences (Java)
+ 
+Problem
+
+All DNA is composed of a series of nucleotides abbreviated as A, C, G, and T, for example: "ACGAATTCCG". When studying DNA, it is sometimes useful to identify repeated sequences within the DNA.
+
+Write a function to find all the 10-letter-long sequences (substrings) that occur more than once in a DNA molecule.
+
+For example, given s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT", return: ["AAAAACCCCC", "CCCCCAAAAA"].
+
+Java Solution
+
+The key to solve this problem is that each of the 4 nucleotides can be stored in 2 bits. So the 10-letter-long sequence can be converted to 20-bits-long integer. The following is a Java solution. You may use an example to manually execute the program and see how it works.
+
+public List<String> findRepeatedDnaSequences(String s) {
+	List<String> result = new ArrayList<String>();
+ 
+	int len = s.length();
+	if (len < 10) {
+		return result;
+	}
+ 
+	Map<Character, Integer> map = new HashMap<Character, Integer>();
+	map.put('A', 0);
+	map.put('C', 1);
+	map.put('G', 2);
+	map.put('T', 3);
+ 
+	Set<Integer> temp = new HashSet<Integer>();
+	Set<Integer> added = new HashSet<Integer>();
+ 
+	int hash = 0;
+	for (int i = 0; i < len; i++) {
+		if (i < 9) {
+			//each ACGT fit 2 bits, so left shift 2
+			hash = (hash << 2) + map.get(s.charAt(i)); 
+		} else {
+			hash = (hash << 2) + map.get(s.charAt(i));
+			//make length of hash to be 20
+			hash = hash &  (1 << 20) - 1; 
+ 
+			if (temp.contains(hash) && !added.contains(hash)) {
+				result.add(s.substring(i - 9, i + 1));
+				added.add(hash); //track added
+			} else {
+				temp.add(hash);
+			}
+		}
+ 
+	}
+ 
+	return result;
+}
+
+* LeetCode – Bitwise AND of Numbers Range (Java)
+ 
+Given a range [m, n] where 0 <= m <= n <= 2147483647, return the bitwise AND of all numbers in this range, inclusive. For example, given the range [5, 7], you should return 4. Java Solution
+
+The key to solve this problem is bitwise AND consecutive numbers. You can use the following example to walk through the code.
+
+    8  4  2  1
+---------------
+5 | 0  1  0  1
+6 | 0  1  1  0
+7 | 0  1  1  1
+public int rangeBitwiseAnd(int m, int n) {
+     while (n > m) {
+          n = n & n - 1;
+     }
+     return m & n;
+}
+
+* LeetCode – Power of Two (Java)
+ 
+Given an integer, write a function to determine if it is a power of two.
+
+Analysis
+
+If a number is power of 2, it's binary form should be 10...0. So if we right shift a bit of the number and then left shift a bit, the value should be the same when the number >= 10(i.e.,2).
+
+Java Solution
+
+public boolean isPowerOfTwo(int n) {
+    if(n<=0) 
+        return false;
+ 
+    while(n>2){
+        int t = n>>1;
+        int c = t<<1;
+ 
+        if(n-c != 0)
+            return false;
+ 
+        n = n>>1;
+    }
+ 
+    return true;
+}
+
+* LeetCode – Counting Bits (Java)
+ 
+Given a non negative integer number num. For every numbers i in the range 0 ≤ i ≤ num calculate the number of 1's in their binary representation and return them as an array.
+
+Example:
+
+For num = 5 you should return [0,1,1,2,1,2].
+
+1. Naive Solution
+
+We can simply count bits for each number like the following:
+
+public int[] countBits(int num) {
+    int[] result = new int[num+1];
+ 
+    for(int i=0; i<=num; i++){
+        result[i] = countEach(i);
+    }
+ 
+    return result;
+}
+ 
+public int countEach(int num){
+    int result = 0;
+ 
+    while(num!=0){
+        if(num%2==1){
+            result++;
+        }
+        num = num/2;
+    }
+ 
+    return result;
+}
+2. Improved Solution
+
+For number 2(10), 4(100), 8(1000), 16(10000), ..., the number of 1's is 1. Any other number can be converted to be 2^m + x. For example, 9=8+1, 10=8+2. The number of 1's for any other number is 1 + # of 1's in x.
+
+Counting Bits (Java)
+
+public int[] countBits(int num) {
+    int[] result = new int[num+1];
+ 
+    int p = 1; //p tracks the index for number x
+    int pow = 1;
+    for(int i=1; i<=num; i++){
+        if(i==pow){
+            result[i] = 1;
+            pow <<= 1;
+            p = 1;
+        }else{
+            result[i] = result[p]+1;
+            p++;
+        }
+ 
+    }
+ 
+    return result;
+}

@@ -1,0 +1,268 @@
+* DFS
+
+DFS(G,v)   ( v is the vertex where the search starts )
+         Stack S := {};   ( start with an empty stack )
+         for each vertex u, set visited[u] := false;
+         push S, v;
+         while (S is not empty) do
+            u := pop S;
+            if (not visited[u]) then
+               visited[u] := true;
+               for each unvisited neighbour w of u
+                  push S, w;
+            end if
+         end while
+      END DFS()
+
+* BFS
+
+1. Enqueue root node.
+2. Dequeue and output. If the queue is empty, go to step 5.
+3. Enqueue the dequeued node's children.
+4. Go to Step 2.
+5. Done
+
+* LeetCode Clone Graph Java
+ 
+LeetCode Problem:
+
+Clone an undirected graph. Each node in the graph contains a label and a list of its neighbors.
+
+leetcode-clone-graph-java
+
+Key to Solve This Problem
+
+A queue is used to do breath first traversal.
+a map is used to store the visited nodes. It is the map between original node and copied node.
+It would be helpful if you draw a diagram and visualize the problem.
+
+clone-graph-leetcode-java
+
+/**
+ * Definition for undirected graph.
+ * class UndirectedGraphNode {
+ *     int label;
+ *     ArrayList<UndirectedGraphNode> neighbors;
+ *     UndirectedGraphNode(int x) { label = x; neighbors = new ArrayList<UndirectedGraphNode>(); }
+ * };
+ */
+public class Solution {
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        if(node == null)
+            return null;
+ 
+        LinkedList<UndirectedGraphNode> queue = new LinkedList<UndirectedGraphNode>();
+        HashMap<UndirectedGraphNode, UndirectedGraphNode> map = 
+                                   new HashMap<UndirectedGraphNode,UndirectedGraphNode>();
+ 
+        UndirectedGraphNode newHead = new UndirectedGraphNode(node.label);
+ 
+        queue.add(node);
+        map.put(node, newHead);
+ 
+        while(!queue.isEmpty()){
+            UndirectedGraphNode curr = queue.pop();
+            ArrayList<UndirectedGraphNode> currNeighbors = curr.neighbors; 
+ 
+            for(UndirectedGraphNode aNeighbor: currNeighbors){
+                if(!map.containsKey(aNeighbor)){
+                    UndirectedGraphNode copy = new UndirectedGraphNode(aNeighbor.label);
+                    map.put(aNeighbor,copy);
+                    map.get(curr).neighbors.add(copy);
+                    queue.add(aNeighbor);
+                }else{
+                    map.get(curr).neighbors.add(map.get(aNeighbor));
+                }
+            }
+ 
+        }
+        return newHead;
+    }
+}
+
+* LeetCode – Course Schedule (Java)
+ 
+There are a total of n courses you have to take, labeled from 0 to n - 1. Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]. Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
+
+For example, given 2 and [[1,0]], there are a total of 2 courses to take. To take course 1 you should have finished course 0. So it is possible.
+
+For another example, given 2 and [[1,0],[0,1]], there are a total of 2 courses to take. To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+
+Analysis
+
+This problem can be converted to finding if a graph contains a cycle.
+
+Java Solution 1 - BFS
+
+This solution uses breath-first search and it is easy to understand.
+
+public boolean canFinish(int numCourses, int[][] prerequisites) {
+    if(prerequisites == null){
+        throw new IllegalArgumentException("illegal prerequisites array");
+    }
+ 
+    int len = prerequisites.length;
+ 
+    if(numCourses == 0 || len == 0){
+        return true;
+    }
+ 
+    // counter for number of prerequisites
+    int[] pCounter = new int[numCourses];
+    for(int i=0; i<len; i++){
+        pCounter[prerequisites[i][0]]++;
+    }
+ 
+    //store courses that have no prerequisites
+    LinkedList<Integer> queue = new LinkedList<Integer>();
+    for(int i=0; i<numCourses; i++){
+        if(pCounter[i]==0){
+            queue.add(i);
+        }
+    }
+ 
+    // number of courses that have no prerequisites
+    int numNoPre = queue.size();
+ 
+    while(!queue.isEmpty()){
+        int top = queue.remove();
+        for(int i=0; i<len; i++){
+            // if a course's prerequisite can be satisfied by a course in queue
+            if(prerequisites[i][1]==top){
+                pCounter[prerequisites[i][0]]--;
+                if(pCounter[prerequisites[i][0]]==0){
+                    numNoPre++;
+                    queue.add(prerequisites[i][0]);
+                }
+            }
+        }
+    }
+ 
+    return numNoPre == numCourses;
+}
+Java Solution 2 - DFS
+
+public boolean canFinish(int numCourses, int[][] prerequisites) {
+    if(prerequisites == null){
+        throw new IllegalArgumentException("illegal prerequisites array");
+    }
+ 
+    int len = prerequisites.length;
+ 
+    if(numCourses == 0 || len == 0){
+        return true;
+    }
+ 
+    //track visited courses
+    int[] visit = new int[numCourses];
+ 
+    // use the map to store what courses depend on a course 
+    HashMap<Integer,ArrayList<Integer>> map = new HashMap<Integer,ArrayList<Integer>>();
+    for(int[] a: prerequisites){
+        if(map.containsKey(a[1])){
+            map.get(a[1]).add(a[0]);
+        }else{
+            ArrayList<Integer> l = new ArrayList<Integer>();
+            l.add(a[0]);
+            map.put(a[1], l);
+        }
+    }
+ 
+    for(int i=0; i<numCourses; i++){
+        if(!canFinishDFS(map, visit, i))
+            return false;
+    }
+ 
+    return true;
+}
+ 
+private boolean canFinishDFS(HashMap<Integer,ArrayList<Integer>> map, int[] visit, int i){
+    if(visit[i]==-1) 
+        return false;
+    if(visit[i]==1) 
+        return true;
+ 
+    visit[i]=-1;
+    if(map.containsKey(i)){
+        for(int j: map.get(i)){
+            if(!canFinishDFS(map, visit, j)) 
+                return false;
+        }
+    }
+ 
+    visit[i]=1;
+ 
+    return true;
+}
+
+LeetCode – Course Schedule II (Java)
+ 
+This is an extension of Course Schedule. This time a valid sequence of courses is required as output.
+
+Analysis
+
+If we use the DFS solution of Course Schedule, a valid sequence can easily be recorded.
+
+Java Solution
+
+public int[] findOrder(int numCourses, int[][] prerequisites) {
+    if(prerequisites == null){
+        throw new IllegalArgumentException("illegal prerequisites array");
+    }
+ 
+    int len = prerequisites.length;
+ 
+    //if there is no prerequisites, return a sequence of courses
+    if(len == 0){
+        int[] res = new int[numCourses];
+        for(int m=0; m<numCourses; m++){
+            res[m]=m;
+        }
+        return res;
+    }
+ 
+    //records the number of prerequisites each course (0,...,numCourses-1) requires
+    int[] pCounter = new int[numCourses];
+    for(int i=0; i<len; i++){
+        pCounter[prerequisites[i][0]]++;
+    }
+ 
+    //stores courses that have no prerequisites
+    LinkedList<Integer> queue = new LinkedList<Integer>();
+    for(int i=0; i<numCourses; i++){
+        if(pCounter[i]==0){
+            queue.add(i);
+        }
+    }
+ 
+    int numNoPre = queue.size();
+ 
+    //initialize result
+    int[] result = new int[numCourses];
+    int j=0;
+ 
+    while(!queue.isEmpty()){
+        int c = queue.remove();
+        result[j++]=c;
+ 
+        for(int i=0; i<len; i++){
+            if(prerequisites[i][1]==c){
+                pCounter[prerequisites[i][0]]--;
+                if(pCounter[prerequisites[i][0]]==0){
+                    queue.add(prerequisites[i][0]);
+                    numNoPre++;
+                }
+            }
+ 
+        }
+    }
+ 
+    //return result
+    if(numNoPre==numCourses){
+        return result;
+    }else{
+        return new int[0];
+    }
+}
+
+* 
