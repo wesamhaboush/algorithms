@@ -61,7 +61,8 @@ public class HighlyDivisibleTriangularNumber
 
     private static Map<Long, Long> frequencyMap(final List<Long> values)
     {
-        return values.stream().collect(groupingBy(e -> e, counting()));
+        return values.stream()
+                     .collect(groupingBy(e -> e, counting()));
     }
 
     private static List<Long> primeFactors(final long numbers) {

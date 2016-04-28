@@ -21,11 +21,11 @@ public class SumOfAmicableNumbers
     public static List<Long> divisorsOf(final long n)
     {
         return LongStream
-                .rangeClosed(1, Math.round(Math.sqrt(n)) + 1)
-                .filter(i -> n % i == 0)
-                .mapToObj(i -> i == n/i ? asList(i) : asList(i, n/i))
+                .rangeClosed(1, Math.round(Math.sqrt(n)) + 1) //by taking square root, we are eliminating repetition
+                .filter(i -> n % i == 0) //only zero remainder divisors
+                .mapToObj(i -> i == n/i ? asList(i) : asList(i, n/i)) // for numbers that are roots, only return 1 (6*6, 2*2, etc)
                 .flatMap(Collection::stream)
-                .filter(i -> i != n)
+                .filter(i -> i != n) //exclude number itself
                 .collect(toList());
     }
 

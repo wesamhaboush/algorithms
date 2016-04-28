@@ -65,7 +65,7 @@ public class LargestProductInGrid
     }
 
     /**
-     * we'll used dynamic programming. for each cell, calculate the max, and keep going
+     * we'll used dynamic programming. for each cell, of the max, and keep going
      * the max then is the max
      */
     public static long calculate(int n)
