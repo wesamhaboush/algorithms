@@ -50,16 +50,4 @@ public class SumOfAmicableNumbers
                         .sum();
     }
 
-    private static long pow (long a, int b)
-    {
-        if ( b == 0)        return 1;
-        if ( b == 1)        return a;
-        if (isEven( b ))    return     pow ( a * a, b/2); //even a=(a^2)^b/2
-        else                return a * pow ( a * a, b/2); //odd  a=a*(a^2)^b/2
-    }
-
-    private static boolean isEven(int b)
-    {
-        return b % 2 == 0;
-    }
 }

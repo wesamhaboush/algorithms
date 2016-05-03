@@ -1,9 +1,10 @@
 package com.codebreeze.algorithms;
 
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toCollection;
 
 /*
 Non-abundant sums
@@ -28,10 +29,10 @@ public class NonAbundantSums
 
     public static long calculate(final int n)
     {
-        final List<Integer> abundants = IntStream.rangeClosed(1, n)
-                                                 .filter(NonAbundantSums::isAbundant)
-                                                 .boxed()
-                                                 .collect(toList());
+        final Set<Integer> abundants = IntStream.rangeClosed(1, n)
+                                                .filter(NonAbundantSums::isAbundant)
+                                                .boxed()
+                                                .collect(toCollection(() -> new TreeSet()));
 
         long sum = 0;
         for(int i = 0; i < n; i++)
@@ -44,7 +45,7 @@ public class NonAbundantSums
         return sum;
     }
 
-    private static boolean isSumOfTwoAbundants(final List<Integer> abundants, int n)
+    private static boolean isSumOfTwoAbundants(final Set<Integer> abundants, int n)
     {
         for (int i : abundants)
         {
@@ -52,7 +53,7 @@ public class NonAbundantSums
             {
                 return false; //we already crossed, we need to exit
             }
-            if (isAbundant(n - i))
+            if (abundants.contains(n - i))
             {
                 return true; //an abundant, with complemented by another is found
             }

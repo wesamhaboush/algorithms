@@ -21,24 +21,11 @@ public class Sigma
                 .mapToLong(primePowerPair -> {
                     final long p = primePowerPair.getKey();
                     final long a = primePowerPair.getValue();
-                    final long sigmaOfPrimeToPower = (pow(p, a + 1) - 1) / (p - 1);
+                    final long sigmaOfPrimeToPower = (Power.apply(p, a + 1) - 1) / (p - 1);
                     return sigmaOfPrimeToPower;
                 })
                 .reduce(1L, (sigma, total) -> sigma * total);
         return totalSigma;
-    }
-
-    private static long pow(long a, long b)
-    {
-        if ( b == 0)        return 1;
-        if ( b == 1)        return a;
-        if (isEven( b ))    return     pow ( a * a, b/2); //even a=(a^2)^b/2
-        else                return a * pow ( a * a, b/2); //odd  a=a*(a^2)^b/2
-    }
-
-    private static boolean isEven(long b)
-    {
-        return b % 2 == 0;
     }
 
     private static <T> Map<T, Long> frequencyMap(final List<T> numbers)
