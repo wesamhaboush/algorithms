@@ -82,7 +82,7 @@ public class PrimeNumbers
         }
     }
 
-    private static boolean isPrime(long number)
+    public static boolean isPrime(long number)
     {
         if(number == 2 || number == 3) return true;
         if(number < 2) return false;

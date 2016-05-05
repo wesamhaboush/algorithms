@@ -1,5 +1,8 @@
 package com.codebreeze.algorithms;
 
+import java.util.Iterator;
+import java.util.function.Function;
+
 /*
 Quadratic primes
 Problem 27
@@ -23,8 +26,47 @@ Find the product of the coefficients, a and b, for the quadratic expression that
  */
 public class QuadraticPrimes
 {
+    /*
+    b itself has to be prime in order for f(0) to be prime, so this will allow us
+    to know righ away if this series is good enough
+     */
     public static int calculate(final int aMax, final int bMax)
     {
-        return 0;
+        final int[][] signs = {{-1,-1}, {-1, 1}, {1, -1}, {1, 1}};
+        int maxA = 0;
+        int maxB = 0;
+        int maxN = 0;
+        //we are starting a from 1 because a = 0 will give an even number when n = 1, which is not prime
+        for(int a = 1; a < aMax; a++)
+        {
+            Iterator<Integer> primes = PrimeNumbers.iterator();
+            for(int b = primes.next(); b < bMax; b = primes.next())
+            {
+                for(int i = 0; i < signs.length; i++)
+                {
+                    final int signedA = signs[i][0] * a;
+                    final int signedB = signs[i][1] * b;
+                    final int newN = findLength(signedA, signedB);
+                    if (newN > maxN)
+                    {
+                        maxA = signedA;
+                        maxB = signedB;
+                        maxN = newN;
+                    }
+                }
+            }
+        }
+        System.out.println("max A = " + maxA);
+        System.out.println("max B = " + maxB);
+        System.out.println("max N = " + maxN);
+        return maxA * maxB;
+    }
+
+    private static int findLength(final int a, final int b)
+    {
+        final Function<Integer, Integer> f = n -> n * n + a * n + b;
+        int n = -1;
+        while(PrimeNumbers.isPrime(f.apply(++n))); //increment while the results are prime;
+        return n;
     }
 }
