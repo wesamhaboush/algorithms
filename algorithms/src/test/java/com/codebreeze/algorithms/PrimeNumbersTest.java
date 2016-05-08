@@ -101,6 +101,22 @@ public class PrimeNumbersTest
         assertThat(PrimeNumbers.primeFactors(12)).isEqualTo(asList(2L, 2L, 3L));
     }
 
+    @Test
+    public void should_find_factors() throws Exception
+    {
+        assertThat(PrimeNumbers.findFactors(2)).isEqualTo(new long[][]{{1, 2}, {2, 1}});
+        assertThat(PrimeNumbers.findFactors(3)).isEqualTo(new long[][]{{1, 3}, {3, 1}});
+        assertThat(PrimeNumbers.findFactors(4)).isEqualTo(new long[][]{{1, 4}, {2, 2}, {4, 1}});
+        assertThat(PrimeNumbers.findFactors(5)).isEqualTo(new long[][]{{1, 5}, {5, 1}});
+        assertThat(PrimeNumbers.findFactors(6)).isEqualTo(new long[][]{{1, 6}, {2,3}, {3, 2}, { 6, 1}});
+        assertThat(PrimeNumbers.findFactors(7)).isEqualTo(new long[][]{{1, 7}, {7, 1}});
+        assertThat(PrimeNumbers.findFactors(8)).isEqualTo(new long[][]{{1, 8}, {2, 4}, {4, 2}, {8, 1}});
+        assertThat(PrimeNumbers.findFactors(9)).isEqualTo(new long[][]{{1, 9}, {3, 3}, {9, 1}});
+        assertThat(PrimeNumbers.findFactors(10)).isEqualTo(new long[][]{{1, 10}, {2,5}, {5, 2}, {10, 1}});
+        assertThat(PrimeNumbers.findFactors(11)).isEqualTo(new long[][]{{1, 11}, {11, 1}});
+        assertThat(PrimeNumbers.findFactors(12)).isEqualTo(new long[][]{{1, 12}, {2,6}, {3, 4}, {4, 3}, {6, 2}, {12, 1}});
+    }
+
     protected static void logAssertionErrorMessage(String assertionContext, AssertionError e) {
         System.out.println(String.format("%s assertion : %s%n", assertionContext, e.getMessage()));
     }

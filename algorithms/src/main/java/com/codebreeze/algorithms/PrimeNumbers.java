@@ -124,4 +124,18 @@ public class PrimeNumbers
                 .findAny()
                 .getAsLong();
     }
+
+    public static long[][] findFactors(long number)
+    {
+        int i = 1;
+        List<long[]> factors = new ArrayList<>();
+        while(i <= number)
+        {
+            if( number % i == 0){
+                factors.add(new long[]{i, number / i});
+            }
+            i++;
+        }
+        return factors.toArray(new long[factors.size()][]);
+    }
 }
