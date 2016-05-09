@@ -1,27 +1,27 @@
 package com.codebreeze.algorithms;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.LongStream;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.log10;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 public class Math2
 {
-    public static List<Long> divisorsOf(final long n)
+    private static final double LOG_10_2 = Math.log10(2);
+
+    public static Set<Long> divisorsOf(final long n, final boolean includeOne, final boolean includeN)
     {
         return LongStream
                 .rangeClosed(1, Math.round(Math.sqrt(n)) + 1) //by taking square root, we are eliminating repetition
                 .filter(i -> n % i == 0) //only zero remainder divisors
                 .mapToObj(i -> i == n/i ? asList(i) : asList(i, n/i)) // for numbers that are roots, only return 1 (6*6, 2*2, etc)
                 .flatMap(Collection::stream)
-                .filter(i -> i != n) //exclude number itself
-                .collect(toList());
+                .filter(i -> i != 1 || includeOne) // exclude 1 as a divisor unless allowed
+                .filter(i -> i != n || includeN) //exclude number itself unless allowed
+                .collect(toSet());
     }
 
     public static int countSetBits(long n)
@@ -58,7 +58,7 @@ this result, the minimal value of k must necessarily be prime.
         final long max = (long)(ceil(log10(n) / log10(2)));
         final Iterator<Integer> primes = PrimeNumbers.iterator();
         long k = 2;
-        final List<Long> divisors = Math2.divisorsOf(n);
+        final Set<Long> divisors = Math2.divisorsOf(n, true, false);
         while(k <= max)
         {
             k = primes.next();
@@ -78,7 +78,7 @@ this result, the minimal value of k must necessarily be prime.
         final long max = (long)(ceil(log10(n) / log10(2)));
         final Iterator<Integer> primes = PrimeNumbers.iterator();
         long k = 2;
-        final List<Long> divisors = Math2.divisorsOf(n);
+        final Set<Long> divisors = Math2.divisorsOf(n, true, false);
         while(k <= max)
         {
             k = primes.next();
@@ -141,5 +141,33 @@ this result, the minimal value of k must necessarily be prime.
         {
             return base + "^" + power;
         }
+    }
+
+    public static <T> Set<List<T>> subsets(final List<T> sourceList) {
+        int i, j;
+        int bit;
+        int max_bits;  // max bits for number i
+        final Set<List<T>> result = new HashSet<>();
+        final long numberOfSubsets = Power.apply(2, sourceList.size() ); // size - 1 to exclude first element
+        for (i = 0; i < numberOfSubsets; i++)
+        {
+            final List<T> subset = new LinkedList<>();
+            max_bits = (int)Math.floor( log2(i) );
+            for (j = 0; j <= max_bits; j++)
+            {
+                bit = (i >> j) & 1;  // bit value at position j
+                if (bit == 1)
+                {
+                    subset.add(sourceList.get(j));
+                }
+            }
+            result.add(subset);
+        }
+        return result;
+    }
+
+    public static double log2(final double n)
+    {
+        return Math.log10(n) / LOG_10_2;
     }
 }

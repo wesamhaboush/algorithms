@@ -2,6 +2,11 @@ package com.codebreeze.algorithms;
 
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Math2Test
@@ -12,6 +17,16 @@ public class Math2Test
         assertThat(Math2.findPerfectPower(16)).isEqualTo(Math2.Exponent.from(2,4));
         assertThat(Math2.findPerfectPower(8)).isEqualTo(Math2.Exponent.from(2,3));
         assertThat(Math2.findPerfectPower(36)).isEqualTo(Math2.Exponent.from(6,2));
+    }
+
+    @Test
+    public void divisorsOf() throws Exception
+    {
+        assertThat(Math2.divisorsOf(16, true, false)).containsOnly(1L, 2L, 4L, 8L);
+        assertThat(Math2.divisorsOf(16, false, false)).containsOnly(2L, 4L, 8L);
+        assertThat(Math2.divisorsOf(12, true, false)).containsOnly(1L, 2L, 3L, 4L, 6L);
+        assertThat(Math2.divisorsOf(12, true, true)).containsOnly(1L, 2L, 3L, 4L, 6L, 12L);
+        assertThat(Math2.divisorsOf(12, false, true)).containsOnly(2L, 3L, 4L, 6L, 12L);
     }
 
     @Test
@@ -39,5 +54,33 @@ public class Math2Test
         assertThat(Math2.isPerfectPower(65)).isFalse();
         assertThat(Math2.isPerfectPower(1000000)).isTrue();
         assertThat(Math2.isPerfectPower(1000001)).isFalse();
+    }
+
+    @Test
+    public void subset() throws Exception
+    {
+        assertThat(Math2.subsets(asList(5))).isEqualTo(asSet(emptyList(),asList(5)));
+        assertThat(Math2.subsets(asList(5,5))).isEqualTo(asSet(emptyList(),asList(5), asList(5, 5)));
+        assertThat(Math2.subsets(asList(1,5,5))).isEqualTo(asSet(
+                emptyList(),
+                asList(5),
+                asList(1),
+                asList(1,5),
+                asList(5, 5),
+                asList(1,5, 5)));
+        assertThat(Math2.subsets(asList(1,2,3))).isEqualTo(asSet(
+                emptyList(),
+                asList(1),
+                asList(2),
+                asList(3),
+                asList(1,2),
+                asList(1, 3),
+                asList(2, 3),
+                asList(1,2, 3)));
+    }
+
+    public <T> Set<T> asSet(T...ts)
+    {
+        return new HashSet<>(asList(ts));
     }
 }

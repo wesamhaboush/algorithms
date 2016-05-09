@@ -4,6 +4,7 @@ import com.codebreeze.algorithms.Math2.Exponent;
 
 import java.util.*;
 
+import static com.codebreeze.algorithms.Math2.divisorsOf;
 import static com.codebreeze.algorithms.Math2.findPerfectPower;
 import static java.lang.Math.log10;
 import static java.util.Arrays.asList;
@@ -58,7 +59,7 @@ public class DistinctPowers
         }
         results.entrySet()
                .stream()
-//               .filter( entry -> entry.getValue().size() > 1)
+               .filter( entry -> entry.getValue().size() > 1)
                .forEach(System.out::println);
         System.out.println(pairs);
         return results.size();
@@ -87,9 +88,6 @@ the reason this works is that the log should neutralize any 'power' arrangement 
         return results.size();
     }
 
-
-
-
     /*
     what we are trying to do here is to simplify every number to its base a^b, by finding out if a is perfect power,
     then finding the smallest base and updating the power accordingly, this way we can identify duplicates. For example:
@@ -98,7 +96,7 @@ the reason this works is that the log should neutralize any 'power' arrangement 
     4^3 = (2^2)^3 = 2 ^ 6
     you can see that the last two are duplicates, while we did not know that earlier!
      */
-    public static long calculate(final long min, final long max)
+    public static long calculateStoreRoots(final long min, final long max)
     {
         final Map<Long, Set<Long>> values = new HashMap<>();
         for(long i = min; i <= max; i++)
@@ -120,7 +118,7 @@ the reason this works is that the log should neutralize any 'power' arrangement 
             }
             else
             {
-                System.out.println(String.format("%d is perfect power, with powers %s", i, perfectPower));
+//                System.out.println(String.format("%d is perfect power, with powers %s", i, perfectPower));
                 for (long j = min; j <= max; j++)
                 {
                     if(values.get(perfectPower.base) == null)
@@ -138,5 +136,100 @@ the reason this works is that the log should neutralize any 'power' arrangement 
                      .stream()
                      .mapToInt(set -> set.size()) //count those distinct powers
                      .sum(); // sum those counts
+    }
+
+    public static long calculateCounting(final long min, final long max)
+    {
+        long count = (max - min + 1) * (max - min + 1);
+        long repeats = 0;
+        for(long i = min; i <= max; i++)
+        {
+            final Exponent perfectPower = findPerfectPower(i);
+            if (perfectPower == null) // non perfect powers add unique combinations, so just add them
+            {
+                //nothing to do, cz non perfect power cannot generate duplicates.
+            }
+            else
+            {
+                for(long j = min; j < max; j++)
+                {
+                    final long reducedCandidateB = perfectPower.power * j;
+                    if(reducedCandidateB <= max)
+                    {
+//                        System.out.println(String.format("found a repeat at i=[%d], j[%d], reduction [%s], ,max[%d]", i, j, perfectPower, max));
+                        repeats++;
+                    }
+                    else
+                    {
+                        //we want to find if this number can be decomposed to another perfect power before it, focus on before it, i.e. a < current a
+                        //if yes, then it is a repeat of that number. For example:
+                        //min,max = 2,8   then for 4^6 and 8^4 are equivalent, but neither are a repeat of 2^12, because 12 is greater than max 8
+                        //so when we hit 4^6, it is decomposed into 2^2^6 = 2^12. Now, can we decompose it to a^b such that a < 4, i.e. current a,
+                        //and with both b < max and > min? the answer is no. so 4^6 is NOT a repeat.
+                        //however, once we hit 8^4 = 2^3^4 = 2^12, we ask the same question, can we get 8^4 = a^b, such that a < 8 and > min,
+                        // and b < max and b > min? the answer is yes. With 2^12, we can find divisors of 12 = 2, 3, 4, 6, 12, then try each as follows:
+                        // b = 12/12 = 1 => fails cz b is less than minimum
+                        // b = 12/6  = 2 => fails cz 6 is greater than 3 (the current decomposed power), which means it is not before it
+                        // b = 12/4 = 3  => fails cz 4 is greater than 3 (the current decomposed power), which means it is not before it
+                        // b = 12/3 = 4  => fails cz 3 is equal to 3 (the power we decomposed the current a, which is 8, to)
+                        // b = 12/2 = 6  => succeeds cz 2 is less than 3 AND 6, which is b, is > min and < max
+                        // so, let's implement that
+                        final Set<Long> candidateBDivisors = divisorsOf(reducedCandidateB, false, false);
+                        final boolean isRepeatOfSomethingNonBasicBefore = candidateBDivisors
+                                .stream()
+                                .anyMatch(divisor -> {
+                                    final long newB = reducedCandidateB / divisor;
+                                    return newB >= min && newB <= max && divisor < perfectPower.power;
+                                });
+                        if(isRepeatOfSomethingNonBasicBefore)
+                        {
+                            repeats++;
+                        }
+                    }
+                }
+
+//                else
+//                {
+//                    System.out.println(String.format("found a non-repeat at i=[%d], reduction [%s], max[%d]", i, perfectPower, max));
+//                }
+                //perfect powers can generate repeats, let's find out what are they?
+                // 8^3, and 8 is a perfect power, which is 2^3^3, and min = 2, and max = 8, so
+                // reducing 8^3 to its basics gives 2^9, which is NOT a repeat, because 2^9 is not going to feature
+                // as a basic form since 9 is greater than max. So, basically, if basic form gives a b that is greater
+                // than max, then this is NOT a repeat, otherwise, it is.
+                // take another example, if min,max = 2,5, and we are handling 4^3, then reducing gives 2^6, and 6 is
+                // greater than max, then, it is NOT a repeat, but if our max was 8 say, then 4^3 and 2^6 are repeats.
+//                for(long j = min; j <= max; j++)
+//                {
+//
+//                }
+//                System.out.println(String.format("%d is perfect power, with powers %s", i, perfectPower));
+//                final List<Long> primeFactors = PrimeNumbers.primeFactors(perfectPower.power);
+//                final Set<List<Long>> powerSubSets = Math2.subsets(primeFactors);
+//                for (List<Long> subset : powerSubSets)
+//                {
+//                    final List<Long> diff = diff(primeFactors, subset);
+//                    final Long power = diff.stream()
+//                                           .mapToLong(l -> l)
+//                                           .reduce(1, (l, c) -> l * l);
+//                    TODO: what to do here?
+//                    if( power <= max && power >= min )
+//                    {
+//                        repeats++;
+//                    }
+//                }
+            }
+        }
+        return count - repeats;
+    }
+
+    private static <T> List<T> diff(final List<T> superset, final List<T> subset)
+    {
+        final List<T> result = new LinkedList<>(superset);
+        for(final T item : subset)
+        {
+            result.remove(item);
+        }
+        return result;
     }
 }
