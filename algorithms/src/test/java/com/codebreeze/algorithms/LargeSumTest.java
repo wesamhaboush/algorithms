@@ -12,7 +12,7 @@ public class LargeSumTest
     public void calculate() throws Exception
     {
         final int[] expected = {5, 5, 3, 7, 3, 7, 6, 2, 3, 0};
-//        assertThat(LargeSum.calculate2()).isEqualTo(expected);
+//        assertThat(LargeSum.calculateUnmemoized()).isEqualTo(expected);
         final int[] calculated = LargeSum.calculate(10);
         //        assertThat(LargeSum.of(10)).isEqualTo(expected);
         Arrays .stream(expected).forEach(System.out::print);

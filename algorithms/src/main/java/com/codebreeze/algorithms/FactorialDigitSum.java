@@ -1,34 +1,43 @@
 package com.codebreeze.algorithms;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
+/*
+n! means n × (n − 1) × ... × 3 × 2 × 1
+
+For example, 10! = 10 × 9 × ... × 3 × 2 × 1 = 3628800,
+and the sum of the digits in the number 10! is 3 + 6 + 2 + 8 + 8 + 0 + 0 = 27.
+
+Find the sum of the digits in the number 100!
+ */
 public class FactorialDigitSum
 {
     public static long calculate(final int n)
     {
-        //first find number of digits required
-        int numberOfDigits = numberOfDigitsOfFactorial(n);
-        int[] digits = new int[numberOfDigits];
+        final int numberOfDigits = numberOfDigitsOfFactorial(n);
+        final int[] digits = new int[numberOfDigits];
         digits[0] = 1;
-        int currentNumber = 1;
+        int targetDigitNumber = 1;
 
-        while (currentNumber < n)
+        while (targetDigitNumber < n)
         {
-            currentNumber++;
-            int carry = 0;
-            for (int i = 0; i < digits.length; i++)
-            {
-                final int num = currentNumber * digits[i] + carry;
-                digits[i] = num % 10;
-                carry = num / 10;
-            }
+            targetDigitNumber++;
+            doMultiplicationForTargetDigit(digits, targetDigitNumber);
         }
-        long sum = 0;
-        for (int digit : digits)
+        return Arrays.stream(digits)
+                     .sum();
+    }
+
+    private static void doMultiplicationForTargetDigit(final int[] digits, final int currentNumber)
+    {
+        int carry = 0;
+        for (int i = 0; i < digits.length; i++)
         {
-            sum += digit;
+            final int num = currentNumber * digits[i] + carry;
+            digits[i] = num % 10;
+            carry = num / 10;
         }
-        return sum;
     }
 
     private static int numberOfDigitsOfFactorial(final int n)

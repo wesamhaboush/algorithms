@@ -15,8 +15,8 @@ public class LehmerCodePermutation {
     public static <T> List<List<T>> of(List<T> items)
     {
         return IntStream.range(0, factorialInt(items.size()))
-                .mapToObj(i ->  perm(items.size(), i))
-                .map(indices -> listOf(indices, items))
+                .mapToObj(i ->  perm(items.size(), i)) // find the list of indices for this permutation
+                .map(indices -> listOf(indices, items)) // get the permutation from the list of indices
                 .collect(toList());
     }
 
@@ -29,23 +29,27 @@ public class LehmerCodePermutation {
                 .collect(toList());
     }
 
-    private static int[] perm(int n, int k)
+    /*
+    k is permutation number (find permutation number x)
+     */
+    private static int[] perm(final int n, final int k)
     {
-        int i;
-        int ind;
         int m = k;
-        int[] permuted = new int[n];
-        int[] elems = new int[n];
-        for (i = 0; i < n; i++)
+        final int[] permuted = new int[n];
+        final int[] elements = new int[n];
+        // initialize the elements from 0 to n (assuming here that we are re-ordering 0 to n - 1 numbers
+        for (int i = 0; i < n; i++)
         {
-            elems[i] = i;
+            elements[i] = i;
         }
-        for (i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
         {
-            ind = m % (n - i);
+            final int ind = m % (n - i);
             m = m / (n - i);
-            permuted[i] = elems[ind];
-            elems[ind] = elems[n - i - 1];
+            permuted[i] = elements[ind];
+            elements[ind] = elements[n - i - 1];
+//            System.out.println(Arrays.toString(permuted));
+//            System.out.println(Arrays.toString(elements));
         }
 //        System.out.println("k = " + k + " n = " + n + " permutation = " +  Arrays.toString(permuted));
         return permuted;
@@ -53,21 +57,23 @@ public class LehmerCodePermutation {
 
     private static int inv(int[] perm)
     {
-        int i, k = 0, m = 1;
-        int n = perm.length;
-        int[] pos = new int[n];
-        int[] elems = new int[n];
-        for (i = 0; i < n; i++)
+        int m = 1;
+        final int n = perm.length;
+        final int[] positions = new int[n];
+        final int[] elements = new int[n];
+        //initial positions and elements to be the same thing (base case)
+        for (int i = 0; i < n; i++)
         {
-            pos[i] = i;
-            elems[i] = i;
+            positions[i] = i;
+            elements[i] = i;
         }
-        for (i = 0; i < n - 1; i++)
+        int k = 0;
+        for (int i = 0; i < n - 1; i++)
         {
-            k += m * pos[perm[i]];
+            k += m * positions[perm[i]];
             m = m * (n - i);
-            pos[elems[n - i - 1]] = pos[perm[i]];
-            elems[pos[perm[i]]] = elems[n - i - 1];
+            positions[elements[n - i - 1]] = positions[perm[i]];
+            elements[positions[perm[i]]] = elements[n - i - 1];
         }
         return k;
     }
@@ -87,5 +93,40 @@ public class LehmerCodePermutation {
     private static int factorialInt(int n)
     {
         return (int)factorial(n);
+    }
+
+    // perm[0]..perm[n-1] must contain the numbers in {0,..,n-1} in any order.
+    public static int permToNumber(int[] perm, int start, int n) {
+        // base case
+        if (n == 1) return 0;
+
+        // fix up perm[1]..perm[n-1] to be a permutation on {0,..,n-2}.
+        for (int i = start+1; i < n; i++) {
+            if (perm[i] > perm[start]) perm[i]--;
+        }
+
+        // recursively compute
+        return perm[start] + n * permToNumber(perm, start + 1, n - 1);
+    }
+
+    // number must be >=0, < n!
+    public static void numberToPerm(int number, int[] perm, int start, int n) {
+        if (n == 1) {
+            perm[start] = 0;
+            return;
+        }
+        perm[start] = number % n;
+        numberToPerm(number / n, perm, start + 1, n - 1);
+
+        // fix up perm[1] .. perm[n-1]
+        for (int i = start + 1; i < n; i++) {
+            if (perm[i] >= perm[start]) perm[i]++;
+        }
+    }
+
+    public static int[] numberToPerm(int number, int n) {
+        final int[] perm = new int[n];
+        numberToPerm(number, perm, 0, n);
+        return perm;
     }
 }
