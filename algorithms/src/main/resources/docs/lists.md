@@ -1,4 +1,4 @@
-Leetcode – Linked List Cycle
+# Leetcode – Linked List Cycle
  
 Given a linked list, determine if it has a cycle in it.
 
@@ -28,7 +28,7 @@ public class Solution {
     }
 }
 
-* Leetcode – Linked List Cycle
+# Leetcode – Linked List Cycle
  
 Given a linked list, determine if it has a cycle in it.
 
@@ -413,7 +413,7 @@ public class Solution {
     }
 }
 
-* LeetCode – LRU Cache (Java)
+# LeetCode – LRU Cache (Java)
  
 Design and implement a data structure for Least Recently Used (LRU) cache. It should support the following operations: get and set.
 
@@ -514,7 +514,7 @@ public class LRUCache {
     }
 }
 
-* LeetCode – Intersection of Two Linked Lists (Java)
+# LeetCode – Intersection of Two Linked Lists (Java)
  
 Problem
 
@@ -531,7 +531,8 @@ begin to intersect at node c1.
 
 Java Solution
 
-First calculate the length of two lists and find the difference. Then start from the longer list at the diff offset, iterate though 2 lists and find the node.
+First calculate the length of two lists and find the difference. Then start from the longer list at the diff offset, 
+iterate though 2 lists and find the node.
 
 /**
  * Definition for singly-linked list.
@@ -699,7 +700,7 @@ public ListNode reverseBetween(ListNode head, int m, int n) {
     return head;
 }
 
-* LeetCode – Remove Nth Node From End of List (Java)
+# LeetCode – Remove Nth Node From End of List (Java)
  
 Given a linked list, remove the nth node from the end of list and return its head.
 
@@ -924,7 +925,8 @@ public boolean isPalindrome(ListNode head) {
 }
 Java Solution 2
 
-We can use a fast and slow pointer to get the center of the list, then reverse the second list and compare two sublists. The time is O(n) and space is O(1).
+We can use a fast and slow pointer to get the center of the list, then reverse the second list and compare two sublists. 
+The time is O(n) and space is O(1).
 
 public boolean isPalindrome(ListNode head) {
  
@@ -975,7 +977,8 @@ public boolean isPalindrome(ListNode head) {
  
 Problem
 
-Given a singly linked list, group all odd nodes together followed by the even nodes. Please note here we are talking about the node number and not the value in the nodes.
+Given a singly linked list, group all odd nodes together followed by the even nodes. Please note here we are talking 
+about the node number and not the value in the nodes.
 
 The program should run in O(1) space complexity and O(nodes) time complexity.
 
