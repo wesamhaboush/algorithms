@@ -6,6 +6,16 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LehmerCodePermutationTest {
+    @Test
+    public void permutationToNumber() throws Exception
+    {
+        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{0, 2, 1}));
+        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{1, 0, 2}));
+        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{2, 0, 1}));
+        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{0, 1, 2}));
+        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{1, 2, 0}));
+        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{2, 1, 0}));
+    }
 
     @Test
     public void of() throws Exception

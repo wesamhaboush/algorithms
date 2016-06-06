@@ -31,6 +31,7 @@ public class LehmerCodePermutation {
 
     /*
     k is permutation number (find permutation number x)
+    n is the number of items we are permutating
      */
     private static int[] perm(final int n, final int k)
     {
@@ -55,7 +56,7 @@ public class LehmerCodePermutation {
         return permuted;
     }
 
-    private static int inv(int[] perm)
+    public static int permutationToNumber(int[] perm)
     {
         int m = 1;
         final int n = perm.length;
