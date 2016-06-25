@@ -1,6 +1,7 @@
 package com.codebreeze.algorithms;
 
 import java.util.*;
+import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 import static java.lang.Math.ceil;
@@ -169,5 +170,16 @@ this result, the minimal value of k must necessarily be prime.
     public static double log2(final double n)
     {
         return Math.log10(n) / LOG_10_2;
+    }
+
+    public static int product(final int[] values)
+    {
+        return Arrays.stream(values).reduce(1, (i, j) -> i * j);
+    }
+
+    public static int product(final int[] values, final int i, final int j)
+    {
+        return IntStream
+                .rangeClosed(i, j).reduce(1, (product, b) -> values[b] * product);
     }
 }

@@ -44,4 +44,14 @@ public class Power
         else                return a * apply ( a * a, b/2); //odd  a=a*(a^2)^b/2
     }
 
+    public static class AsInt {
+        public static int apply(int a, int b)
+        {
+            if ( b == 0)        return 1;
+            if ( b == 1)        return a;
+            if (isEven( b ))    return     apply ( a * a, b/2); //even a=(a^2)^b/2
+            else                return a * apply ( a * a, b/2); //odd  a=a*(a^2)^b/2
+        }
+    }
+
 }
