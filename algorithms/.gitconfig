@@ -1,0 +1,16 @@
+# This is Git's per-user configuration file.
+[core]
+# Please adapt and uncomment the following lines:
+#	user = Wesam Haboush (Sam)
+#	email = wesam.haboush@macys.com
+[core]
+	ignorecase = false
+	mergeoptions = --no-edit
+	editor = /usr/bin/vim
+[push]
+	default = simple
+[user]
+	name = Wesam Haboush
+	email = wesam.haboush@macys.com
+[merge]
+	tool = kdiff3
