@@ -38,7 +38,6 @@ public class SpecialPythogoreanTriplet
             a = improperDenominator;
             b = denominator;
             c = Math.max(a, b) + 1;
-            System.out.println("a: " + a + " b: " + b + " c: " + c + " sum: " + (a + b + c));
             try
             {
                 Thread.sleep(1000);
@@ -48,7 +47,6 @@ public class SpecialPythogoreanTriplet
                 e.printStackTrace();
             }
         }
-        //        System.out.println("a: " + a + " b: " + b + " c: " + c);
         return a * b * c;
     }
 
@@ -71,13 +69,6 @@ public class SpecialPythogoreanTriplet
                     x = r + s;
                     y = r + t;
                     z = r + s + t;
-//                    System.out.println("r:" + r +
-//                                       ",s:" + s +
-//                                       ",t:" + t +
-//                                       ",x:" + x +
-//                                       ",y:" + y +
-//                                       ",z:" + z +
-//                                       ",x + y + z:" + (x + y + z));
                     if (x + y + z == sum)
                     {
                         return x * y * z;

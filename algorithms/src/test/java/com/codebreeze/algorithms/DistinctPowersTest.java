@@ -17,8 +17,6 @@ public class DistinctPowersTest
     @Test
     public void calculate() throws Exception
     {
-//        System.out.println(DistinctPowers.calculateStoreReduced(2, 11));
-//        System.out.println(DistinctPowers.calculateStoreReduced(2, 16)); //20^20
         assertThat(DistinctPowers.calculateStoreReduced(2, 5)).isEqualTo(15);
         assertThat(DistinctPowers.calculateStoreReduced(2, 6)).isEqualTo(23);
         assertThat(DistinctPowers.calculateStoreReduced(2, 8)).isEqualTo(44);
@@ -28,8 +26,6 @@ public class DistinctPowersTest
         assertThat(DistinctPowers.calculateStoreReduced(2, 12)).isEqualTo(106);
         assertThat(DistinctPowers.calculateStoreReduced(2, 15)).isEqualTo(177);
         assertThat(DistinctPowers.calculateStoreReduced(2, 16)).isEqualTo(195);
-//        assertThat(DistinctPowers.calculate6(2, 20)).isEqualTo(320);
-        //                assertThat(DistinctPowers.calculate5(2, 100)).isEqualTo(9182L);//9183
         long start = System.currentTimeMillis();
         assertThat(DistinctPowers.calculateStoreReduced(2, 100)).isEqualTo(9183);//9183
         long end = System.currentTimeMillis();
@@ -39,7 +35,6 @@ public class DistinctPowersTest
     @Test
     public void calculateCounting() throws Exception
     {
-//                System.out.println(DistinctPowers.calculateBrute(2, 8));
         assertThat(DistinctPowers.calculateCounting(2, 5)).isEqualTo(15);
         assertThat(DistinctPowers.calculateCounting(2, 6)).isEqualTo(23);
         assertThat(DistinctPowers.calculateCounting(2, 8)).isEqualTo(44);
@@ -87,7 +82,7 @@ public class DistinctPowersTest
             }
             assert result.size() == 5;
         }
-        System.out.println("1 st experiment: " + sum / iterationCountThatCount);
+        System.out.println("experiment, entrySet stream getValue toList: " + sum / iterationCountThatCount);
         sum = 0;
         for(int i = 0; i < iterationCount; i++)
         {
@@ -104,7 +99,7 @@ public class DistinctPowersTest
             }
             assert result.size() == 5;
         }
-        System.out.println("1 st experiment: " + sum / iterationCountThatCount);
+        System.out.println("experiment, entrySet stream getValue toList: " + sum / iterationCountThatCount);
         sum = 0;
         for(int i = 0; i < iterationCount; i++)
         {
@@ -121,7 +116,7 @@ public class DistinctPowersTest
             }
             assert result.size() == 5;
         }
-        System.out.println("2nd experiment: " + sum / iterationCountThatCount);
+        System.out.println("experiment, entrySet Stream getValue toCollection: " + sum / iterationCountThatCount);
         sum = 0;
         for(int i = 0; i < iterationCount; i++)
         {
@@ -137,7 +132,7 @@ public class DistinctPowersTest
             }
             assert result.size() == 5;
         }
-        System.out.println("3rt experiment: " + sum / iterationCountThatCount);
+        System.out.println("experiment, values stream toCollection: " + sum / iterationCountThatCount);
         sum = 0;
         for(int i = 0; i < iterationCount; i++)
         {
@@ -154,7 +149,7 @@ public class DistinctPowersTest
             }
             assert result.size() == 5;
         }
-        System.out.println("4th experiment: " + sum / iterationCountThatCount);
+        System.out.println("experiment, entrySet for each add to outside: " + sum / iterationCountThatCount);
         sum = 0;
         for(int i = 0; i < iterationCount; i++)
         {
@@ -172,7 +167,7 @@ public class DistinctPowersTest
             }
             assert result.size() == 5;
         }
-        System.out.println("5th experiment: " + sum / iterationCountThatCount);
+        System.out.println("experiment, normal loop add each value: " + sum / iterationCountThatCount);
         sum = 0;
         //then
 //        assert jvmLangs1.size() == 5;

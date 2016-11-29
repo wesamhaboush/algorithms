@@ -53,7 +53,6 @@ public class DistinctPowers
                .stream()
                .filter( entry -> entry.getValue().size() > 1)
                .forEach(System.out::println);
-        System.out.println(pairs);
         return results.size();
     }
 

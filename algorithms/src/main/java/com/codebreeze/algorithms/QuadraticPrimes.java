@@ -56,9 +56,6 @@ public class QuadraticPrimes
                 }
             }
         }
-        System.out.println("max A = " + maxA);
-        System.out.println("max B = " + maxB);
-        System.out.println("max N = " + maxN);
         return maxA * maxB;
     }
 

@@ -49,7 +49,6 @@ public class AlexanderBogomolnyPermutation
         {
             sequence[i] = 0;
         }
-        System.out.println("The permutations are: ");
         final List<List<T>> permutations = new LinkedList<>();
         visit(level, sequence, 0, items, permutations);
         return permutations;

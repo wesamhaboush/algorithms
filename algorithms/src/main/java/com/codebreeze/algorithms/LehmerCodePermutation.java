@@ -49,10 +49,7 @@ public class LehmerCodePermutation {
             m = m / (n - i);
             permuted[i] = elements[ind];
             elements[ind] = elements[n - i - 1];
-//            System.out.println(Arrays.toString(permuted));
-//            System.out.println(Arrays.toString(elements));
         }
-//        System.out.println("k = " + k + " n = " + n + " permutation = " +  Arrays.toString(permuted));
         return permuted;
     }
 

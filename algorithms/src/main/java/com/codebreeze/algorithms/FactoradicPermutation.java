@@ -49,11 +49,8 @@ public class FactoradicPermutation
         final int size = ts.size();
         return IntStream.range(0, factorialInt(size))
                 .map(FactoradicPermutation::numberToFactoradic)
-//                        .peek(i -> System.out.println("factoradic: " + i))
                 .mapToObj(i -> factoradicToLehmerCode(i, size))
-//                        .peek(i -> System.out.println("lehmer: " + Arrays.toString(i)))
                         .map(i -> FactoradicPermutation.lehmerCodeToPermutation(i, size))
-//                        .peek(o -> System.out.println("perm:" + Arrays.toString(o)))
                 .map(indicesToList(ts))
                 .iterator();
     }

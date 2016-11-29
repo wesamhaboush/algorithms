@@ -182,4 +182,17 @@ this result, the minimal value of k must necessarily be prime.
         return IntStream
                 .rangeClosed(i, j).reduce(1, (product, b) -> values[b] * product);
     }
+
+    public static class AsLong {
+        public static long product(final long[] values, final int i, final int j)
+        {
+            return LongStream
+                    .rangeClosed(i, j).reduce(1L, (product, b) -> values[(int)b] * product);
+        }
+
+        public static long product(final long[] values)
+        {
+            return Arrays.stream(values).reduce(1, (i, j) -> i * j);
+        }
+    }
 }

@@ -106,14 +106,12 @@ public class FactorialPrimeSwingCache
 
                   if (null != cachedPrimorial)
                   {
-                      // System.out.println(" <- from Cache");
                       int low1 = cachedPrimorial.high + 1;
                       int p = sieve.getPrimorial(low1, high);
                       primorial = p * cachedPrimorial.value;
                   }
                   else
                   {
-                      // System.out.println(" <- from Sieve");
                       primorial = sieve.getPrimorial(low, high);
                   }
 

@@ -42,7 +42,6 @@ public class LargestPalindromeProduct
                     final int remainder = index % firstFactor;
                     if(remainder == 0 && asDigits(secondFactor).length == n)
                     {
-                        System.out.println(String.format("palindrome[%d], factors[%d,%d]", index, firstFactor, secondFactor));
                         return index;
                     }
                     firstFactor++;

@@ -46,5 +46,10 @@
       <version>3.4.0</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>com.codebreeze.testing.tools</groupId>
+          <artifactId>pinto</artifactId>
+          <version>0.6</version>
+      </dependency>
   </dependencies>
 </project>

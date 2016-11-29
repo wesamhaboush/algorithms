@@ -30,7 +30,6 @@ public class DigitFifthPowers
     {
         final long min = 0;
         final long max = Power.apply(9, n) * n;
-        System.out.println(max);
         return LongStream.rangeClosed(min, max)
                   .filter(i -> i == toNthPowerOfDigits(i, n))
                   .peek(System.out::println)

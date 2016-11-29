@@ -19,20 +19,20 @@ public int reverse(int x) {
 		x = 0 - x;
 		flag = true;
 	}
- 
+
 	int res = 0;
 	int p = x;
- 
+
 	while (p > 0) {
 		int mod = p % 10;
 		p = p / 10;
 		res = res * 10 + mod;
 	}
- 
+
 	if (flag) {
 		res = 0 - res;
 	}
- 
+
 	return res;
 }
 3. Succinct Solution
@@ -45,12 +45,12 @@ public int reverse(int x) {
         rev = rev*10 + x%10;
         x = x/10;
     }
- 
+
     return rev;
 }
 
 * LeetCode – Palindrome Number (Java)
- 
+
 Determine whether an integer is a palindrome. Do this without extra space.
 
 Thoughts
@@ -66,30 +66,30 @@ public class Solution {
         //negative numbers are not palindrome
 		if (x < 0)
 			return false;
- 
+
 		// initialize how many zeros
 		int div = 1;
 		while (x / div >= 10) {
 			div *= 10;
 		}
- 
+
 		while (x != 0) {
 			int left = x / div;
 			int right = x % 10;
- 
+
 			if (left != right)
 				return false;
- 
+
 			x = (x % div) / 10;
 			div /= 100;
 		}
- 
+
 		return true;
     }
 }
 
 * LeetCode – Pow(x, n)
- 
+
 Problem:
 
 Implement pow(x, n).
@@ -104,12 +104,12 @@ public class Solution {
     public double pow(double x, int n) {
         if(x == 0) return 0;
         if(n == 0) return 1;
- 
+
         double result=1;
         for(int i=1; i<=n; i++){
             result = result * x;
         }
- 
+
         return result;
     }
 }
@@ -120,21 +120,21 @@ Now we should think about how to do better than O(n).
 Naturally, we next may think how to do it in O(logn). We have a relation that x^n = x^(n/2) * x^(n/2) * x^(n%2). By using this relation, a recursive solution can easily be written.
 
 public static double pow(double x, int n) {
-    if(n == 0) 
+    if(n == 0)
         return 1;
- 
-    if(n == 1) 
+
+    if(n == 1)
         return x;
- 
+
     int half = n/2;
-    int remainder = n%2; 
- 
- 
+    int remainder = n%2;
+
+
     if(n % 2 ==1 && x < 0 && n < 0)
         return - 1/(pow(-x, half) * pow(-x, half) * pow(-x, remainder));
     else if (n < 0)
         return 1/(pow(x, -half) * pow(x, -half) * pow(x, -remainder));
-    else 
+    else
         return (pow(x, half) * pow(x, half) * pow(x, remainder));
 }
 In this solution, we can handle cases that x < 0 and n < 0. This solution actually takes more time than the first solution. Why? 3. Accepted Solution
@@ -146,13 +146,13 @@ public double pow(double x, int n) {
 		return 1;
 	if (n == 1)
 		return x;
- 
+
 	int pn = n > 0 ? n : -n;// positive n
 	int pn2 = pn;
- 
+
 	double px = x > 0 ? x : -x;// positive x
 	double result = px;
- 
+
 	int k = 1;
 	//the key part of solving this problem
 	while (pn / 2 > 0) {
@@ -160,17 +160,17 @@ public double pow(double x, int n) {
 		pn = pn / 2;
 		k = k * 2;
 	}
- 
+
 	result = result * pow(px, pn2 - k);
- 
+
 	// handle negative result
 	if (x < 0 && n % 2 == 1)
 		result = -result;
- 
+
 	// handle negative power
 	if (n < 0)
 		result = 1 / result;
- 
+
 	return result;
 }
 4. Best Solution
@@ -180,16 +180,16 @@ The most understandable solution I have found so far.
 public double power(double x, int n) {
 	if (n == 0)
 		return 1;
- 
+
 	double v = power(x, n / 2);
- 
+
 	if (n % 2 == 0) {
 		return v * v;
 	} else {
 		return v * v * x;
 	}
 }
- 
+
 public double pow(double x, int n) {
 	if (n < 0) {
 		return 1 / power(x, -n);
@@ -199,7 +199,7 @@ public double pow(double x, int n) {
 }
 
 * LeetCode – Subsets (Java)
- 
+
 Given a set of distinct integers, S, return all possible subsets.
 
 Note: 1) Elements in a subset must be in non-descending order. 2) The solution set must not contain duplicate subsets.
@@ -224,40 +224,40 @@ Java Solution
 public ArrayList<ArrayList<Integer>> subsets(int[] S) {
 	if (S == null)
 		return null;
- 
+
 	Arrays.sort(S);
- 
+
 	ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
- 
+
 	for (int i = 0; i < S.length; i++) {
 		ArrayList<ArrayList<Integer>> temp = new ArrayList<ArrayList<Integer>>();
- 
+
 		//get sets that are already in result
 		for (ArrayList<Integer> a : result) {
 			temp.add(new ArrayList<Integer>(a));
 		}
- 
+
 		//add S[i] to existing sets
 		for (ArrayList<Integer> a : temp) {
 			a.add(S[i]);
 		}
- 
+
 		//add S[i] only as a set
 		ArrayList<Integer> single = new ArrayList<Integer>();
 		single.add(S[i]);
 		temp.add(single);
- 
+
 		result.addAll(temp);
 	}
- 
+
 	//add empty set
 	result.add(new ArrayList<Integer>());
- 
+
 	return result;
 }
 
 * LeetCode – Excel Sheet Column Number (Java)
- 
+
 Problem
 
 Given a column title as appear in an Excel sheet, return its corresponding column number. For example:
@@ -268,9 +268,9 @@ Given a column title as appear in an Excel sheet, return its corresponding colum
     ...
     Z -> 26
     AA -> 27
-    AB -> 28 
+    AB -> 28
     ...
-    AAA -> 703 
+    AAA -> 703
 Java Solution 1
 
 This problem is related to Excel Sheet Column Title. The key is to use a hashmap to store the mapping between character and integer. Starting from the right-hand side, the converted value for each character is the mapping integer * 26 to the t-th power, where t starts from 0.
@@ -279,14 +279,14 @@ public int titleToNumber(String s) {
     if(s==null || s.length() == 0){
         throw new IllegalArgumentException("Input is not valid!");
     }
- 
+
     HashMap<Character, Integer> map = new HashMap<Character, Integer>();
     char c = 'A';
     for(int i=1; i<=26; i++){
         map.put(c, i);
-        c += 1; 
+        c += 1;
     }
- 
+
     int result = 0;
     int i = s.length()-1;
     int t = 0;
@@ -296,7 +296,7 @@ public int titleToNumber(String s) {
         t++;
         i--;
     }
- 
+
     return result;
 }
 Java Solution 2
@@ -307,7 +307,7 @@ public int titleToNumber(String s) {
     if(s==null || s.length() == 0){
         throw new IllegalArgumentException("Input is not valid!");
     }
- 
+
     int result = 0;
     int i = s.length()-1;
     int t = 0;
@@ -317,12 +317,12 @@ public int titleToNumber(String s) {
         t++;
         i--;
     }
- 
+
     return result;
 }
 
 * LeetCode – Excel Sheet Column Title (Java)
- 
+
 Problem
 
 Given a positive integer, return its corresponding column title as appear in an Excel sheet. For example:
@@ -333,7 +333,7 @@ Given a positive integer, return its corresponding column title as appear in an 
     ...
     26 -> Z
     27 -> AA
-    28 -> AB 
+    28 -> AB
 Java Solution
 
 This problem is the reverse version of Excel Sheet Column Number.
@@ -344,22 +344,22 @@ public String convertToTitle(int n) {
     if(n <= 0){
         throw new IllegalArgumentException("Input is not valid!");
     }
- 
+
     StringBuilder sb = new StringBuilder();
- 
+
     while(n > 0){
         n--;
         char ch = (char) (n % 26 + 'A');
         n /= 26;
         sb.append(ch);
     }
- 
+
     sb.reverse();
     return sb.toString();
 }
 
 * LeetCode – Factorial Trailing Zeroes (Java)
- 
+
 Given an integer n, return the number of trailing zeroes in n!.
 
 Note: Your solution should be in logarithmic time complexity.
@@ -369,17 +369,17 @@ Java Solution
 public int trailingZeroes(int n) {
 	if (n < 0)
 		return -1;
- 
+
 	int count = 0;
 	for (long i = 5; n / i >= 1; i *= 5) {
 		count += n / i;
 	}
- 
+
 	return count;
 }
 
 * LeetCode – Factorial Trailing Zeroes (Java)
- 
+
 Given an integer n, return the number of trailing zeroes in n!.
 
 Note: Your solution should be in logarithmic time complexity.
@@ -389,18 +389,18 @@ Java Solution
 public int trailingZeroes(int n) {
 	if (n < 0)
 		return -1;
- 
+
 	int count = 0;
         //read this to understand: http://www.purplemath.com/modules/factzero.htm
 	for (long i = 5; n / i >= 1; i *= 5) {
 		count += n / i;
 	}
- 
+
 	return count;
 }
 
 * LeetCode – Happy Number (Java)
- 
+
 Write an algorithm to determine if a number is "happy".
 
 What is an happy number can be shown in the following example:
@@ -418,18 +418,18 @@ Java Solution
 
 public boolean isHappy(int n) {
     HashSet<Integer> set = new HashSet<Integer>();
- 
+
     while(!set.contains(n)){
         set.add(n);
- 
+
         n = sum(getDigits(n));
         if (n == 1)
             return true;
     }
- 
+
     return false;
 }
- 
+
 public int sum(int[] arr){
     int sum = 0;
     for(int i: arr){
@@ -437,23 +437,23 @@ public int sum(int[] arr){
     }
     return sum;
 }
- 
+
 public int[] getDigits(int n){
     String s = String.valueOf(n);
     int[] result = new int[s.length()];
     int i=0;
- 
+
     while(n>0){
         int m = n%10;
         result[i++] = m;
         n = n/10;
     }
- 
+
     return result;
 }
 
 * LeetCode – Count Primes (Java)
- 
+
 Count the number of prime numbers less than a non-negative number, n
 
 Java Solution 1
@@ -462,19 +462,19 @@ This solution exceeds time limit.
 
 public int countPrimes(int n) {
     n = n-1;
- 
+
     ArrayList<Integer> primes = new ArrayList<Integer>();
- 
-    if(n<=1) 
+
+    if(n<=1)
         return 0;
     if(n==2)
         return 1;
     if(n==3)
         return 2;
- 
+
     primes.add(2);
     primes.add(3);
- 
+
     for(int i=4; i<=n; i++){
         boolean isPrime = true;
         for(int p: primes){
@@ -484,12 +484,12 @@ public int countPrimes(int n) {
                 break;
             }
         }
- 
+
         if(isPrime){
             primes.add(i);
         }
     }
- 
+
     return primes.size();
 }
 Java Solution 2
@@ -499,12 +499,12 @@ This solution is the implementation of Sieve of Eratosthenes.
 public int countPrimes(int n) {
 	if (n <= 2)
 		return 0;
- 
+
 	// init an array to track prime numbers
 	boolean[] primes = new boolean[n];
 	for (int i = 2; i < n; i++)
 		primes[i] = true;
- 
+
 	for (int i = 2; i <= Math.sqrt(n - 1); i++) {
 	// or for (int i = 2; i <= n-1; i++) {
 		if (primes[i]) {
@@ -512,18 +512,18 @@ public int countPrimes(int n) {
 				primes[j] = false;
 		}
 	}
- 
+
 	int count = 0;
 	for (int i = 2; i < n; i++) {
 		if (primes[i])
 			count++;
 	}
- 
+
 	return count;
 }
 
 * LeetCode – Plus One (Java)
- 
+
 Given a non-negative number represented as an array of digits, plus one to the number. The digits are stored such that the most significant digit is at the head of the list.
 
 Java Solution
@@ -533,7 +533,7 @@ To solve this problem, we can use a flag to mark if the current digit needs to b
 public int[] plusOne(int[] digits) {
 	int len = digits.length;
 	boolean flag = true; // flag if the digit needs to be changed
- 
+
 	for (int i = len - 1; i >= 0; i--) {
 		if (flag) {
 			if (digits[i] == 9) {
@@ -542,7 +542,7 @@ public int[] plusOne(int[] digits) {
 				digits[i] = digits[i] + 1;
 				flag = false;
 			}
- 
+
 			if (i == 0 && digits[i] == 0) {
 				int[] y = new int[len + 1];
 				y[0] = 1;
@@ -553,12 +553,12 @@ public int[] plusOne(int[] digits) {
 			}
 		}
 	}
- 
+
 	return digits;
 }
 
 * LeetCode – Divide Two Integers (Java)
- 
+
 Divide two integers without using multiplication, division and mod operator. If it is overflow, return MAX_INT.
 
 Analysis
@@ -575,24 +575,24 @@ public int divide(int dividend, int divisor) {
     if(divisor==0) return Integer.MAX_VALUE;
     if(divisor==-1 && dividend == Integer.MIN_VALUE)
         return Integer.MAX_VALUE;
- 
+
     //get positive values
     long pDividend = Math.abs((long)dividend);
     long pDivisor = Math.abs((long)divisor);
- 
+
     int result = 0;
     while(pDividend>=pDivisor){
         //calculate number of left shifts
-        int numShift = 0;    
+        int numShift = 0;
         while(pDividend>=(pDivisor<<numShift)){
             numShift++;
         }
- 
+
         //dividend minus the largest shifted divisor
         result += 1<<(numShift-1);
         pDividend -= (pDivisor<<(numShift-1));
     }
- 
+
     if((dividend>0 && divisor>0) || (dividend<0 && divisor<0)){
         return result;
     }else{
@@ -601,7 +601,7 @@ public int divide(int dividend, int divisor) {
 }
 
 * LeetCode – Multiply Strings (Java)
- 
+
 Given two numbers represented as strings, return multiplication of the numbers as a string.
 
 Analysis
@@ -613,18 +613,18 @@ Java Solution
 public String multiply(String num1, String num2) {
     String n1 = new StringBuilder(num1).reverse().toString();
     String n2 = new StringBuilder(num2).reverse().toString();
- 
+
     int[] d = new int[num1.length()+num2.length()];
- 
+
     //multiply each digit and sum at the corresponding positions
     for(int i=0; i<n1.length(); i++){
         for(int j=0; j<n2.length(); j++){
             d[i+j] += (n1.charAt(i)-'0') * (n2.charAt(j)-'0');
         }
     }
- 
+
     StringBuilder sb = new StringBuilder();
- 
+
     //calculate each digit
     for(int i=0; i<d.length; i++){
         int mod = d[i]%10;
@@ -634,17 +634,17 @@ public String multiply(String num1, String num2) {
         }
         sb.insert(0, mod);
     }
- 
+
     //remove front 0's
     while(sb.charAt(0) == '0' && sb.length()> 1){
         sb.deleteCharAt(0);
     }
- 
+
     return sb.toString();
 }
 
 * LeetCode – Max Points on a Line (Java)
- 
+
 Given n points on a 2D plane, find the maximum number of points that lie on the same straight line.
 
 Analysis
@@ -655,10 +655,10 @@ Java Solution
 
 public int maxPoints(Point[] points) {
     if(points == null || points.length == 0) return 0;
- 
+
     HashMap<Double, Integer> result = new HashMap<Double, Integer>();
     int max=0;
- 
+
     for(int i=0; i<points.length; i++){
         int duplicate = 1;//
         int vertical = 0;
@@ -674,7 +674,7 @@ public int maxPoints(Point[] points) {
                 double slope = points[j].y == points[i].y ? 0.0
 				        : (1.0 * (points[j].y - points[i].y))
 						/ (points[j].x - points[i].x);
- 
+
                 if(result.get(slope) != null){
                     result.put(slope, result.get(slope) + 1);
                 }else{
@@ -682,26 +682,26 @@ public int maxPoints(Point[] points) {
                 }
             }
         }
- 
+
         for(Integer count: result.values()){
             if(count+duplicate > max){
                 max = count+duplicate;
             }
         }
- 
+
         max = Math.max(vertical + duplicate, max);
         result.clear();
     }
- 
- 
+
+
     return max;
 }
 The relation between normal cases, vertical cases and duplicate cases can be shown as follows:
 max-points-on-a-line-leetcode
 
 * LeetCode – Product of Array Except Self (Java)
- 
-Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to the product of all the elements of nums except nums[i].
+
+Given an array of n integers where n > 1, nums, return an array output such that output[i] is equal to the third of all the elements of nums except nums[i].
 
 Solve it without division and in O(n).
 
@@ -711,28 +711,28 @@ Java Solution 1
 
 public int[] productExceptSelf(int[] nums) {
     int[] result = new int[nums.length];
- 
+
     int[] t1 = new int[nums.length];
     int[] t2 = new int[nums.length];
- 
+
     t1[0]=1;
     t2[nums.length-1]=1;
- 
+
     //scan from left to right
     for(int i=0; i<nums.length-1; i++){
         t1[i+1] = nums[i] * t1[i];
     }
- 
+
     //scan from right to left
     for(int i=nums.length-1; i>0; i--){
         t2[i-1] = t2[i] * nums[i];
     }
- 
+
     //multiply
     for(int i=0; i<nums.length; i++){
         result[i] = t1[i] * t2[i];
     }
- 
+
     return result;
 }
 Java Solution 2
@@ -742,22 +742,22 @@ Space is O(1).
 public int[] productExceptSelf(int[] nums) {
     int[] result = new int[nums.length];
     result[result.length-1] = 1;
- 
+
     for(int i=nums.length-2; i>=0; i--) {
         result[i] = result[i+1] * nums[i+1];
     }
- 
+
     int left = 1;
     for(int i=0; i<nums.length; i++) {
         result[i] *= left;
         left *= nums[i];
     }
- 
+
     return result;
 }
 
 * LeetCode – Self Crossing (Java)
- 
+
 Analysis
 
 This problem can be easily solved if the three self crossing cases are summarized well. Here are the three self crossing cases. There are no other self crossing situations based on the restrictions of counter-clockwise.
@@ -769,23 +769,23 @@ Java Solution
 Writing the solution is straightforward once the 3 self crossing cases are identified.
 
 public boolean isSelfCrossing(int[] x) {
-    if(x==null || x.length<=3) 
+    if(x==null || x.length<=3)
         return false;
- 
+
     for(int i=3; i<x.length; i++){
         if(x[i-3] >= x[i-1] && x[i-2]<=x[i]){
             return true;
         }
- 
+
         if(i>=4 && x[i-4]+x[i]>=x[i-2] && x[i-3]==x[i-1])   {
             return true;
         }
- 
+
         if(i>=5 && x[i-5]<=x[i-3] && x[i]<=x[i-2]&& x[i-1]<=x[i-3] && x[i-4]<=x[i-2] && x[i-1]>=x[i-3]-x[i-5] && x[i]>=x[i-2]-x[i-4]){
             return true;
         }
     }
- 
+
     return false;
 }
 

@@ -10,11 +10,11 @@ Additional space is used to save time.
 The problem of climbing steps perfectly fit those 4 properties. Therefore, it can be solve by using dynamic programming.
 
 public static int[] A = new int[100];
- 
+
 public static int f3(int n) {
 	if (n <= 2)
 		A[n]= n;
- 
+
 	if(A[n] > 0)
 		return A[n];
 	else
@@ -23,7 +23,7 @@ public static int f3(int n) {
 }
 
 * Edit Distance in Java
- 
+
 
 From Wiki:
 
@@ -53,24 +53,24 @@ After the analysis above, the code is just a representation of it.
 public static int minDistance(String word1, String word2) {
 	int len1 = word1.length();
 	int len2 = word2.length();
- 
+
 	// len1+1, len2+1, because finally return dp[len1][len2]
 	int[][] dp = new int[len1 + 1][len2 + 1];
- 
+
 	for (int i = 0; i <= len1; i++) {
 		dp[i][0] = i;
 	}
- 
+
 	for (int j = 0; j <= len2; j++) {
 		dp[0][j] = j;
 	}
- 
+
 	//iterate though, and check last char
 	for (int i = 0; i < len1; i++) {
 		char c1 = word1.charAt(i);
 		for (int j = 0; j < len2; j++) {
 			char c2 = word2.charAt(j);
- 
+
 			//if last two chars equal
 			if (c1 == c2) {
 				//update dp value for +1 length
@@ -79,19 +79,19 @@ public static int minDistance(String word1, String word2) {
 				int replace = dp[i][j] + 1;
 				int insert = dp[i][j + 1] + 1;
 				int delete = dp[i + 1][j] + 1;
- 
+
 				int min = replace > insert ? insert : replace;
 				min = delete > min ? min : delete;
 				dp[i + 1][j + 1] = min;
 			}
 		}
 	}
- 
+
 	return dp[len1][len2];
 }
 
 * LeetCode – Distinct Subsequences Total (Java)
- 
+
 Given a string S and a string T, count the number of distinct subsequences of T in S.
 
 A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, "ACE" is a subsequence of "ABCDE" while "AEC" is not).
@@ -115,10 +115,10 @@ Let W(i, j) stand for the number of subsequences of S(0, i) equals to T(0, j). I
 
 public int numDistincts(String S, String T) {
 	int[][] table = new int[S.length() + 1][T.length() + 1];
- 
+
 	for (int i = 0; i < S.length(); i++)
 		table[i][0] = 1;
- 
+
 	for (int i = 1; i <= S.length(); i++) {
 		for (int j = 1; j <= T.length(); j++) {
 			if (S.charAt(i - 1) == T.charAt(j - 1)) {
@@ -128,7 +128,7 @@ public int numDistincts(String S, String T) {
 			}
 		}
 	}
- 
+
 	return table[S.length()][T.length()];
 }
 Java Solution 2
@@ -137,7 +137,7 @@ Do NOT write something like this, even it can also pass the online judge.
 
 public int numDistinct(String S, String T) {
 	HashMap<Character, ArrayList<Integer>> map = new HashMap<Character, ArrayList<Integer>>();
- 
+
 	for (int i = 0; i < T.length(); i++) {
 		if (map.containsKey(T.charAt(i))) {
 			map.get(T.charAt(i)).add(i);
@@ -147,31 +147,31 @@ public int numDistinct(String S, String T) {
 			map.put(T.charAt(i), temp);
 		}
 	}
- 
+
 	int[] result = new int[T.length() + 1];
 	result[0] = 1;
- 
+
 	for (int i = 0; i < S.length(); i++) {
 		char c = S.charAt(i);
- 
+
 		if (map.containsKey(c)) {
 			ArrayList<Integer> temp = map.get(c);
 			int[] old = new int[temp.size()];
- 
+
 			for (int j = 0; j < temp.size(); j++)
 				old[j] = result[temp.get(j)];
- 
+
 			// the relation
 			for (int j = 0; j < temp.size(); j++)
 				result[temp.get(j) + 1] = result[temp.get(j) + 1] + old[j];
 		}
 	}
- 
+
 	return result[T.length()];
 }
 
 * Leetcode – Longest Palindromic Substring (Java)
- 
+
 Finding the longest palindromic substring is a classic problem of coding interview. This post summarizes 3 different solutions for this problem.
 
 1. Naive Approach
@@ -179,11 +179,11 @@ Finding the longest palindromic substring is a classic problem of coding intervi
 Naively, we can simply examine every substring and check if it is palindromic. The time complexity is O(n^3). If this is submitted to LeetCode onlinejudge, an error message will be returned - "Time Limit Exceeded". Therefore, this approach is just a start, we need a better algorithm.
 
 public static String longestPalindrome1(String s) {
- 
+
 	int maxPalinLength = 0;
 	String longestPalindrome = null;
 	int length = s.length();
- 
+
 	// check all possible sub strings
 	for (int i = 0; i < length; i++) {
 		for (int j = i + 1; j < length; j++) {
@@ -197,18 +197,18 @@ public static String longestPalindrome1(String s) {
 			}
 		}
 	}
- 
+
 	return longestPalindrome;
 }
- 
+
 public static boolean isPalindrome(String s) {
- 
+
 	for (int i = 0; i < s.length() - 1; i++) {
 		if (s.charAt(i) != s.charAt(s.length() - 1 - i)) {
 			return false;
 		}
 	}
- 
+
 	return true;
 }
 2. Dynamic Programming
@@ -218,7 +218,7 @@ Let s be the input string, i and j are two indices of the string. Define a 2-dim
 Start condition:
 
 table[i][i] == 1;
-table[i][i+1] == 1  => s.charAt(i) == s.charAt(i+1) 
+table[i][i+1] == 1  => s.charAt(i) == s.charAt(i+1)
 Changing condition:
 
 table[i+1][j-1] == 1 && s.charAt(i) == s.charAt(j)
@@ -229,30 +229,30 @@ Time O(n^2) Space O(n^2)
 public static String longestPalindrome2(String s) {
 	if (s == null)
 		return null;
- 
+
 	if(s.length() <=1)
 		return s;
- 
+
 	int maxLen = 0;
 	String longestStr = null;
- 
+
 	int length = s.length();
- 
+
 	int[][] table = new int[length][length];
- 
+
 	//every single letter is palindrome
 	for (int i = 0; i < length; i++) {
 		table[i][i] = 1;
 	}
 	printTable(table);
- 
+
 	//e.g. bcba
 	//two consecutive same letters are palindrome
 	for (int i = 0; i <= length - 2; i++) {
 		if (s.charAt(i) == s.charAt(i + 1)){
 			table[i][i + 1] = 1;
 			longestStr = s.substring(i, i + 2);
-		}	
+		}
 	}
 	printTable(table);
 	//condition for calculate whole table
@@ -269,7 +269,7 @@ public static String longestPalindrome2(String s) {
 			printTable(table);
 		}
 	}
- 
+
 	return longestStr;
 }
 public static void printTable(int[][] x){
@@ -283,12 +283,12 @@ public static void printTable(int[][] x){
 }
 Given a string, we can use the printTable() method to examine the table after execution. For example, if the input string is "dabcba", the final matrix would be the following:
 
-1 0 0 0 0 0 
-0 1 0 0 0 1 
-0 0 1 0 1 0 
-0 0 0 1 0 0 
-0 0 0 0 1 0 
-0 0 0 0 0 1 
+1 0 0 0 0 0
+0 1 0 0 0 1
+0 0 1 0 1 0
+0 0 0 1 0 0
+0 0 0 0 1 0
+0 0 0 0 0 1
 From the table, we can clearly see that the longest string is in cell table[1][5].
 
 3. A Simple Algorithm
@@ -299,11 +299,11 @@ public String longestPalindrome(String s) {
 	if (s.isEmpty()) {
 		return null;
 	}
- 
+
 	if (s.length() == 1) {
 		return s;
 	}
- 
+
 	String longest = s.substring(0, 1);
 	for (int i = 0; i < s.length(); i++) {
 		// get longest palindrome with center of i
@@ -311,18 +311,18 @@ public String longestPalindrome(String s) {
 		if (tmp.length() > longest.length()) {
 			longest = tmp;
 		}
- 
+
 		// get longest palindrome with center of i, i+1
 		tmp = helper(s, i, i + 1);
 		if (tmp.length() > longest.length()) {
 			longest = tmp;
 		}
 	}
- 
+
 	return longest;
 }
- 
-// Given a center, either one letter or two letter, 
+
+// Given a center, either one letter or two letter,
 // Find longest palindrome
 public String helper(String s, int begin, int end) {
 	while (begin >= 0 && end <= s.length() - 1 && s.charAt(begin) == s.charAt(end)) {
@@ -336,7 +336,7 @@ public String helper(String s, int begin, int end) {
 Manacher's algorithm is much more complicated to figure out, even though it will bring benefit of time complexity of O(n). Since it is not typical, there is no need to waste time on that.
 
 * Leetcode – Word Break (Java)
- 
+
 Given a string s and a dictionary of words dict, determine if s can be segmented into a space-separated sequence of one or more dictionary words.
 
 For example, given
@@ -353,24 +353,24 @@ public class Solution {
     public boolean wordBreak(String s, Set<String> dict) {
              return wordBreakHelper(s, dict, 0);
     }
- 
+
     public boolean wordBreakHelper(String s, Set<String> dict, int start){
-        if(start == s.length()) 
+        if(start == s.length())
             return true;
- 
+
         for(String a: dict){
             int len = a.length();
             int end = start+len;
- 
+
             //end index should be <= string length
-            if(end > s.length()) 
+            if(end > s.length())
                 continue;
- 
+
             if(s.substring(start, start+len).equals(a))
                 if(wordBreakHelper(s, dict, start+len))
                     return true;
         }
- 
+
         return false;
     }
 }
@@ -387,26 +387,26 @@ public class Solution {
         boolean[] t = new boolean[s.length()+1];
         t[0] = true; //set first to be true, why?
         //Because we need initial state
- 
+
         for(int i=0; i<s.length(); i++){
             //should continue from match position
-            if(!t[i]) 
+            if(!t[i])
                 continue;
- 
+
             for(String a: dict){
                 int len = a.length();
                 int end = i + len;
                 if(end > s.length())
                     continue;
- 
+
                 if(t[end]) continue;
- 
+
                 if(s.substring(i, end).equals(a)){
                     t[end] = true;
                 }
             }
         }
- 
+
         return t[s.length()];
     }
 }
@@ -414,7 +414,7 @@ Time: O(string length * dict size)
 
 One tricky part of this solution is the case:
 
-INPUT: "programcreek", ["programcree","program","creek"]. 
+INPUT: "programcreek", ["programcree","program","creek"].
 We should get all possible matches, not stop at "programcree".
 
 3. Regular Expression
@@ -427,18 +427,18 @@ public static void main(String[] args) {
 	dict.add("goal");
 	dict.add("goals");
 	dict.add("special");
- 
+
 	StringBuilder sb = new StringBuilder();
- 
+
 	for(String s: dict){
 		sb.append(s + "|");
 	}
- 
+
 	String pattern = sb.toString().substring(0, sb.length()-1);
 	pattern = "("+pattern+")*";
 	Pattern p = Pattern.compile(pattern);
 	Matcher m = p.matcher("goalspecial");
- 
+
 	if(m.matches()){
 		System.out.println("match");
 	}
@@ -450,7 +450,7 @@ The dynamic solution can tell us whether the string can be broken to words, but 
 Check out Word Break II
 
 * LeetCode – Word Break II (Java)
- 
+
 Given a string s and a dictionary of words dict, add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences. For example, given s = "catsanddog", dict = ["cat", "cats", "and", "sand", "dog"], the solution is ["cats and dog", "cat sand dog"].
 
 Java Solution - Dynamic Programming
@@ -465,17 +465,17 @@ public static List<String> wordBreak(String s, Set<String> dict) {
     //create an array of ArrayList<String>
     List<String> dp[] = new ArrayList[s.length()+1];
     dp[0] = new ArrayList<String>();
- 
+
     for(int i=0; i<s.length(); i++){
-        if( dp[i] == null ) 
-            continue; 
- 
+        if( dp[i] == null )
+            continue;
+
         for(String word:dict){
             int len = word.length();
             int end = i+len;
-            if(end > s.length()) 
+            if(end > s.length())
                 continue;
- 
+
             if(s.substring(i,end).equals(word)){
                 if(dp[end] == null){
                     dp[end] = new ArrayList<String>();
@@ -484,28 +484,28 @@ public static List<String> wordBreak(String s, Set<String> dict) {
             }
         }
     }
- 
+
     List<String> result = new LinkedList<String>();
-    if(dp[s.length()] == null) 
-        return result; 
- 
+    if(dp[s.length()] == null)
+        return result;
+
     ArrayList<String> temp = new ArrayList<String>();
     dfs(dp, s.length(), result, temp);
- 
+
     return result;
 }
- 
+
 public static void dfs(List<String> dp[],int end,List<String> result, ArrayList<String> tmp){
     if(end <= 0){
         String path = tmp.get(tmp.size()-1);
         for(int i=tmp.size()-2; i>=0; i--){
             path += " " + tmp.get(i) ;
         }
- 
+
         result.add(path);
         return;
     }
- 
+
     for(String str : dp[end]){
         tmp.add(str);
         dfs(dp, end-str.length(), result, tmp);
@@ -515,7 +515,7 @@ public static void dfs(List<String> dp[],int end,List<String> result, ArrayList<
 This problem is also useful for solving real problems. Assuming you want to analyze the domain names of the top 10k websites. We can use this solution to break the main part of the domain into words and then get a sense of what kinds of websites are popular. I did this a long time ago and found some interesting results. For example, the most frequent words include "news", "tube", "porn", "etc".
 
 * LeetCode – Maximum Subarray (Java)
- 
+
 Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
 
 For example, given the array [−2,1,−3,4,−1,2,1,−5,4], the contiguous subarray [4,−1,2,1] has the largest sum = 6.
@@ -528,15 +528,15 @@ public class Solution {
 	public int maxSubArray(int[] A) {
 		int sum = 0;
 		int maxSum = Integer.MIN_VALUE;
- 
+
 		for (int i = 0; i < A.length; i++) {
 			sum += A[i];
 			maxSum = Math.max(maxSum, sum);
- 
+
 			if (sum < 0)
 				sum = 0;
 		}
- 
+
 		return maxSum;
 	}
 }
@@ -549,12 +549,12 @@ public class Solution {
 		int max = A[0];
 		int[] sum = new int[A.length];
 		sum[0] = A[0];
- 
+
 		for (int i = 1; i < A.length; i++) {
 			sum[i] = Math.max(A[i], sum[i - 1] + A[i]);
 			max = Math.max(max, sum[i]);
 		}
- 
+
 		return max;
 	}
 }
@@ -574,29 +574,29 @@ Mehdi provided the following solution in his comment.
 This problem is asked by Palantir.
 
 * LeetCode – Maximum Product Subarray (Java)
- 
-Find the contiguous subarray within an array (containing at least one number) which has the largest product.
 
-For example, given the array [2,3,-2,4], the contiguous subarray [2,3] has the largest product = 6.
+Find the contiguous subarray within an array (containing at least one number) which has the largest third.
+
+For example, given the array [2,3,-2,4], the contiguous subarray [2,3] has the largest third = 6.
 
 Java Solution 1 - Brute-force
 
 public int maxProduct(int[] A) {
     int max = Integer.MIN_VALUE;
- 
+
     for(int i=0; i<A.length; i++){
         for(int l=0; l<A.length; l++){
             if(i+l < A.length){
-                int product = calProduct(A, i, l);
-                max = Math.max(product, max);
+                int third = calProduct(A, i, l);
+                max = Math.max(third, max);
             }
- 
+
         }
- 
+
     }
     return max;
 }
- 
+
 public int calProduct(int[] A, int i, int j){
     int result = 1;
     for(int m=i; m<=j; m++){
@@ -608,30 +608,30 @@ The time of the solution is O(n^3).
 
 Java Solution 2 - Dynamic Programming
 
-This is similar to maximum subarray. Instead of sum, the sign of number affect the product value.
+This is similar to maximum subarray. Instead of sum, the sign of number affect the third value.
 
 When iterating the array, each element has two possibilities: positive number or negative number. We need to track a minimum value, so that when a negative number is given, it can also find the maximum value. We define two local variables, one tracks the maximum and the other tracks the minimum.
 
 public int maxProduct(int[] A) {
-    if(A==null || A.length==0)  
-        return 0;  
- 
-    int maxLocal = A[0];  
-    int minLocal = A[0];  
-    int global = A[0];  
- 
-    for(int i=1; i<A.length; i++){  
-        int temp = maxLocal;  
-        maxLocal = Math.max(Math.max(A[i]*maxLocal, A[i]), A[i]*minLocal);  
-        minLocal = Math.min(Math.min(A[i]*temp, A[i]), A[i]*minLocal);  
-        global = Math.max(global, maxLocal);  
-    }  
+    if(A==null || A.length==0)
+        return 0;
+
+    int maxLocal = A[0];
+    int minLocal = A[0];
+    int global = A[0];
+
+    for(int i=1; i<A.length; i++){
+        int temp = maxLocal;
+        maxLocal = Math.max(Math.max(A[i]*maxLocal, A[i]), A[i]*minLocal);
+        minLocal = Math.min(Math.min(A[i]*temp, A[i]), A[i]*minLocal);
+        global = Math.max(global, maxLocal);
+    }
     return global;
 }
 Time is O(n).
 
 * LeetCode – Palindrome Partitioning (Java)
- 
+
 Problem
 
 Given a string s, partition s such that every substring of the partition is a palindrome.
@@ -649,17 +649,17 @@ Return
 
 public ArrayList<ArrayList<String>> partition(String s) {
 	ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
- 
+
 	if (s == null || s.length() == 0) {
 		return result;
 	}
- 
+
 	ArrayList<String> partition = new ArrayList<String>();//track each possible partition
 	addPalindrome(s, 0, partition, result);
- 
+
 	return result;
 }
- 
+
 private void addPalindrome(String s, int start, ArrayList<String> partition,
 		ArrayList<ArrayList<String>> result) {
 	//stop condition
@@ -668,30 +668,30 @@ private void addPalindrome(String s, int start, ArrayList<String> partition,
 		result.add(temp);
 		return;
 	}
- 
+
 	for (int i = start + 1; i <= s.length(); i++) {
 		String str = s.substring(start, i);
 		if (isPalindrome(str)) {
-			partition.add(str); 
+			partition.add(str);
 			addPalindrome(s, i, partition, result);
 			partition.remove(partition.size() - 1);
 		}
 	}
 }
- 
+
 private boolean isPalindrome(String str) {
 	int left = 0;
 	int right = str.length() - 1;
- 
+
 	while (left < right) {
 		if (str.charAt(left) != str.charAt(right)) {
 			return false;
 		}
- 
+
 		left++;
 		right--;
 	}
- 
+
 	return true;
 }
 2. Dynamic Programming
@@ -699,21 +699,21 @@ private boolean isPalindrome(String str) {
 The dynamic programming approach is very similar to the problem of longest palindrome substring.
 
 public static List<String> palindromePartitioning(String s) {
- 
+
 	List<String> result = new ArrayList<String>();
- 
+
 	if (s == null)
 		return result;
- 
+
 	if (s.length() <= 1) {
 		result.add(s);
 		return result;
 	}
- 
+
 	int length = s.length();
- 
+
 	int[][] table = new int[length][length];
- 
+
 	// l is length, i is index of left boundary, j is index of right boundary
 	for (int l = 1; l <= length; l++) {
 		for (int i = 0; i <= length - l; i++) {
@@ -732,12 +732,12 @@ public static List<String> palindromePartitioning(String s) {
 			}
 		}
 	}
- 
+
 	return result;
 }
 
 * LeetCode – Palindrome Partitioning II (Java)
- 
+
 Given a string s, partition s such that every substring of the partition is a palindrome. Return the minimum cuts needed for a palindrome partitioning of s. For example, given s = "aab", return 1 since the palindrome partitioning ["aa","b"] could be produced using 1 cut.
 
 Analysis
@@ -748,32 +748,32 @@ Java Solution
 
 public int minCut(String s) {
     int n = s.length();
- 
+
 	boolean dp[][] = new boolean[n][n];
 	int cut[] = new int[n];
- 
+
 	for (int j = 0; j < n; j++) {
 		cut[j] = j; //set maximum # of cut
 		for (int i = 0; i <= j; i++) {
 			if (s.charAt(i) == s.charAt(j) && (j - i <= 1 || dp[i+1][j-1])) {
 				dp[i][j] = true;
- 
+
 				// if need to cut, add 1 to the previous cut[i-1]
 				if (i > 0){
 					cut[j] = Math.min(cut[j], cut[i-1] + 1);
 				}else{
-				// if [0...j] is palindrome, no need to cut    
-					cut[j] = 0; 
-				}	
+				// if [0...j] is palindrome, no need to cut
+					cut[j] = 0;
+				}
 			}
 		}
 	}
- 
+
 	return cut[n-1];
 }
 
 * LeetCode – House Robber (Java)
- 
+
 You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security system connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
 
 Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
@@ -785,17 +785,17 @@ The key is to find the relation dp[i] = Math.max(dp[i-1], dp[i-2]+num[i-1]).
 public int rob(int[] num) {
     if(num==null || num.length==0)
         return 0;
- 
+
     int n = num.length;
- 
+
     int[] dp = new int[n+1];
     dp[0]=0;
     dp[1]=num[0];
- 
+
     for (int i=2; i<n+1; i++){
        dp[i] = Math.max(dp[i-1], dp[i-2]+num[i-1]);
     }
- 
+
     return dp[n];
 }
 Java Solution 2
@@ -808,10 +808,10 @@ house-robber
 public int rob(int[] num) {
 	if(num==null || num.length == 0)
 		return 0;
- 
+
 	int even = 0;
 	int odd = 0;
- 
+
 	for (int i = 0; i < num.length; i++) {
 		if (i % 2 == 0) {
 			even += num[i];
@@ -821,12 +821,12 @@ public int rob(int[] num) {
 			odd = even > odd ? even : odd;
 		}
 	}
- 
+
 	return even > odd ? even : odd;
 }
 
 * LeetCode – House Robber (Java)
- 
+
 You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security system connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
 
 Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
@@ -838,17 +838,17 @@ The key is to find the relation dp[i] = Math.max(dp[i-1], dp[i-2]+num[i-1]).
 public int rob(int[] num) {
     if(num==null || num.length==0)
         return 0;
- 
+
     int n = num.length;
- 
+
     int[] dp = new int[n+1];
     dp[0]=0;
     dp[1]=num[0];
- 
+
     for (int i=2; i<n+1; i++){
        dp[i] = Math.max(dp[i-1], dp[i-2]+num[i-1]);
     }
- 
+
     return dp[n];
 }
 Java Solution 2
@@ -861,10 +861,10 @@ house-robber
 public int rob(int[] num) {
 	if(num==null || num.length == 0)
 		return 0;
- 
+
 	int even = 0;
 	int odd = 0;
- 
+
 	for (int i = 0; i < num.length; i++) {
 		if (i % 2 == 0) {
 			even += num[i];
@@ -874,12 +874,12 @@ public int rob(int[] num) {
 			odd = even > odd ? even : odd;
 		}
 	}
- 
+
 	return even > odd ? even : odd;
 }
 
 * LeetCode – House Robber II (Java)
- 
+
 After robbing those houses on that street, the thief has found himself a new place for his thievery so that he will not get too much attention. This time, all houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, the security system for these houses remain the same as for those in the previous street.
 
 Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
@@ -893,39 +893,39 @@ Java Solution
 public int rob(int[] nums) {
     if(nums==null||nums.length==0)
         return 0;
- 
+
     int n = nums.length;
- 
+
     if(n==1){
         return nums[0];
-    }    
+    }
     if(n==2){
         return Math.max(nums[1], nums[0]);
     }
- 
+
     //include 1st element, and not last element
     int[] dp = new int[n+1];
     dp[0]=0;
     dp[1]=nums[0];
- 
+
     for(int i=2; i<n; i++){
         dp[i] = Math.max(dp[i-1], dp[i-2]+nums[i-1]);
     }
- 
+
     //not include frist element, and include last element
     int[] dr = new int[n+1];
     dr[0]=0;
     dr[1]=nums[1];
- 
+
     for(int i=2; i<n; i++){
     	dr[i] = Math.max(dr[i-1], dr[i-2]+nums[i]);
     }
- 
+
     return Math.max(dp[n-1], dr[n-1]);
 }
 
 * LeetCode – House Robber II (Java)
- 
+
 After robbing those houses on that street, the thief has found himself a new place for his thievery so that he will not get too much attention. This time, all houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, the security system for these houses remain the same as for those in the previous street.
 
 Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
@@ -939,39 +939,39 @@ Java Solution
 public int rob(int[] nums) {
     if(nums==null||nums.length==0)
         return 0;
- 
+
     int n = nums.length;
- 
+
     if(n==1){
         return nums[0];
-    }    
+    }
     if(n==2){
         return Math.max(nums[1], nums[0]);
     }
- 
+
     //include 1st element, and not last element
     int[] dp = new int[n+1];
     dp[0]=0;
     dp[1]=nums[0];
- 
+
     for(int i=2; i<n; i++){
         dp[i] = Math.max(dp[i-1], dp[i-2]+nums[i-1]);
     }
- 
+
     //not include frist element, and include last element
     int[] dr = new int[n+1];
     dr[0]=0;
     dr[1]=nums[1];
- 
+
     for(int i=2; i<n; i++){
     	dr[i] = Math.max(dr[i-1], dr[i-2]+nums[i]);
     }
- 
+
     return Math.max(dp[n-1], dr[n-1]);
-} 
+}
 
 * LeetCode – House Robber III (Java)
- 
+
 The houses form a binary tree. If the root is robbed, its left and right can not be robbed.
 
 Analysis
@@ -983,30 +983,30 @@ Java Solution
 public int rob(TreeNode root) {
     if(root == null)
         return 0;
- 
+
     int[] result = helper(root);
     return Math.max(result[0], result[1]);
 }
- 
+
 public int[] helper(TreeNode root){
     if(root == null){
         int[] result = {0, 0};
         return result;
     }
- 
+
     int[] result = new int[2];
     int[] left = helper(root.left);
     int[] right = helper (root.right);
- 
-    // result[0] is when root is selected, result[1] is when not. 
+
+    // result[0] is when root is selected, result[1] is when not.
     result[0] = root.val + left[1] + right[1];
     result[1] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
- 
+
     return result;
 }
 
 * LeetCode – Jump Game (Java)
- 
+
 Given an array of non-negative integers, you are initially positioned at the first index of the array. Each element in the array represents your maximum jump length at that position. Determine if you are able to reach the last index. For example: A = [2,3,1,1,4], return true. A = [3,2,1,0,4], return false.
 
 Analysis
@@ -1023,29 +1023,29 @@ Java Solution
 public boolean canJump(int[] A) {
     if(A.length <= 1)
         return true;
- 
+
     int max = A[0]; //max stands for the largest index that can be reached.
- 
+
     for(int i=0; i<A.length; i++){
         //if not enough to go to next
-        if(max <= i && A[i] == 0) 
+        if(max <= i && A[i] == 0)
             return false;
- 
-        //update max    
+
+        //update max
         if(i + A[i] > max){
             max = i + A[i];
         }
- 
+
         //max is enough to reach the end
-        if(max >= A.length-1) 
+        if(max >= A.length-1)
             return true;
     }
- 
-    return false;    
+
+    return false;
 }
 
 * LeetCode – Jump Game II (Java)
- 
+
 Given an array of non-negative integers, you are initially positioned at the first index of the array. Each element in the array represents your maximum jump length at that position.
 
 Your goal is to reach the last index in the minimum number of jumps.
@@ -1063,29 +1063,29 @@ Java Solution
 public int jump(int[] nums) {
 	if (nums == null || nums.length == 0)
 		return 0;
- 
+
 	int lastReach = 0;
 	int reach = 0;
 	int step = 0;
- 
+
 	for (int i = 0; i <= reach && i < nums.length; i++) {
 		//when last jump can not read current i, increase the step by 1
 		if (i > lastReach) {
 			step++;
 			lastReach = reach;
 		}
-		//update the maximal jump 
+		//update the maximal jump
 		reach = Math.max(reach, nums[i] + i);
 	}
- 
+
 	if (reach < nums.length - 1)
 		return 0;
- 
+
 	return step;
 }
 
 * LeetCode – Jump Game II (Java)
- 
+
 Given an array of non-negative integers, you are initially positioned at the first index of the array. Each element in the array represents your maximum jump length at that position.
 
 Your goal is to reach the last index in the minimum number of jumps.
@@ -1103,29 +1103,29 @@ Java Solution
 public int jump(int[] nums) {
 	if (nums == null || nums.length == 0)
 		return 0;
- 
+
 	int lastReach = 0;
 	int reach = 0;
 	int step = 0;
- 
+
 	for (int i = 0; i <= reach && i < nums.length; i++) {
 		//when last jump can not read current i, increase the step by 1
 		if (i > lastReach) {
 			step++;
 			lastReach = reach;
 		}
-		//update the maximal jump 
+		//update the maximal jump
 		reach = Math.max(reach, nums[i] + i);
 	}
- 
+
 	if (reach < nums.length - 1)
 		return 0;
- 
+
 	return step;
 }
 
 * LeetCode – Best Time to Buy and Sell Stock (Java)
- 
+
 Say you have an array for which the ith element is the price of a given stock on day i.
 
 If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
@@ -1138,7 +1138,7 @@ public int maxProfit(int[] prices) {
     if(prices == null || prices.length < 2){
         return 0;
     }
- 
+
     int profit = Integer.MIN_VALUE;
     for(int i=0; i<prices.length-1; i++){
         for(int j=0; j< prices.length; j++){
@@ -1164,7 +1164,7 @@ public int maxProfit(int[] prices) {
 }
 
 * LeetCode – Best Time to Buy and Sell Stock II (Java)
- 
+
 Say you have an array for which the ith element is the price of a given stock on day i.
 
 Design an algorithm to find the maximum profit. You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
@@ -1189,7 +1189,7 @@ public int maxProfit(int[] prices) {
 }
 
 * LeetCode – Best Time to Buy and Sell Stock III (Java)
- 
+
 Say you have an array for which the ith element is the price of a given stock on day i.
 
 Design an algorithm to find the maximum profit. You may complete at most two transactions.
@@ -1212,19 +1212,19 @@ public int maxProfit(int[] prices) {
 	if (prices == null || prices.length < 2) {
 		return 0;
 	}
- 
+
 	//highest profit in 0 ... i
 	int[] left = new int[prices.length];
 	int[] right = new int[prices.length];
- 
+
 	// DP from left to right
-	left[0] = 0; 
+	left[0] = 0;
 	int min = prices[0];
 	for (int i = 1; i < prices.length; i++) {
 		min = Math.min(min, prices[i]);
 		left[i] = Math.max(left[i - 1], prices[i] - min);
 	}
- 
+
 	// DP from right to left
 	right[prices.length - 1] = 0;
 	int max = prices[prices.length - 1];
@@ -1232,17 +1232,17 @@ public int maxProfit(int[] prices) {
 		max = Math.max(max, prices[i]);
 		right[i] = Math.max(right[i + 1], max - prices[i]);
 	}
- 
+
 	int profit = 0;
 	for (int i = 0; i < prices.length; i++) {
 		profit = Math.max(profit, left[i] + right[i]);
 	}
- 
+
 	return profit;
 }
 
 * LeetCode – Best Time to Buy and Sell Stock IV (Java)
- 
+
 Problem
 
 Say you have an array for which the ith element is the price of a given stock on day i.Design an algorithm to find the maximum profit. You may complete at most k transactions.
@@ -1264,17 +1264,17 @@ Java Solution - 2D Dynamic Programming
 
 public int maxProfit(int k, int[] prices) {
 	int len = prices.length;
- 
+
 	if (len < 2 || k <= 0)
 		return 0;
- 
+
 	// ignore this line
 	if (k == 1000000000)
 		return 1648961;
- 
+
 	int[][] local = new int[len][k + 1];
 	int[][] global = new int[len][k + 1];
- 
+
 	for (int i = 1; i < len; i++) {
 		int diff = prices[i] - prices[i - 1];
 		for (int j = 1; j <= k; j++) {
@@ -1284,12 +1284,12 @@ public int maxProfit(int k, int[] prices) {
 			global[i][j] = Math.max(global[i - 1][j], local[i][j]);
 		}
 	}
- 
+
 	return global[prices.length - 1][k];
 }
 
 * LeetCode – Dungeon Game (Java)
- 
+
 Example:
 
 -2 (K)	-3	3
@@ -1302,22 +1302,22 @@ This problem can be solved by using dynamic programming. We maintain a 2-D table
 public int calculateMinimumHP(int[][] dungeon) {
 	int m = dungeon.length;
 	int n = dungeon[0].length;
- 
+
 	//init dp table
 	int[][] h = new int[m][n];
- 
+
 	h[m - 1][n - 1] = Math.max(1 - dungeon[m - 1][n - 1], 1);
- 
+
 	//init last row
 	for (int i = m - 2; i >= 0; i--) {
 		h[i][n - 1] = Math.max(h[i + 1][n - 1] - dungeon[i][n - 1], 1);
 	}
- 
+
 	//init last column
 	for (int j = n - 2; j >= 0; j--) {
 		h[m - 1][j] = Math.max(h[m - 1][j + 1] - dungeon[m - 1][j], 1);
 	}
- 
+
 	//calculate dp table
 	for (int i = m - 2; i >= 0; i--) {
 		for (int j = n - 2; j >= 0; j--) {
@@ -1326,12 +1326,12 @@ public int calculateMinimumHP(int[][] dungeon) {
 			h[i][j] = Math.min(right, down);
 		}
 	}
- 
+
 	return h[0][0];
 }
 
 * LeetCode – Minimum Path Sum (Java)
- 
+
 Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right which minimizes the sum of all numbers along its path.
 
 Java Solution 1: Depth-First Search
@@ -1341,26 +1341,26 @@ A native solution would be depth-first search. It's time is too expensive and fa
 public int minPathSum(int[][] grid) {
     return dfs(0,0,grid);
 }
- 
+
 public int dfs(int i, int j, int[][] grid){
     if(i==grid.length-1 && j==grid[0].length-1){
         return grid[i][j];
     }
- 
+
     if(i<grid.length-1 && j<grid[0].length-1){
         int r1 = grid[i][j] + dfs(i+1, j, grid);
         int r2 = grid[i][j] + dfs(i, j+1, grid);
         return Math.min(r1,r2);
     }
- 
+
     if(i<grid.length-1){
         return grid[i][j] + dfs(i+1, j, grid);
     }
- 
+
     if(j<grid[0].length-1){
         return grid[i][j] + dfs(i, j+1, grid);
     }
- 
+
     return 0;
 }
 Java Solution 2: Dynamic Programming
@@ -1368,23 +1368,23 @@ Java Solution 2: Dynamic Programming
 public int minPathSum(int[][] grid) {
     if(grid == null || grid.length==0)
         return 0;
- 
+
     int m = grid.length;
     int n = grid[0].length;
- 
+
     int[][] dp = new int[m][n];
-    dp[0][0] = grid[0][0];    
- 
+    dp[0][0] = grid[0][0];
+
     // initialize top row
     for(int i=1; i<n; i++){
         dp[0][i] = dp[0][i-1] + grid[0][i];
     }
- 
+
     // initialize left column
     for(int j=1; j<m; j++){
         dp[j][0] = dp[j-1][0] + grid[j][0];
     }
- 
+
     // fill up the dp table
     for(int i=1; i<m; i++){
         for(int j=1; j<n; j++){
@@ -1395,12 +1395,12 @@ public int minPathSum(int[][] grid) {
             }
         }
     }
- 
+
     return dp[m-1][n-1];
 }
 
 * LeetCode – Unique Paths (Java)
- 
+
 A robot is located at the top-left corner of a m x n grid. It can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid.
 
 How many possible unique paths are there?
@@ -1412,24 +1412,24 @@ A depth-first search solution is pretty straight-forward. However, the time of t
 public int uniquePaths(int m, int n) {
     return dfs(0,0,m,n);
 }
- 
+
 public int dfs(int i, int j, int m, int n){
     if(i==m-1 && j==n-1){
         return 1;
     }
- 
+
     if(i<m-1 && j<n-1){
         return dfs(i+1,j,m,n) + dfs(i,j+1,m,n);
     }
- 
+
     if(i<m-1){
         return dfs(i+1,j,m,n);
     }
- 
+
     if(j<n-1){
         return dfs(i,j+1,m,n);
     }
- 
+
     return 0;
 }
 Java Solution 2 - Dynamic Programming
@@ -1437,31 +1437,31 @@ Java Solution 2 - Dynamic Programming
 public int uniquePaths(int m, int n) {
     if(m==0 || n==0) return 0;
     if(m==1 || n==1) return 1;
- 
+
     int[][] dp = new int[m][n];
- 
+
     //left column
     for(int i=0; i<m; i++){
         dp[i][0] = 1;
     }
- 
+
     //top row
     for(int j=0; j<n; j++){
         dp[0][j] = 1;
     }
- 
+
     //fill up the dp table
     for(int i=1; i<m; i++){
         for(int j=1; j<n; j++){
             dp[i][j] = dp[i-1][j] + dp[i][j-1];
         }
     }
- 
+
     return dp[m-1][n-1];
 }
 
 * LeetCode – Decode Ways (Java)
- 
+
 A message containing letters from A-Z is being encoded to numbers using the following mapping:
 
 'A' -> 1
@@ -1478,30 +1478,30 @@ Java Solution
 public int numDecodings(String s) {
     if(s==null||s.length()==0||s.equals("0"))
         return 0;
- 
- 
+
+
     int[] t = new int[s.length()+1];
     t[0] = 1;
- 
+
     //if(s.charAt(0)!='0')
     if(isValid(s.substring(0,1)))
         t[1]=1;
     else
         t[1]=0;
- 
+
     for(int i=2; i<=s.length(); i++){
         if(isValid(s.substring(i-1,i))){
             t[i]+=t[i-1];
         }
- 
+
         if(isValid(s.substring(i-2,i))){
             t[i]+=t[i-2];
         }
     }
- 
+
     return t[s.length()];
 }
- 
+
 public boolean isValid(String s){
     if(s.charAt(0)=='0')
         return false;

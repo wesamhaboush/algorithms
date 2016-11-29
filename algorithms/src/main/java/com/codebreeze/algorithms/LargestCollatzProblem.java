@@ -61,7 +61,6 @@ public class LargestCollatzProblem
                 startingPointWithMaxChainLength = i;
                 maxChainLength = chainLength;
             }
-//            System.out.println("finished " + i);
         }
         return new long[]{startingPointWithMaxChainLength, maxChainLength};
     }

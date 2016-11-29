@@ -8,15 +8,6 @@ public class FactorialPrimeSwingList
               private int[] tower;
               private int[] bound;
 
-              public FactorialPrimeSwingList()
-              {
-              }
-
-              public final String getName()
-              {
-                  return "PrimeSwingList    ";
-              }
-
               public int factorial(int n)
               {
                   // For very small n the 'NaiveFactorial' is OK.

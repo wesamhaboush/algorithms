@@ -9,12 +9,12 @@ public class LehmerCodePermutationTest {
     @Test
     public void permutationToNumber() throws Exception
     {
-        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{0, 2, 1}));
-        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{1, 0, 2}));
-        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{2, 0, 1}));
-        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{0, 1, 2}));
-        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{1, 2, 0}));
-        System.out.println(LehmerCodePermutation.permutationToNumber(new int[]{2, 1, 0}));
+        assertThat(LehmerCodePermutation.permutationToNumber(new int[]{0, 2, 1})).isEqualTo(0);
+        assertThat(LehmerCodePermutation.permutationToNumber(new int[]{1, 0, 2})).isEqualTo(1);
+        assertThat(LehmerCodePermutation.permutationToNumber(new int[]{2, 0, 1})).isEqualTo(2);
+        assertThat(LehmerCodePermutation.permutationToNumber(new int[]{0, 1, 2})).isEqualTo(3);
+        assertThat(LehmerCodePermutation.permutationToNumber(new int[]{1, 2, 0})).isEqualTo(4);
+        assertThat(LehmerCodePermutation.permutationToNumber(new int[]{2, 1, 0})).isEqualTo(5);
     }
 
     @Test
@@ -58,7 +58,6 @@ public class LehmerCodePermutationTest {
                                 asList(4, 3, 1, 2),
                                 asList(4, 3, 2, 1)
                           );
-        System.out.println(LehmerCodePermutation.of(asList(1, 2, 3)));
     }
 
     @Test
@@ -88,6 +87,5 @@ public class LehmerCodePermutationTest {
                 .isEqualTo(new int[]{2, 0, 0});
         assertThat(LehmerCodePermutation.numberToPerm(9, 3))
                 .isEqualTo(new int[]{0, 2, 1});
-        //        System.out.println(LehmerCodePermutation.of(asList(1, 2, 3)));
     }
 }
