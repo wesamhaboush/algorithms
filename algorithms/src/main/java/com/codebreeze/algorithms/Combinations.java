@@ -23,11 +23,11 @@ public class Combinations
         return ofInternal(s -> s.size() == size, items);
     }
 
-    public static <T> Set<List<T>> ofInternal(final Predicate<Set<Integer>> sizeFilter, final List<T> items)
+    private static <T> Set<List<T>> ofInternal(final Predicate<Set<Integer>> sizeFilter, final List<T> items)
     {
         final Set<Integer> indices = IntStream.iterate(0, i -> ++i)
                                               .limit(items.size())
-                                              .mapToObj(i -> i)
+                                              .boxed()
                                               .collect(toSet());
         return PowerSet.of(indices)
                        .stream()
