@@ -32,7 +32,7 @@ public class NonAbundantSums
         final Set<Integer> abundants = IntStream.rangeClosed(1, n)
                                                 .filter(NonAbundantSums::isAbundant)
                                                 .boxed()
-                                                .collect(toCollection(() -> new TreeSet()));
+                                                .collect(toCollection(TreeSet::new));
 
         long sum = 0;
         for(int i = 0; i < n; i++)

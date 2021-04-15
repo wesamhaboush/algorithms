@@ -11,7 +11,7 @@ public class ExeterPermutation
     {
         List<List<T>> permutations = new ArrayList<>();
         if (start == items.size() - 1) {
-            permutations.add(new ArrayList(items));
+            permutations.add(new ArrayList<>(items));
         }
         else {
             for (int i = start; i < items.size(); i++) {

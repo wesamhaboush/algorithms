@@ -34,7 +34,7 @@ public class HeapPermutations
     {
         if( n == 1 )
         {
-            result.add(new ArrayList(items));
+            result.add(new ArrayList<>(items));
         }
         else
         {

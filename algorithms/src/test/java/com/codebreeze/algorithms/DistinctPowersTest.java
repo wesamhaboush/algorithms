@@ -7,16 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.toCollection;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DistinctPowersTest
-{
+public class DistinctPowersTest {
 
     @Test
-    public void calculate() throws Exception
-    {
+    public void calculate() throws Exception {
         assertThat(DistinctPowers.calculateStoreReduced(2, 5)).isEqualTo(15);
         assertThat(DistinctPowers.calculateStoreReduced(2, 6)).isEqualTo(23);
         assertThat(DistinctPowers.calculateStoreReduced(2, 8)).isEqualTo(44);
@@ -33,8 +29,7 @@ public class DistinctPowersTest
     }
 
     @Test
-    public void calculateCounting() throws Exception
-    {
+    public void calculateCounting() {
         assertThat(DistinctPowers.calculateCounting(2, 5)).isEqualTo(15);
         assertThat(DistinctPowers.calculateCounting(2, 6)).isEqualTo(23);
         assertThat(DistinctPowers.calculateCounting(2, 8)).isEqualTo(44);
@@ -53,12 +48,12 @@ public class DistinctPowersTest
     }
 
     @Test
-    public void testMapIteration(){
+    public void testMapIteration() {
         //given
         final long iterationCount = 500;
         final long skipCount = 100;
-        final Double iterationCountThatCount = Double.valueOf(iterationCount - skipCount);
-        final Map<Integer, String> map = new HashMap<Integer, String>(){{
+        final double iterationCountThatCount = (double) (iterationCount - skipCount);
+        final Map<Integer, String> map = new HashMap<>() {{
             put(1, "Java");
             put(2, "Groovy");
             put(3, "Scala");
@@ -67,16 +62,12 @@ public class DistinctPowersTest
         }};
         //when
         long sum = 0;
-        for(int i = 0; i < iterationCount; i++)
-        {
+        for (int i = 0; i < iterationCount; i++) {
             final long start = System.nanoTime();
-            final List<String> result = map
-                    .entrySet()
-                    .stream()
-                    .map(Map.Entry::getValue)
-                    .collect(toList());
+            final List<String> result = new ArrayList<>(map
+                    .values());
             final long end = System.nanoTime();
-            if( i > skipCount) //skip first 10 for warm up
+            if (i > skipCount) //skip first 10 for warm up
             {
                 sum += (end - start);
             }
@@ -84,16 +75,12 @@ public class DistinctPowersTest
         }
         System.out.println("experiment, entrySet stream getValue toList: " + sum / iterationCountThatCount);
         sum = 0;
-        for(int i = 0; i < iterationCount; i++)
-        {
+        for (int i = 0; i < iterationCount; i++) {
             final long start = System.nanoTime();
-            final List<String> result = map
-                    .entrySet()
-                    .stream()
-                    .map(Map.Entry::getValue)
-                    .collect(toList());
+            final List<String> result = new ArrayList<>(map
+                    .values());
             final long end = System.nanoTime();
-            if( i > skipCount) //skip first 10 for warm up
+            if (i > skipCount) //skip first 10 for warm up
             {
                 sum += (end - start);
             }
@@ -101,16 +88,12 @@ public class DistinctPowersTest
         }
         System.out.println("experiment, entrySet stream getValue toList: " + sum / iterationCountThatCount);
         sum = 0;
-        for(int i = 0; i < iterationCount; i++)
-        {
+        for (int i = 0; i < iterationCount; i++) {
             final long start = System.nanoTime();
-            final List<String> result = map
-                    .entrySet()
-                    .stream()
-                    .map(Map.Entry::getValue)
-                    .collect(toCollection(() -> new ArrayList<>()));
+            final List<String> result = new ArrayList<>(map
+                    .values());
             final long end = System.nanoTime();
-            if( i > skipCount) //skip first 10 for warm up
+            if (i > skipCount) //skip first 10 for warm up
             {
                 sum += (end - start);
             }
@@ -118,15 +101,11 @@ public class DistinctPowersTest
         }
         System.out.println("experiment, entrySet Stream getValue toCollection: " + sum / iterationCountThatCount);
         sum = 0;
-        for(int i = 0; i < iterationCount; i++)
-        {
+        for (int i = 0; i < iterationCount; i++) {
             final long start = System.nanoTime();
-            final List<String> result = map
-                    .values()
-                    .stream()
-                    .collect(toCollection(() -> new ArrayList<>()));
+            final List<String> result = new ArrayList<>(map.values());
             final long end = System.nanoTime();
-            if( i > skipCount) //skip first 10 for warm up
+            if (i > skipCount) //skip first 10 for warm up
             {
                 sum += (end - start);
             }
@@ -134,16 +113,14 @@ public class DistinctPowersTest
         }
         System.out.println("experiment, values stream toCollection: " + sum / iterationCountThatCount);
         sum = 0;
-        for(int i = 0; i < iterationCount; i++)
-        {
-            final List<String> result = new ArrayList(map.entrySet().size());
+        for (int i = 0; i < iterationCount; i++) {
+            final List<String> result = new ArrayList<>(map.entrySet().size());
             final long start = System.nanoTime();
             map
-                    .entrySet()
-                    .forEach( e -> result.add(e.getValue()));
+                    .forEach((key, value) -> result.add(value));
             final long end = System.nanoTime();
             assert result.size() == map.entrySet().size();
-            if( i > skipCount) //skip first 10 for warm up
+            if (i > skipCount) //skip first 10 for warm up
             {
                 sum += (end - start);
             }
@@ -151,17 +128,15 @@ public class DistinctPowersTest
         }
         System.out.println("experiment, entrySet for each add to outside: " + sum / iterationCountThatCount);
         sum = 0;
-        for(int i = 0; i < iterationCount; i++)
-        {
-            final List<String> result = new ArrayList(map.entrySet().size());
+        for (int i = 0; i < iterationCount; i++) {
+            final List<String> result = new ArrayList<>(map.entrySet().size());
             final long start = System.nanoTime();
-            for(final Map.Entry<Integer, String> entry : map.entrySet())
-            {
+            for (final Map.Entry<Integer, String> entry : map.entrySet()) {
                 result.add(entry.getValue());
             }
             final long end = System.nanoTime();
             assert result.size() == map.entrySet().size();
-            if( i > skipCount) //skip first 10 for warm up
+            if (i > skipCount) //skip first 10 for warm up
             {
                 sum += (end - start);
             }

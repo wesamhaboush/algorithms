@@ -1,5 +1,6 @@
 package com.codebreeze.algorithms;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -36,12 +37,39 @@ public class Math2
         return count;
     }
 
+    public static BigInteger gcd(final BigInteger a, final BigInteger b)
+    {
+        if (b.equals(BigInteger.ZERO))
+            return a;
+        else
+            return gcd(b, a.remainder(b));
+    }
+
     public static long gcd(final long a, final long b)
     {
         if (b == 0)
             return a;
         else
             return gcd(b, a % b);
+    }
+
+    public static int gcd(int a, int b) {
+        int x, y;
+
+        if (a >= b) {
+            x = a;
+            y = b;
+        } else {
+            x = b;
+            y = a;
+        }
+
+        while (y != 0) {
+            int t = x % y;
+            x = y;
+            y = t;
+        }
+        return x;
     }
 
     /*

@@ -55,7 +55,7 @@ public class PandigitalProductSum
         //1- first find all permutations
         final List<Integer> oneToNine = IntStream.iterate(1, n -> n + 1)
                                                  .limit(9)
-                                                 .mapToObj(i -> i)
+                                                 .boxed()
                                                  .collect(toList());
         final List<List<Integer>> permutations = HeapPermutations.of(oneToNine);
 

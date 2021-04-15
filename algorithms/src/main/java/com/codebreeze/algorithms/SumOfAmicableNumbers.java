@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 public class SumOfAmicableNumbers
@@ -23,7 +24,8 @@ public class SumOfAmicableNumbers
         return LongStream
                 .rangeClosed(1, Math.round(Math.sqrt(n)) + 1) //by taking square root, we are eliminating repetition
                 .filter(i -> n % i == 0) //only zero remainder divisors
-                .mapToObj(i -> i == n/i ? asList(i) : asList(i, n/i)) // for numbers that are roots, only return 1 (6*6, 2*2, etc)
+                .mapToObj(i -> i == n/i ? singletonList(i)
+                                        : asList(i, n / i)) // for numbers that are roots, only return 1 (6*6, 2*2, etc)
                 .flatMap(Collection::stream)
                 .filter(i -> i != n) //exclude number itself
                 .collect(toList());
