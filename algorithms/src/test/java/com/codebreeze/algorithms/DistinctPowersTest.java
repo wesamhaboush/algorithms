@@ -1,6 +1,8 @@
 package com.codebreeze.algorithms;
 
-import org.junit.Test;
+
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DistinctPowersTest {
 
     @Test
-    public void calculate() throws Exception {
+    public void calculate() {
         assertThat(DistinctPowers.calculateStoreReduced(2, 5)).isEqualTo(15);
         assertThat(DistinctPowers.calculateStoreReduced(2, 6)).isEqualTo(23);
         assertThat(DistinctPowers.calculateStoreReduced(2, 8)).isEqualTo(44);

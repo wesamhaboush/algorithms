@@ -2,7 +2,8 @@ package com.codebreeze.algorithms;
 
 import org.assertj.core.api.SoftAssertionError;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 import java.util.Iterator;
 
@@ -38,42 +39,32 @@ public class PrimeNumbersTest
         SoftAssertions softly = new SoftAssertions();
         final Iterator<Integer> primeNumbersIterator1 = PrimeNumbers.iterator();
         final Iterator<Integer> primeNumbersIterator2 = PrimeNumbers.iterator();
-        final Thread thread1 = new Thread()
-        {
-            @Override
-            public void run()
-            {
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(2);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(3);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(5);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(7);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(11);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(13);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(17);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(19);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(23);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(29);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(31);
-                softly.assertThat(primeNumbersIterator1.next()).isEqualTo(37);
-            }
-        };
-        final Thread thread2 = new Thread()
-        {
-            @Override
-            public void run()
-            {
-                softly.assertThat(primeNumbersIterator2.next()).isEqualTo(2);
-                softly.assertThat(primeNumbersIterator2.next()).isEqualTo(3);
-                softly.assertThat(primeNumbersIterator2.next()).isEqualTo(5);
-                softly.assertThat(primeNumbersIterator2.next()).isEqualTo(7);
-                softly.assertThat(primeNumbersIterator2.next()).isEqualTo(11);
-                softly.assertThat(primeNumbersIterator2.next()).isEqualTo(13);
-                softly.assertThat(primeNumbersIterator2.next()).isEqualTo(17);
-                softly.assertThat(primeNumbersIterator2.next()).isEqualTo(19);
-                softly.assertThat(primeNumbersIterator2.next()).isEqualTo(23);
-                softly.assertThat(primeNumbersIterator2.next()).isEqualTo(29);
-            }
-        };
+        final Thread thread1 = new Thread(() -> {
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(2);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(3);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(5);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(7);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(11);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(13);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(17);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(19);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(23);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(29);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(31);
+            softly.assertThat(primeNumbersIterator1.next()).isEqualTo(37);
+        });
+        final Thread thread2 = new Thread(() -> {
+            softly.assertThat(primeNumbersIterator2.next()).isEqualTo(2);
+            softly.assertThat(primeNumbersIterator2.next()).isEqualTo(3);
+            softly.assertThat(primeNumbersIterator2.next()).isEqualTo(5);
+            softly.assertThat(primeNumbersIterator2.next()).isEqualTo(7);
+            softly.assertThat(primeNumbersIterator2.next()).isEqualTo(11);
+            softly.assertThat(primeNumbersIterator2.next()).isEqualTo(13);
+            softly.assertThat(primeNumbersIterator2.next()).isEqualTo(17);
+            softly.assertThat(primeNumbersIterator2.next()).isEqualTo(19);
+            softly.assertThat(primeNumbersIterator2.next()).isEqualTo(23);
+            softly.assertThat(primeNumbersIterator2.next()).isEqualTo(29);
+        });
         thread1.start();
         thread2.start();
         thread1.join();
@@ -118,6 +109,6 @@ public class PrimeNumbersTest
     }
 
     protected static void logAssertionErrorMessage(String assertionContext, AssertionError e) {
-        System.out.println(String.format("%s assertion : %s%n", assertionContext, e.getMessage()));
+        System.out.printf("%s assertion : %s%n%n", assertionContext, e.getMessage());
     }
 }

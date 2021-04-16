@@ -2,8 +2,6 @@ package com.codebreeze.algorithms;
 
 import java.util.function.BiConsumer;
 
-import static org.junit.Assert.*;
-
 public class SlideRotateArrayTest extends AbstractRotateArray {
 
     @Override

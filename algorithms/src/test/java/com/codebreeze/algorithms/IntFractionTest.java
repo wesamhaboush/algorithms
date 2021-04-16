@@ -1,6 +1,8 @@
 package com.codebreeze.algorithms;
 
-import org.junit.Test;
+
+
+import org.junit.jupiter.api.Test;
 
 import static com.codebreeze.algorithms.IntFraction.intFraction;
 import static org.assertj.core.api.Assertions.assertThat;

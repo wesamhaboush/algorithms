@@ -1,6 +1,8 @@
 package com.codebreeze.algorithms;
 
-import org.junit.Test;
+
+
+import org.junit.jupiter.api.Test;
 
 import java.util.Stack;
 
@@ -24,7 +26,7 @@ public class HanoiTowerTest
         assertThat(auxiliary).isEmpty();
     }
 
-    private static final  <T> Stack<T> stack(final T...ts)
+    private static <T> Stack<T> stack(final T...ts)
     {
         final Stack<T> s = new Stack<>();
         s.addAll(asList(ts));

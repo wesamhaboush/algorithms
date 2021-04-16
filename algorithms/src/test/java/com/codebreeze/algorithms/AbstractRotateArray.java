@@ -1,13 +1,14 @@
 package com.codebreeze.algorithms;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.function.BiConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public abstract class AbstractRotateArray {
+abstract class AbstractRotateArray {
 
     @Test
     public void accept() {
