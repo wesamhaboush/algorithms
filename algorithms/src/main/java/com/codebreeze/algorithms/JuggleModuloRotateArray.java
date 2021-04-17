@@ -6,9 +6,9 @@ import java.util.function.BiConsumer;
 public class JuggleModuloRotateArray<T> implements BiConsumer<T[], Integer> {
 
     @Override
-    public void accept(T[] elements, Integer I) {
+    public void accept(T[] elements, Integer rotationDistance) {
         print(elements);
-        juggleRotModulo(elements, I);
+        juggleRotModulo(elements, rotationDistance);
         print(elements);
     }
 
@@ -16,12 +16,8 @@ public class JuggleModuloRotateArray<T> implements BiConsumer<T[], Integer> {
         System.out.println(Arrays.toString(ts));
     }
 
-    private void print(T t) {
-        System.out.println(t);
-    }
-
-    private void juggleRotModulo(T[] elements, int I) {
-        int cycles = gcd(I, elements.length);
+    private void juggleRotModulo(T[] elements, int rotationDistance) {
+        int cycles = Gcd.FUNCTION.applyAsInt(rotationDistance, elements.length);
         for (int i = 0; i < cycles; i++) {
             System.out.print("/");
             /* move i-th values of blocks */
@@ -30,30 +26,19 @@ public class JuggleModuloRotateArray<T> implements BiConsumer<T[], Integer> {
             for (; ; ) {
                 System.out.print("|");
 /* Replace with mod below
- k = j + rotdist;
+ k = j + rotationDistance;
  if (k >= n)
  k -= n;
  */
-                int k = (j + I) % elements.length;
-                if (k == i)
+                int k = (j + rotationDistance) % elements.length;
+                // if this happens that means we have moved all the vector for that cycle
+                if (k == i) {
                     break;
+                }
                 elements[j] = elements[k];
                 j = k;
             }
             elements[j] = t;
         }
-    }
-
-    private int gcd(int i, int j) {
-        while (i != 0) {
-            if (j >= i) {
-                j -= i;
-            } else {
-                int t = i;
-                i = j;
-                j = t;
-            }
-        }
-        return j;
     }
 }

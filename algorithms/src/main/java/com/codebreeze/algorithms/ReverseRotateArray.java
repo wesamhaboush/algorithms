@@ -6,18 +6,14 @@ import java.util.function.BiConsumer;
 public class ReverseRotateArray<T> implements BiConsumer<T[], Integer> {
 
     @Override
-    public void accept(T[] elements, Integer I) {
+    public void accept(T[] elements, Integer rotationDistance) {
         print(elements);
-        revrot(elements, I);
+        reverseRotate(elements, rotationDistance);
         print(elements);
     }
 
     private void print(T[] ts) {
         System.out.println(Arrays.toString(ts));
-    }
-
-    private void print(T t) {
-        System.out.println(t);
     }
 
     /* Alg 1: Rotate by reversal */
@@ -32,9 +28,9 @@ public class ReverseRotateArray<T> implements BiConsumer<T[], Integer> {
         }
     }
 
-    private void revrot(T[] elements, int rotdist) {
-        reverse(elements, 0, rotdist - 1);
-        reverse(elements, rotdist, elements.length - 1);
+    private void reverseRotate(T[] elements, int rotationDistance) {
+        reverse(elements, 0, rotationDistance - 1);
+        reverse(elements, rotationDistance, elements.length - 1);
         reverse(elements, 0, elements.length - 1);
     }
 }

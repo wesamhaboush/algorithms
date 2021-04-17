@@ -6,9 +6,9 @@ import java.util.function.BiConsumer;
 public class GcdRotateArray<T> implements BiConsumer<T[], Integer> {
 
     @Override
-    public void accept(T[] elements, Integer I) {
+    public void accept(T[] elements, Integer rotationDistance) {
         print(elements);
-        gcdRotate(elements, I);
+        gcdRotate(elements, rotationDistance);
         print(elements);
     }
 
@@ -16,13 +16,10 @@ public class GcdRotateArray<T> implements BiConsumer<T[], Integer> {
         System.out.println(Arrays.toString(ts));
     }
 
-    private void print(T t) {
-        System.out.println(t);
-    }
-
     /* Alg 3: Recursive rotate (using gcd structure) */
     private void swap(T[] elements, int i, int j, int k) /* swap x[i..i+k-1] with x[j..j+k-1] */ {
         while (k-- > 0) {
+            System.out.print('|');
             T t = elements[i];
             elements[i] = elements[j];
             elements[j] = t;
@@ -31,11 +28,12 @@ public class GcdRotateArray<T> implements BiConsumer<T[], Integer> {
         }
     }
 
-    private void gcdRotate(T[] elements, int rotdist) {
+    private void gcdRotate(T[] elements, int rotationDistance) {
         int i, j, p;
-        if (rotdist == 0 || rotdist == elements.length)
+        if (rotationDistance == 0 || rotationDistance == elements.length) {
             return;
-        i = p = rotdist;
+        }
+        i = p = rotationDistance;
         j = elements.length - p;
         while (i != j) {
             System.out.print("/");
