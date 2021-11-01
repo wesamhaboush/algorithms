@@ -1,4 +1,7 @@
-package com.codebreeze.algorithms;
+package com.codebreeze.algorithms.rotate;
+
+import com.codebreeze.algorithms.rotate.AbstractRotateArrayTest;
+import com.codebreeze.algorithms.rotate.JuggleModuloRotateArray;
 
 import java.util.function.BiConsumer;
 

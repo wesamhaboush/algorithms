@@ -1,8 +1,8 @@
-package com.codebreeze.algorithms;
+package com.codebreeze.algorithms.rotate;
 
 import java.util.function.BiConsumer;
 
-public class ReverseRotateArrayTest extends AbstractRotateArrayTest {
+class ReverseRotateArrayTest extends AbstractRotateArrayTest {
 
     @Override
     <T> BiConsumer<T[], Integer> rotateArray() {

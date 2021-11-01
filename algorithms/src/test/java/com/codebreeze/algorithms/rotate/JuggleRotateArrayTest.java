@@ -1,4 +1,4 @@
-package com.codebreeze.algorithms;
+package com.codebreeze.algorithms.rotate;
 
 import java.util.function.BiConsumer;
 

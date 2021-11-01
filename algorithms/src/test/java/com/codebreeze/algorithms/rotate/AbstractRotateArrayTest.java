@@ -1,4 +1,4 @@
-package com.codebreeze.algorithms;
+package com.codebreeze.algorithms.rotate;
 
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ abstract class AbstractRotateArrayTest {
     @Test
     public void accept_3() {
         // given
+        System.out.println("3 shifts test:");
         String[] original = {"a", "b", "c", "d", "e", "f", "g"};
 
         // when
@@ -27,6 +28,7 @@ abstract class AbstractRotateArrayTest {
     @Test
     public void accept_5() {
         // given
+        System.out.println("5 shifts test:");
         String[] original = {"a", "b", "c", "d", "e", "f", "g"};
 
         // when
