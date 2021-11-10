@@ -14,4 +14,8 @@ public class Utils {
             return new File(resource.getFile());
         }
     }
+
+    public static int[] arrayOf(int...ints) {
+        return ints;
+    }
 }

@@ -12,6 +12,10 @@ public class Bits {
         return number | (1 << bitNumber);
     }
 
+    public static byte set(byte number, byte bitNumber) {
+        return (byte)(number | (1 << bitNumber));
+    }
+
     public static int unset(int number, int bitNumber) {
         return number & ~(1 << bitNumber);
     }

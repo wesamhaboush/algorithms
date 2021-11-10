@@ -1,0 +1,22 @@
+From,
+$sender_name
+$sender_address
+
+Date: $date
+
+To,
+$recipient_name
+$recipient_address
+
+Dear $recipient_title $recipient_name,
+
+I am pleased to inform you that you are cordially invited to the $event_name. This event will be organized at $event_address and will be held on $event_date at $event_time. A lunch has been arranged in between the event to make more enjoyable.
+
+Please confirm your availability on or before $confirmation_date by contacting us at $organizer_contact_number or by emailing us at $organizer_email.
+
+We look forward to your presence on the event $event_name.
+
+Yours Sincerely,
+
+$signature
+$sender_name
