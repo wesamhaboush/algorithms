@@ -18,4 +18,11 @@ public class Utils {
     public static int[] arrayOf(int...ints) {
         return ints;
     }
+
+    public static long nanosToRun(Runnable runnable) {
+        long start = System.nanoTime();
+        runnable.run();
+        long end = System.nanoTime();
+        return end - start;
+    }
 }
