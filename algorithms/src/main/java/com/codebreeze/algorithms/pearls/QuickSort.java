@@ -1,26 +1,25 @@
 package com.codebreeze.algorithms.pearls;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.apache.commons.lang3.ArrayUtils.swap;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 
+/*
+Note: most algorithms differ in how they do the partitioning to do quick sort.
+ */
 public class QuickSort implements Consumer<int[]> {
 
     private final Algorithm algorithm;
 
     public QuickSort(Algorithm algorithm) {
-        if (algorithm == null) {
-            throw new NullPointerException("cannot work with null algorithm");
-        }
-        this.algorithm = algorithm;
+        this.algorithm = Objects.requireNonNull(algorithm, "cannot work with null algorithm");
     }
 
     @Override
     public void accept(int[] x) {
-        if (x == null) {
-            throw new NullPointerException("cannot sort null int arrays");
-        }
+        Objects.requireNonNull(x, "cannot sort null in arrays");
         algorithm.accept(x);
     }
 
@@ -112,6 +111,128 @@ procedure QSort(L,U)
                     swap(x, l, j);
                     qsort(x, l, j - 1);
                     qsort(x, i, u);
+                }
+            }
+        },
+        /*
+procedure QSort(L,U)
+    if L < U then
+        Swap(X[L], X[RandInt(L,U)])
+        T := X[L]
+        M := U+1
+        for I := U downto L do
+            if X[I] >= T then
+                M := M-1
+                Swap(X[M], X[I])
+        QSort(L, M-1)
+        QSort(M+1, U)
+         */
+        ALG3 {
+            @Override
+            public void accept(int[] x) {
+                qsort(x, 0, x.length - 1);
+            }
+
+            private static void qsort(int[] x, int l, int u) {
+                if (l < u) {
+                    int random = nextInt(l, u + 1);
+                    swap(x, l, random);
+                    int t = x[l];
+                    int m = u + 1;
+                    for (int i = u; i >= l; i--) {
+                        if (x[i] >= t) {
+                            m = m - 1;
+                            swap(x, m, i);
+                        }
+                    }
+                    qsort(x, l, m - 1);
+                    qsort(x, m + 1, u);
+                }
+            }
+        },
+        /*
+procedure QSort(L,U)
+    if L < U then
+        Swap(X[L], X[RandInt(L,U)])
+        T := X[L]
+        M := U+1
+        I := U+1
+        repeat
+                repeat I := I-1 until X[I] >= T
+                M := M-1
+                Swap(X[M], X[I])
+            until I = L
+        QSort(L, M-1)
+        QSort(M+1, U)
+         */
+        ALG4 {
+            @Override
+            public void accept(int[] x) {
+                qsort(x, 0, x.length - 1);
+            }
+
+            private static void qsort(int[] x, int l, int u) {
+                if (l < u) {
+                    int random = nextInt(l, u + 1);
+                    swap(x, l, random);
+                    int t = x[l];
+                    int m = u + 1;
+                    int i = u + 1;
+                    do {
+                        do {
+                            i = i - 1;
+                        } while (x[i] < t);
+                        m = m - 1;
+                        swap(x, m, i);
+                    } while (i != l);
+                    qsort(x, l, m - 1);
+                    qsort(x, m + 1, u);
+                }
+            }
+        },
+        ALG5 {
+            @Override
+            public void accept(int[] x) {
+                qsort(x, 0, x.length - 1);
+            }
+
+            static int partition(int[] x, int l, int u) {
+                int pivot = x[u];
+
+                // Index of smaller element and
+                // indicates the right position
+                // of pivot found so far
+                int i = l - 1;
+
+                for (int j = l; j <= u - 1; j++) {
+                    if (x[j] < pivot) {
+                        // Increment index of
+                        // smaller element
+                        i++;
+                        swap(x, i, j);
+                    }
+                }
+                swap(x, i + 1, u);
+                return i + 1;
+            }
+
+            private static void qsort(int[] x, int l, int u) {
+                while (l < u) {
+        /* m is partitioning index, x[p] is now
+           at right place */
+                    int m = partition(x, l, u);
+
+                    // If left part is smaller, then recur for left
+                    // part and handle right part iteratively
+                    if (m - l < u - m) {
+                        qsort(x, l, m - 1);
+                        l = m + 1;
+                    }
+                    // Else recur for right part
+                    else {
+                        qsort(x, m + 1, u);
+                        u = m - 1;
+                    }
                 }
             }
         }

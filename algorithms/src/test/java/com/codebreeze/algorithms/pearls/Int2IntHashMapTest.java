@@ -1,6 +1,7 @@
 package com.codebreeze.algorithms.pearls;
 
 import com.codebreeze.algorithms.Utils;
+import com.codebreeze.algorithms.primitive.collections.map.Int2IntHashMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -22,7 +23,7 @@ class Int2IntHashMapTest {
             .toArray();
         Arrays.sort(values);
         for(int value : values) {
-            map.add(value);
+            map.put(value, value);
         }
 
         // then
@@ -35,10 +36,10 @@ class Int2IntHashMapTest {
     private long getTime(int[] values, Int2IntHashMap bs) {
         return Utils.nanosToRun(() -> {
             for (int i : values) {
-                assertThat(bs.find(i)).isNotEqualTo(-1);
+                assertThat(bs.get(i)).isNotEqualTo(-1);
             }
-            assertThat(bs.find(-10)).isEqualTo(-1);
-            assertThat(bs.find(20000)).isEqualTo(-1);
+            assertThat(bs.get(-10)).isEqualTo(-1);
+            assertThat(bs.get(20000)).isEqualTo(-1);
         });
     }
 }

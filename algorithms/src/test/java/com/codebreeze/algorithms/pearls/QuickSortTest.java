@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
+import static com.codebreeze.algorithms.Utils.copy;
 import static com.codebreeze.algorithms.Utils.nanosToRun;
-import static com.codebreeze.algorithms.pearls.QuickSort.Algorithm.ALG1;
-import static com.codebreeze.algorithms.pearls.QuickSort.Algorithm.ALG2;
+import static com.codebreeze.algorithms.pearls.QuickSort.Algorithm.*;
 import static org.apache.commons.lang3.RandomUtils.nextBoolean;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.assertj.core.api.Assertions.*;
@@ -30,79 +30,71 @@ class QuickSortTest {
         // when
         QuickSort a1qs = new QuickSort(ALG1);
         QuickSort a2qs = new QuickSort(ALG2);
+        QuickSort a3qs = new QuickSort(ALG3);
+        QuickSort a4qs = new QuickSort(ALG3);
 
         // then
         assertThatCode(() -> a1qs.accept(emptyX)).doesNotThrowAnyException();
         assertThatCode(() -> a2qs.accept(emptyX)).doesNotThrowAnyException();
+        assertThatCode(() -> a3qs.accept(emptyX)).doesNotThrowAnyException();
+        assertThatCode(() -> a4qs.accept(emptyX)).doesNotThrowAnyException();
     }
 
     @Test
     void accept_one() {
-        // given
-        int[] expected = {1};
-        int[] x1 = {1};
-        int[] x2 = {1};
+        final int[] expected = {1};
 
-        // when
-        QuickSort a1qs = new QuickSort(ALG1);
-        QuickSort a2qs = new QuickSort(ALG2);
-        a1qs.accept(x1);
-        a2qs.accept(x2);
+        Arrays.stream(QuickSort.Algorithm.values()).forEach(algorithm -> {
+            // given
+            int[] x = {1};
 
-        // then
-        assertThat(x1).isEqualTo(expected);
-        assertThat(x2).isEqualTo(expected);
+            // when
+            QuickSort qs = new QuickSort(algorithm);
+            qs.accept(x);
+
+            // then
+            assertThat(x).isEqualTo(expected);
+        });
     }
 
     @Test
     void accept_two() {
-        // given
-        int[] x2sorted1 = {-1, 2};
-        int[] x2sorted2 = {-1, 2};
-        int[] x2unsorted1 = {2, -1};
-        int[] x2unsorted2 = {2, -1};
-        int[] x2expected = {-1, 2};
+        int[] expected = {-1, 2};
+        Arrays.stream(QuickSort.Algorithm.values()).forEach(algorithm -> {
+            System.out.println("algorithm: " + algorithm);
+            // given
+            int[] sorted = {-1, 2};
+            int[] unsorted = {2, -1};
 
-        // when
-        QuickSort a1qs = new QuickSort(ALG1);
-        QuickSort a2qs = new QuickSort(ALG2);
-        a1qs.accept(x2sorted1);
-        a1qs.accept(x2unsorted1);
-        a2qs.accept(x2sorted2);
-        a2qs.accept(x2unsorted2);
+            // when
+            QuickSort qs = new QuickSort(algorithm);
+            qs.accept(sorted);
+            qs.accept(unsorted);
 
-        // then
-        assertThat(x2sorted1).isEqualTo(x2expected);
-        assertThat(x2unsorted1).isEqualTo(x2expected);
-        assertThat(x2sorted2).isEqualTo(x2expected);
-        assertThat(x2unsorted2).isEqualTo(x2expected);
+            // then
+            assertThat(sorted).isEqualTo(expected);
+            assertThat(unsorted).isEqualTo(expected);
+        });
     }
 
     @Test
     void accept_many() {
-        // when
-        QuickSort a1qs = new QuickSort(ALG1);
-        QuickSort a2qs = new QuickSort(ALG2);
-
         IntStream.range(3, 13)
             .forEach(
                 length -> {
-                    // given
                     int[] x = intArrayOfSize(length);
-                    int[] xSorted = Arrays.copyOf(x, x.length);
+                    int[] xSorted = copy(x);
                     Arrays.sort(xSorted);
-
-                    // when
                     System.out.println("sorting: " + Arrays.toString(x));
                     System.out.println("sorted: " + Arrays.toString(xSorted));
-                    int[] x1 = Arrays.copyOf(x, x.length);
-                    int[] x2 = Arrays.copyOf(x, x.length);
-                    a1qs.accept(x1);
-                    a2qs.accept(x2);
 
-                    // then
-                    assertThat(x1).isEqualTo(xSorted);
-                    assertThat(x2).isEqualTo(xSorted);
+                    // when/ then
+                    Arrays.stream(QuickSort.Algorithm.values())
+                        .forEach(algorithm -> {
+                            int[] copy = copy(x);
+                            new QuickSort(algorithm).accept(copy);
+                            assertThat(copy).isEqualTo(xSorted);
+                        });
                 }
             );
     }
@@ -133,7 +125,7 @@ class QuickSortTest {
         IntStream.range(0, sampleCount + 1).forEach(i_ -> {
             long alg1Time = nanosToRun(() -> testSorting(a1qs, Arrays.copyOf(x, x.length), xSorted));
             long alg2Time = nanosToRun(() -> testSorting(a2qs, Arrays.copyOf(x, x.length), xSorted));
-            if(i_ != 0) { // this is to avoid first value which is normally an outlier!
+            if (i_ != 0) { // this is to avoid first value which is normally an outlier!
                 alg1Times.addValue(alg1Time);
                 alg2Times.addValue(alg2Time);
             }

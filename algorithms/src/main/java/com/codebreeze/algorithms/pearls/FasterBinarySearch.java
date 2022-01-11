@@ -1,5 +1,7 @@
 package com.codebreeze.algorithms.pearls;
 
+import com.codebreeze.algorithms.primitive.collections.pair.IntIntPair;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class FasterBinarySearch extends CountingBinarySearch {
@@ -9,11 +11,11 @@ public class FasterBinarySearch extends CountingBinarySearch {
     }
 
     @Override
-    public IntPair apply(int value) {
+    public IntIntPair apply(int value) {
         AtomicInteger count = new AtomicInteger(0);
         int position = regularBinarySearch(values, value, count);
         // first is location, second is count of comparisons done
-        return new IntPair(position, count.get());
+        return new IntIntPair(position, count.get());
     }
 
     @Override

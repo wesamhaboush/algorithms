@@ -1,5 +1,6 @@
 package com.codebreeze.algorithms.pearls;
 
+import com.codebreeze.algorithms.primitive.collections.pair.DoubleDoublePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
@@ -19,11 +20,11 @@ class LinesBracketTest {
     @Test
     void apply() {
         // given
-        DoublePair[] lines = {
-            DoublePair.of(0.6, -1),
-            DoublePair.of(0.4, 2),
-            DoublePair.of(0.1, 3),
-            DoublePair.of(0.25, 4)
+        DoubleDoublePair[] lines = {
+            DoubleDoublePair.of(0.6, -1),
+            DoubleDoublePair.of(0.4, 2),
+            DoubleDoublePair.of(0.1, 3),
+            DoubleDoublePair.of(0.25, 4)
         };
 
         // when
@@ -32,25 +33,25 @@ class LinesBracketTest {
         // then
         // points considered:
         // (1, 4), (0.5, 3), (1.5, 2)
-        assertThat(lb.apply(DoublePair.of(1, 4)))
+        assertThat(lb.apply(DoubleDoublePair.of(1, 4)))
             .isEqualTo(
                 Pair.of(
-                    DoublePair.of(0.1, 3),
-                    DoublePair.of(0.25, 4)
+                    DoubleDoublePair.of(0.1, 3),
+                    DoubleDoublePair.of(0.25, 4)
                 )
             );
-        assertThat(lb.apply(DoublePair.of(0.5, 3)))
+        assertThat(lb.apply(DoubleDoublePair.of(0.5, 3)))
             .isEqualTo(
                 Pair.of(
-                    DoublePair.of(0.4, 2),
-                    DoublePair.of(0.1, 3)
+                    DoubleDoublePair.of(0.4, 2),
+                    DoubleDoublePair.of(0.1, 3)
                 )
             );
-        assertThat(lb.apply(DoublePair.of(1.5, 2)))
+        assertThat(lb.apply(DoubleDoublePair.of(1.5, 2)))
             .isEqualTo(
                 Pair.of(
-                    DoublePair.of(0.6, -1),
-                    DoublePair.of(0.4, 2)
+                    DoubleDoublePair.of(0.6, -1),
+                    DoubleDoublePair.of(0.4, 2)
                 )
             );
     }
@@ -58,11 +59,11 @@ class LinesBracketTest {
     @Test
     void apply_failures() {
         // given
-        DoublePair[] lines = {
-            DoublePair.of(0.6, -1),
-            DoublePair.of(0.4, 2),
-            DoublePair.of(0.1, 3),
-            DoublePair.of(0.25, 4)
+        DoubleDoublePair[] lines = {
+            DoubleDoublePair.of(0.6, -1),
+            DoubleDoublePair.of(0.4, 2),
+            DoubleDoublePair.of(0.1, 3),
+            DoubleDoublePair.of(0.25, 4)
         };
 
         // when
@@ -71,22 +72,22 @@ class LinesBracketTest {
         // then
         // points considered:
         // (0.25, -1), (0.75, 4.25), (0, -1), (0, 2), (0, 3), (0, 4)
-        assertThatThrownBy(() -> lb.apply(DoublePair.of(0.25, -1))) // below all lines
+        assertThatThrownBy(() -> lb.apply(DoubleDoublePair.of(0.25, -1))) // below all lines
             .isInstanceOf(NoSuchElementException.class)
             .hasMessageContaining("not bracketed");
-        assertThatThrownBy(() -> lb.apply(DoublePair.of(0.75, 4.25))) // below all lines
+        assertThatThrownBy(() -> lb.apply(DoubleDoublePair.of(0.75, 4.25))) // below all lines
             .isInstanceOf(NoSuchElementException.class)
             .hasMessageContaining("not bracketed");
-        assertThatThrownBy(() -> lb.apply(DoublePair.of(0, -1))) // below on a line
+        assertThatThrownBy(() -> lb.apply(DoubleDoublePair.of(0, -1))) // below on a line
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("this point is on a line");
-        assertThatThrownBy(() -> lb.apply(DoublePair.of(0, 2))) // below on a line
+        assertThatThrownBy(() -> lb.apply(DoubleDoublePair.of(0, 2))) // below on a line
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("this point is on a line");
-        assertThatThrownBy(() -> lb.apply(DoublePair.of(0, 3))) // below on a line
+        assertThatThrownBy(() -> lb.apply(DoubleDoublePair.of(0, 3))) // below on a line
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("this point is on a line");
-        assertThatThrownBy(() -> lb.apply(DoublePair.of(0, 4))) // below on a line
+        assertThatThrownBy(() -> lb.apply(DoubleDoublePair.of(0, 4))) // below on a line
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("this point is on a line");
     }

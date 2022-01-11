@@ -1,5 +1,6 @@
 package com.codebreeze.algorithms.pearls;
 
+import com.codebreeze.algorithms.primitive.collections.pair.IntIntPair;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 
@@ -22,8 +23,8 @@ class CountingBinarySearchTest {
         int sumForFast = 0;
         int sumForRegular = 0;
         for (int value : values) {
-            IntPair regular = cbs.apply(value);
-            IntPair fast = fbs.apply(value);
+            IntIntPair regular = cbs.apply(value);
+            IntIntPair fast = fbs.apply(value);
             sumForFast += fast.second();
             sumForRegular += regular.second();
 

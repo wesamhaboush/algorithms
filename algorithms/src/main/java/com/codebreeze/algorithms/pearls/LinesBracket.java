@@ -1,5 +1,6 @@
 package com.codebreeze.algorithms.pearls;
 
+import com.codebreeze.algorithms.primitive.collections.pair.DoubleDoublePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.NoSuchElementException;
@@ -16,23 +17,23 @@ How could he solve the problem quickly?
 
 basically this is a binary search between the lines
  */
-public class LinesBracket implements Function<DoublePair, Pair<DoublePair, DoublePair>> {
-    private final DoublePair[] lines;
+public class LinesBracket implements Function<DoubleDoublePair, Pair<DoubleDoublePair, DoubleDoublePair>> {
+    private final DoubleDoublePair[] lines;
 
-    public LinesBracket(DoublePair[] lines) {
+    public LinesBracket(DoubleDoublePair[] lines) {
         this.lines = lines;
     }
 
     @Override
-    public Pair<DoublePair, DoublePair> apply(DoublePair point) {
+    public Pair<DoubleDoublePair, DoubleDoublePair> apply(DoubleDoublePair point) {
         return binarySearch(lines, 0, lines.length - 1, point);
     }
 
-    private Pair<DoublePair, DoublePair> binarySearch(DoublePair[] lines, int min, int max, DoublePair point) {
+    private Pair<DoubleDoublePair, DoubleDoublePair> binarySearch(DoubleDoublePair[] lines, int min, int max, DoubleDoublePair point) {
         while (min <= max) {
             int mid = (min + max) / 2;
-            double midY = f(lines[mid].left(), lines[mid].right(), point.left());
-            if (midY > point.right()) { // the point is under this line (not necessarily bracketed by it
+            double midY = f(lines[mid].first(), lines[mid].second(), point.first());
+            if (midY > point.second()) { // the point is under this line (not necessarily bracketed by it
                 // three possibilities:
                 // 1- the point is below middle, and middle is the first line (mid = 0)
                 // 2- the point is below middle, and above middle - 1. bracketed by mid and mid - 1
@@ -40,13 +41,13 @@ public class LinesBracket implements Function<DoublePair, Pair<DoublePair, Doubl
                 if(mid == 0) {
                     throw new NoSuchElementException("this point is not bracketed by any of the lines! " + point);
                 }
-                double midYPrevious = f(lines[mid - 1].left(), lines[mid - 1].right(), point.left());
-                if(midYPrevious >= point.right()) {
+                double midYPrevious = f(lines[mid - 1].first(), lines[mid - 1].second(), point.first());
+                if(midYPrevious >= point.second()) {
                     max = mid - 1;
                 } else {
                     return Pair.of(lines[mid - 1], lines[mid]);
                 }
-            } else if (midY < point.right()) { // the point is above this line (not necessarily bracketed by it
+            } else if (midY < point.second()) { // the point is above this line (not necessarily bracketed by it
                 // three possibilities:
                 // 1- the point is above middle, and middle is the last line (mid = lines.length - 1)
                 // 2- the point is above middle, and below mid + 1. bracketed by mid and mid + 1
@@ -54,8 +55,8 @@ public class LinesBracket implements Function<DoublePair, Pair<DoublePair, Doubl
                 if(mid == lines.length - 1) {
                     throw new NoSuchElementException("this point is not bracketed by any of the lines! " + point);
                 }
-                double midYNext = f(lines[mid + 1].left(), lines[mid + 1].right(), point.left());
-                if(midYNext <= point.right()) {
+                double midYNext = f(lines[mid + 1].first(), lines[mid + 1].second(), point.first());
+                if(midYNext <= point.second()) {
                     min = mid + 1;
                 } else {
                     return Pair.of(lines[mid], lines[mid + 1]);

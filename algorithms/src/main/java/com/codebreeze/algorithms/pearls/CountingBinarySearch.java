@@ -1,10 +1,12 @@
 package com.codebreeze.algorithms.pearls;
 
+import com.codebreeze.algorithms.primitive.collections.pair.IntIntPair;
+
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntFunction;
 
-public class CountingBinarySearch implements IntFunction<IntPair> {
+public class CountingBinarySearch implements IntFunction<IntIntPair> {
     protected final int[] values;
 
     public CountingBinarySearch(int[] values) {
@@ -15,11 +17,11 @@ public class CountingBinarySearch implements IntFunction<IntPair> {
     }
 
     @Override
-    public IntPair apply(int value) {
+    public IntIntPair apply(int value) {
         AtomicInteger count = new AtomicInteger(0);
         int position = regularBinarySearch(values, value, count);
         // first is location, second is count of comparisons done
-        return new IntPair(position, count.get());
+        return new IntIntPair(position, count.get());
     }
 
     protected int regularBinarySearch(int[] values, int value, AtomicInteger count) {
