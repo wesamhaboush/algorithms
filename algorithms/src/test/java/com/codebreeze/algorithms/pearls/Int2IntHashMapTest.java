@@ -5,11 +5,13 @@ import com.codebreeze.algorithms.primitive.collections.map.Int2IntHashMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
 import static java.util.stream.IntStream.range;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class Int2IntHashMapTest {
 
@@ -38,8 +40,8 @@ class Int2IntHashMapTest {
             for (int i : values) {
                 assertThat(bs.get(i)).isNotEqualTo(-1);
             }
-            assertThat(bs.get(-10)).isEqualTo(-1);
-            assertThat(bs.get(20000)).isEqualTo(-1);
+            assertThatThrownBy(() -> bs.get(-10)).isInstanceOf(NoSuchElementException.class);
+            assertThatThrownBy(() -> bs.get(20000)).isInstanceOf(NoSuchElementException.class);
         });
     }
 }
