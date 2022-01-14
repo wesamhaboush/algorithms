@@ -20,6 +20,10 @@ public class Heaps {
         return 2 * parentIndex + 2;
     }
 
+    public static <T> void print(List<T> heap, StringBuilder buffer) {
+        print(heap, buffer, "", "", 0);
+    }
+
     public static <T> void print(List<T> heap, StringBuilder buffer, String prefix, String childrenPrefix, int currentNode) {
         buffer.append(prefix);
         buffer.append(heap.get(currentNode));
