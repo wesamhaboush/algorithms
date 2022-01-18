@@ -7,5 +7,6 @@ import java.util.stream.Stream;
 public interface Heap<T> extends Collection {
     void insert(T d);
     T extractM();
+    T peek();
     Stream<T> stream();
 }

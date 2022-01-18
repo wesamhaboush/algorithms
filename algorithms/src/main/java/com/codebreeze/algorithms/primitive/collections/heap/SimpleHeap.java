@@ -24,6 +24,7 @@ public class SimpleHeap<T> implements Heap<T> {
 
     @Override
     public void insert(T element) {
+        requireNonNull(element);
         heap.add(element); // heap.set(size, element);
         siftUp(heap, size);
         size++;
@@ -40,6 +41,14 @@ public class SimpleHeap<T> implements Heap<T> {
         size = size - 1;
         siftDown(heap, size - 1);
         return popped;
+    }
+
+    @Override
+    public T peek() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("cannot extract values from empty heap");
+        }
+        return heap.get(0);
     }
 
     @Override

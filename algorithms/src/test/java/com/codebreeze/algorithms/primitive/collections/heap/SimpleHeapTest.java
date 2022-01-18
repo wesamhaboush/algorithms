@@ -2,6 +2,7 @@ package com.codebreeze.algorithms.primitive.collections.heap;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
@@ -54,5 +55,7 @@ class SimpleHeapTest {
     void fails_for_null() {
         // given/when/then
         assertThatThrownBy(() -> new SimpleHeap<>(true,null)).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> new SimpleHeap<>(true, Comparator.comparingInt(Object::hashCode)).insert(null))
+            .isInstanceOf(NullPointerException.class);
     }
 }
