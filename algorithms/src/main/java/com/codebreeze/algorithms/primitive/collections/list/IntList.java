@@ -1,5 +1,6 @@
 package com.codebreeze.algorithms.primitive.collections.list;
 
+import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
 public interface IntList {
@@ -20,4 +21,11 @@ public interface IntList {
         this.set(index1, v2);
         this.set(index2, v1);
     }
+    default int last() {
+        if(isEmpty()) {
+            throw new NoSuchElementException("cannot get last element from an empty list");
+        }
+        return get(size() - 1);
+    }
+    void clear();
 }

@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 import static com.codebreeze.algorithms.Utils.isEquals;
 
 public class ArrayIntList implements IntList {
+    private static final int DEFAULT_INITIAL_CAPACITY = 10;
     private int[] elements;
     private int size;
 
@@ -22,7 +23,7 @@ public class ArrayIntList implements IntList {
     }
 
     public ArrayIntList() {
-        this(10);
+        this(DEFAULT_INITIAL_CAPACITY);
     }
 
 
@@ -85,6 +86,11 @@ public class ArrayIntList implements IntList {
     @Override
     public IntStream stream() {
         return Arrays.stream(this.elements, 0, size);
+    }
+
+    @Override
+    public void clear() {
+        this.elements = new int[DEFAULT_INITIAL_CAPACITY];
     }
 
     private void validateIndex(int index) {
